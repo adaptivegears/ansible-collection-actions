@@ -6,7 +6,7 @@ debian_packages:
   - grub-pc
   - grub-efi-amd64
   - grub-efi-amd64-signed
-  - shim-signed:amd64
+  - shim-signed
 
   # kernel
   - linux-image-amd64
@@ -37,8 +37,8 @@ debian_packages:
   - init
   - init-system-helpers
   - sysvinit-utils
-  - libnss-systemd:amd64
-  - libpam-systemd:amd64
+  - libnss-systemd
+  - libpam-systemd
   - lsb-release
   - unattended-upgrades
 
