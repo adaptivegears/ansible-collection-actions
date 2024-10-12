@@ -27,12 +27,12 @@
     var: debian_packages_install
 
 - name: Debian | Conditional installation for Intel Microcode
-  when: ansible_facts.processor[0].vendor == "GenuineIntel" and 'intel-microcode' in debian_packages_install
+  when: ansible_processor[1] == "GenuineIntel" and 'intel-microcode' in debian_packages_install
   ansible.builtin.set_fact:
     debian_packages_install: "{{ debian_packages_install | difference(['intel-microcode']) }}"
 
 - name: Debian | Conditional installation for AMD Microcode
-  when: ansible_facts.processor[0].vendor == "AuthenticAMD" and 'amd64-microcode' in debian_packages_install
+  when: ansible_processor[1] == "AuthenticAMD" and 'amd64-microcode' in debian_packages_install
   ansible.builtin.set_fact:
     debian_packages_install: "{{ debian_packages_install | difference(['amd64-microcode']) }}"
 
