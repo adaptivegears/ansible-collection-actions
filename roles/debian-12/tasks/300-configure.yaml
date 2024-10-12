@@ -1,0 +1,13 @@
+---
+- name: Debian | Update alternatives for iptables
+  community.general.alternatives:
+    name: "{{ item.name }}"
+    link: "{{ item.link }}"
+    path: "{{ item.path }}"
+  loop:
+    - name: "iptables"
+      link: "/usr/sbin/iptables"
+      path: "/usr/sbin/iptables-nft"
+    - name: "ip6tables"
+      link: "/usr/sbin/ip6tables"
+      path: "/usr/sbin/ip6tables-nft"

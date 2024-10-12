@@ -2,54 +2,11 @@
 - name: Debian | Prerequisite
   ansible.builtin.import_tasks: 100-prerequisite.yaml
 
-- name: Debian | Install
+- name: Debian | Auto Install
   ansible.builtin.import_tasks: 200-auto-install.yaml
 
-- name: Debian | Update alternatives for iptables
-  community.general.alternatives:
-    name: "{{ item.name }}"
-    link: "{{ item.link }}"
-    path: "{{ item.path }}"
-  loop:
-    - name: "iptables"
-      link: "/usr/sbin/iptables"
-      path: "/usr/sbin/iptables-nft"
-    - name: "ip6tables"
-      link: "/usr/sbin/ip6tables"
-      path: "/usr/sbin/ip6tables-nft"
+- name: Debian | Configure
+  ansible.builtin.import_tasks: 300-configure.yaml
 
-- name: Debian | Gather package dependencies
-  ansible.builtin.command: apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances "{{ item }}"
-  loop: "{{ debian_packages | sort }}"
-  register: debian_packages_dependencies
-  changed_when: false
-
-- name: Debian | Display dependencies
-  ansible.builtin.debug:
-    var: debian_packages_dependencies
-
-- name: Debian | Get unique dependencies
-  ansible.builtin.set_fact:
-    debian_packages_dependencies: "{{ debian_packages_dependencies.results | map(attribute='stdout') | join('\n') | split('\n') | reject('match', '^(\\s+|<)') | unique | sort }}"
-
-- name: Debian | Display unique dependencies
-  ansible.builtin.debug:
-    var: debian_packages_dependencies
-
-- name: Debian | Gather APT packages
-  ansible.builtin.package_facts:
-    manager: auto
-
-- name: Debian | Mark packages as manually installed
-  when: item in ansible_facts.packages
-  ansible.builtin.command: apt-mark manual "{{ item }}"
-  loop: "{{ debian_packages_dependencies }}"
-  changed_when: false
-
-- name: Debian | Get packages to remove
-  ansible.builtin.set_fact:
-    debian_packages_remove: "{{ ansible_facts.packages.keys() | list | difference(debian_packages_dependencies) | sort }}"
-
-- name: Debian | Display packages to remove
-  ansible.builtin.debug:
-    var: debian_packages_remove
+- name: Debian | Auto Remove
+  ansible.builtin.import_tasks: 400-auto-remove.yaml
