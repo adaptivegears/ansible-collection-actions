@@ -17,3 +17,12 @@
 - name: Debian | Get installed packages
   ansible.builtin.set_fact:
     debian_packages_installed: "{{ ansible_facts.packages.keys() | list }}"
+
+- name: Debian | Get packages to install
+  ansible.builtin.set_fact:
+    debian_packages_install: "{{ debian_packages | difference(debian_packages_installed) }}"
+
+- name: Debian | Display packages to install
+  ansible.builtin.debug:
+    var: debian_packages_install
+    verbosity: 1
