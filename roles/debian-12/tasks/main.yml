@@ -26,16 +26,6 @@
   ansible.builtin.debug:
     var: debian_packages_install
 
-- name: Debian | Conditional installation for Intel Microcode
-  when: ansible_processor[1] == "GenuineIntel" and 'intel-microcode' in debian_packages_install
-  ansible.builtin.set_fact:
-    debian_packages_install: "{{ debian_packages_install | difference(['intel-microcode']) }}"
-
-- name: Debian | Conditional installation for AMD Microcode
-  when: ansible_processor[1] == "AuthenticAMD" and 'amd64-microcode' in debian_packages_install
-  ansible.builtin.set_fact:
-    debian_packages_install: "{{ debian_packages_install | difference(['amd64-microcode']) }}"
-
 - name: Debian | Conditional installation for QEMU packages
   when: ansible_virtualization_type != "qemu"
   vars:
@@ -57,6 +47,8 @@
       - cloud-init
       - cloud-utils
       - cloud-initramfs-growroot
+      - intel-microcode
+      - amd64-microcode
   ansible.builtin.set_fact:
     debian_packages_install: "{{ debian_packages_install | difference(debian_packages_install_exclude) }}"
 
