@@ -5,15 +5,7 @@
 
 - name: Debian | Get unique dependencies
   ansible.builtin.set_fact:
-    debian_packages_dependencies: "{{ debian_packages_dependencies | split('\n') | reject('match', '^(\\s+|<)') | unique | sort }}"
-
-- name: Debian | Display dependencies
-  ansible.builtin.debug:
-    var: debian_packages_dependencies
-
-- name: Debian | Get unique dependencies
-  ansible.builtin.set_fact:
-    debian_packages_dependencies: "{{ debian_packages_dependencies.results | map(attribute='stdout') | join('\n') | split('\n') | reject('match', '^(\\s+|<)') | unique | sort }}"
+    debian_packages_dependencies: "{{ debian_packages_dependencies.stdout | split('\n') | reject('match', '^(\\s+|<)') | unique | sort }}"
 
 - name: Debian | Display unique dependencies
   ansible.builtin.debug:
