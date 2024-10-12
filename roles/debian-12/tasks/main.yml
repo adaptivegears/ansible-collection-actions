@@ -85,7 +85,7 @@
 
 - name: Debian | Gather package dependencies
   ansible.builtin.command: apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances "{{ item }}"
-  loop: "{{ debian_packages }}"
+  loop: "{{ debian_packages | sort }}"
   register: debian_packages_dependencies
   changed_when: false
 
