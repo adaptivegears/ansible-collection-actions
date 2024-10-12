@@ -17,10 +17,11 @@
     manager: auto
 
 - name: Debian | Mark packages as manually installed
-  when: item in ansible_facts.packages
   ansible.builtin.shell: |
     {% for package in debian_packages_dependencies %}
+    {% if package in ansible_facts.packages %}
     apt-mark manual "{{ package }}"
+    {% endif %}
     {% endfor %}
   changed_when: false
 
