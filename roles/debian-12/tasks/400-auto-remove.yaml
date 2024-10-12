@@ -1,9 +1,26 @@
 ---
-- name: Debian | Gather package dependencies
-  ansible.builtin.command: apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances "{{ item }}"
+- name: Debian | Gather package dependencies (async)
+  ansible.builtin.command: >
+    apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts
+    --no-breaks --no-replaces --no-enhances "{{ item }}"
   loop: "{{ debian_packages | sort }}"
   register: debian_packages_dependencies
+  async: 300
+  poll: 0
   changed_when: false
+
+- name: Debian | Wait for all dependency gathering jobs to complete
+  ansible.builtin.async_status:
+    jid: "{{ item.ansible_job_id }}"
+  register: debian_packages_dependencies_status
+  until: debian_packages_dependencies_status.finished
+  retries: 30
+  delay: 10
+  loop: "{{ debian_packages_dependencies.results }}"
+
+- name: Debian | Aggregate dependency results
+  ansible.builtin.set_fact:
+    debian_packages_dependencies: "{{ debian_packages_dependencies.results | map(attribute='stdout') | join('\n') | split('\n') | reject('match', '^(\\s+|<)') | unique | sort }}"
 
 - name: Debian | Display dependencies
   ansible.builtin.debug:
