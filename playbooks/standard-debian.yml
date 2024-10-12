@@ -1,0 +1,10 @@
+---
+- name: Standard Debian 12
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  become: true
+  tasks:
+    - name: Include Role
+      ansible.builtin.include_role:
+        name: debian-12
