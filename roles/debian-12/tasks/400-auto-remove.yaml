@@ -20,7 +20,7 @@
   when: item in ansible_facts.packages
   ansible.builtin.shell: |
     {% for package in debian_packages_dependencies %}
-      apt-mark manual "{{ package }}"
+    apt-mark manual "{{ package }}"
     {% endfor %}
   changed_when: false
 
