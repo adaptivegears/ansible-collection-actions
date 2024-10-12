@@ -25,4 +25,3 @@
 - name: Debian | Display packages to install
   ansible.builtin.debug:
     var: debian_packages_install
-    verbosity: 1
