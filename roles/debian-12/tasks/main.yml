@@ -89,6 +89,10 @@
   register: debian_packages_dependencies
   changed_when: false
 
+- name: Debian | Display dependencies
+  ansible.builtin.debug:
+    var: debian_packages_dependencies
+
 - name: Debian | Get unique dependencies
   ansible.builtin.set_fact:
     debian_packages_dependencies: "{{ debian_packages_dependencies.results | map(attribute='stdout') | join('\n') | regex_findall('^\\w+', multiline=true) | unique | sort }}"
