@@ -95,7 +95,7 @@
 
 - name: Debian | Get unique dependencies
   ansible.builtin.set_fact:
-    debian_packages_dependencies: "{{ debian_packages_dependencies.results | map(attribute='stdout') | join('\n') | split('\n') | reject('match', '^\s+') | unique | sort}}"
+    debian_packages_dependencies: "{{ debian_packages_dependencies.results | map(attribute='stdout') | join('\n') | split('\n') | reject('match', '^\\s+') | unique | sort }}"
 
 - name: Debian | Display unique dependencies
   ansible.builtin.debug:
