@@ -5,7 +5,7 @@
     --no-breaks --no-replaces --no-enhances "{{ async_item }}"
   async: 300
   poll: 0
-  loop: "{{ debian_packages | sort }}"
+  loop: "{{ debian_packages }}"
   loop_control:
     loop_var: "async_item"
   register: async_results
