@@ -1,1 +1,19 @@
 ---
+- name: Debian | Update APT cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Debian | Upgrade APT packages
+  ansible.builtin.apt:
+    upgrade: dist
+    autoremove: true
+    autoclean: true
+
+- name: Debian | Gather APT packages
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: Debian | debug APT packages
+  ansible.builtin.debug:
+    var: ansible_facts.packages
