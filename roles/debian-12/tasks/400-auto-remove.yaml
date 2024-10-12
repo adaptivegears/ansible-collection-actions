@@ -1,29 +1,23 @@
 ---
 - name: Debian | Gather package dependencies (async)
-  ansible.builtin.command: >
-    apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts
-    --no-breaks --no-replaces --no-enhances "{{ async_item }}"
-  async: 300
-  poll: 0
+  ansible.builtin.command: apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances "{{ item }}"
   loop: "{{ debian_packages }}"
-  loop_control:
-    loop_var: "async_item"
-  register: async_results
+  register: job_results
+  async: 60
+  poll: 0
 
 - name: Debian | Wait for all dependency gathering jobs to complete
   ansible.builtin.async_status:
-    jid: "{{ async_item.ansible_job_id }}"
-  loop: "{{ async_results.results }}"
-  loop_control:
-    loop_var: "async_item"
-  register: async_poll_results
-  until: async_poll_results.finished
+    jid: "{{ item.ansible_job_id }}"
+  register: job_status
   retries: 30
-  delay: 5
+  delay: 1
+  until: job_status.finished
+  loop: "{{ job_results.results }}"
 
 - name: Debian | Aggregate dependency results
   ansible.builtin.set_fact:
-    debian_packages_dependencies: "{{ async_results.results | map(attribute='stdout') | join('\n') | split('\n') | reject('match', '^(\\s+|<)') | unique | sort }}"
+    debian_packages_dependencies: "{{ job_results.results | map(attribute='stdout') | join('\n') | split('\n') | reject('match', '^(\\s+|<)') | unique | sort }}"
 
 - name: Debian | Display dependencies
   ansible.builtin.debug:
