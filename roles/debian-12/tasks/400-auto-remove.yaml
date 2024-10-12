@@ -18,8 +18,10 @@
 
 - name: Debian | Mark packages as manually installed
   when: item in ansible_facts.packages
-  ansible.builtin.command: apt-mark manual "{{ item }}"
-  loop: "{{ debian_packages_dependencies }}"
+  ansible.builtin.shell: |
+    {% for package in debian_packages_dependencies %}
+      apt-mark manual "{{ package }}"
+    {% endfor %}
   changed_when: false
 
 - name: Debian | Get packages to remove
