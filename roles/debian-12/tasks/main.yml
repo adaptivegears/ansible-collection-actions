@@ -25,3 +25,41 @@
 - name: Debian | Display packages to install
   ansible.builtin.debug:
     var: debian_packages_install
+
+- name: Debian | Conditional installation for Intel Microcode
+  when: ansible_processor_vendors[0] == "GenuineIntel" and 'intel-microcode' in debian_packages_install
+  ansible.builtin.set_fact:
+    debian_packages_install: "{{ debian_packages_install | difference(['intel-microcode']) }}"
+
+- name: Debian | Conditional installation for AMD Microcode
+  when: ansible_processor_vendors[0] == "AuthenticAMD" and 'amd64-microcode' in debian_packages_install
+  ansible.builtin.set_fact:
+    debian_packages_install: "{{ debian_packages_install | difference(['amd64-microcode']) }}"
+
+- name: Debian | Conditional installation for QEMU packages
+  when: ansible_virtualization_type != "qemu"
+  vars:
+    debian_packages_qemu:
+      - qemu-guest-agent
+      - qemu-utils
+  ansible.builtin.set_fact:
+    debian_packages_install: "{{ debian_packages_install | difference(debian_packages_qemu) }}"
+
+- name: Debian | Exclude specific packages from installation
+  vars:
+    debian_packages_install_exclude:
+      - efibootmgr
+      - grub-cloud-amd64
+      - grub-pc
+      - grub-efi-amd64
+      - grub-efi-amd64-signed
+      - shim-signed
+      - cloud-init
+      - cloud-utils
+      - cloud-initramfs-growroot
+  ansible.builtin.set_fact:
+    debian_packages_install: "{{ debian_packages_install | difference(debian_packages_install_exclude) }}"
+
+- name: Debian | Display packages to install
+  ansible.builtin.debug:
+    var: debian_packages_install
