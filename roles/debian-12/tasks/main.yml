@@ -87,6 +87,7 @@
   ansible.builtin.command: apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances "{{ item }}"
   loop: "{{ debian_packages }}"
   register: debian_packages_dependencies
+  changed_when: false
 
 - name: Debian | Get unique dependencies
   ansible.builtin.set_fact:
@@ -95,3 +96,13 @@
 - name: Debian | Display unique dependencies
   ansible.builtin.debug:
     var: debian_packages_dependencies
+
+- name: Debian | Gather APT packages
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: Debian | Mark packages as manually installed
+  when: item in ansible_facts.packages
+  ansible.builtin.command: apt-mark manual "{{ item }}"
+  loop: "{{ debian_packages_dependencies }}"
+  changed_when: false
