@@ -12,8 +12,8 @@
 - name: Debian | Wait for all dependency gathering jobs to complete
   ansible.builtin.async_status:
     jid: "{{ item.ansible_job_id }}"
-  register: debian_packages_dependencies_status
-  until: debian_packages_dependencies_status.finished
+  register: task_gather_dependencies
+  until: task_gather_dependencies.finished
   retries: 30
   delay: 10
   loop: "{{ debian_packages_dependencies.results }}"
