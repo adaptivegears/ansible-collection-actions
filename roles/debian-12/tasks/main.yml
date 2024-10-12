@@ -76,8 +76,8 @@
     link: "{{ item.link }}"
     path: "{{ item.path }}"
   loop:
-    - name: "iptables",
-      link: "/usr/sbin/iptables",
+    - name: "iptables"
+      link: "/usr/sbin/iptables"
       path: "/usr/sbin/iptables-nft"
     - name: "ip6tables"
       link: "/usr/sbin/ip6tables"
