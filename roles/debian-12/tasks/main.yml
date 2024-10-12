@@ -63,3 +63,22 @@
 - name: Debian | Display packages to install
   ansible.builtin.debug:
     var: debian_packages_install
+
+- name: Debian | Install packages
+  ansible.builtin.apt:
+    name: "{{ debian_packages_install }}"
+    state: present
+    install_recommends: false
+
+- name: Debian | Update alternatives for iptables
+  community.general.alternatives:
+    name: "{{ item.name }}"
+    link: "{{ item.link }}"
+    path: "{{ item.path }}"
+  loop:
+    - name: "iptables",
+      link: "/usr/sbin/iptables",
+      path: "/usr/sbin/iptables-nft"
+    - name: "ip6tables"
+      link: "/usr/sbin/ip6tables"
+      path: "/usr/sbin/ip6tables-nft"
