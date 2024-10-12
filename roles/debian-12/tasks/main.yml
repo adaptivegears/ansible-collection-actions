@@ -2,53 +2,8 @@
 - name: Debian | Prerequisite
   ansible.builtin.import_tasks: 100-prerequisite.yaml
 
-- name: Debian | Gather APT packages
-  ansible.builtin.package_facts:
-    manager: auto
-
-- name: Debian | Get installed packages
-  ansible.builtin.set_fact:
-    debian_packages_installed: "{{ ansible_facts.packages.keys() | list }}"
-
-- name: Debian | Get packages to install
-  ansible.builtin.set_fact:
-    debian_packages_install: "{{ debian_packages | difference(debian_packages_installed) }}"
-
-- name: Debian | Conditional installation for QEMU packages
-  when: ansible_virtualization_type != "qemu"
-  vars:
-    debian_packages_qemu:
-      - qemu-guest-agent
-      - qemu-utils
-  ansible.builtin.set_fact:
-    debian_packages_install: "{{ debian_packages_install | difference(debian_packages_qemu) }}"
-
-- name: Debian | Exclude specific packages from installation
-  vars:
-    debian_packages_install_exclude:
-      - efibootmgr
-      - grub-cloud-amd64
-      - grub-pc
-      - grub-efi-amd64
-      - grub-efi-amd64-signed
-      - shim-signed
-      - cloud-init
-      - cloud-utils
-      - cloud-initramfs-growroot
-      - intel-microcode
-      - amd64-microcode
-  ansible.builtin.set_fact:
-    debian_packages_install: "{{ debian_packages_install | difference(debian_packages_install_exclude) }}"
-
-- name: Debian | Display packages to install
-  ansible.builtin.debug:
-    var: debian_packages_install
-
-- name: Debian | Install packages
-  ansible.builtin.apt:
-    name: "{{ debian_packages_install }}"
-    state: present
-    install_recommends: false
+- name: Debian | Install
+  ansible.builtin.import_tasks: 200-auto-install.yaml
 
 - name: Debian | Update alternatives for iptables
   community.general.alternatives:
