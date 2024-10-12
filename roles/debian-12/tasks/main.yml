@@ -82,3 +82,16 @@
     - name: "ip6tables"
       link: "/usr/sbin/ip6tables"
       path: "/usr/sbin/ip6tables-nft"
+
+- name: Debian | Gather package dependencies
+  ansible.builtin.command: apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances "{{ item }}"
+  loop: "{{ debian_packages_install }}"
+  register: debian_packages_dependencies
+
+- name: Debian | Get unique dependencies
+  ansible.builtin.set_fact:
+    debian_packages_dependencies: "{{ debian_packages_dependencies.results | map(attribute='stdout') | join('\n') | regex_findall('^\\w+', multiline=true) | unique }}"
+
+- name: Debian | Display unique dependencies
+  ansible.builtin.debug:
+    var: debian_packages_dependencies
