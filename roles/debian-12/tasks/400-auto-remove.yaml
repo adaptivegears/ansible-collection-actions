@@ -35,9 +35,9 @@
   ansible.builtin.debug:
     var: debian_packages_remove
 
-- name: Debian | Remove packages
-  ansible.builtin.apt:
-    name: "{{ debian_packages_remove }}"
-    state: absent
-    autoremove: true
-    purge: true
+# - name: Debian | Remove packages
+#   ansible.builtin.apt:
+#     name: "{{ debian_packages_remove }}"
+#     state: absent
+#     autoremove: true
+#     purge: true
