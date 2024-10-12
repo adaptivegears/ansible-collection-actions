@@ -1,0 +1,25 @@
+namespace: adaptivegears
+name: actions
+version: 1.0.0
+
+readme: README.md
+
+authors:
+  - Andrey Gubarev <andrey@andreygubarev.com> (adaptivegears.studio)
+
+description:
+license_file: LICENSE
+
+tags: []
+
+dependencies: {}
+
+repository: https://github.com/adaptivegears/ansible-ansible-collections-actions
+documentation: https://github.com/adaptivegears/ansible-ansible-collections-actions
+homepage: https://github.com/adaptivegears/ansible-ansible-collections-actions
+issues: https://github.com/adaptivegears/ansible-ansible-collections-actions/issues
+
+build_ignore:
+  - Makefile
+  - .git
+  - .gitignore

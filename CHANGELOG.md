@@ -1,0 +1,1 @@
+# `adaptivegears.ansible-collection-actions`
