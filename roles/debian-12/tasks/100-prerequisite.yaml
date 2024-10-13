@@ -9,8 +9,8 @@
 - name: Debian | Ensure the architecture is supported
   ansible.builtin.assert:
     that:
-      - ansible_architecture == "amd64"
-    fail_msg: "This role is only supported on amd64 architecture"
+      - ansible_architecture == "x86_64"
+    fail_msg: "This role is only supported on amd64 (x86_64) architecture"
 
 - name: Debian | Update the APT package cache
   ansible.builtin.apt:
