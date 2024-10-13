@@ -5,6 +5,23 @@
   gather_facts: true
   become: true
   tasks:
+    - name: Print Usage
+      when: help | default(h) | default(false)
+      failed_when: help | default(h) | default(false)
+      ansible.builtin.debug:
+        msg:
+          - "Usage: @adaptivegears/standard-debian [OPTIONS]"
+          - "Options:"
+          - "  -m, --minimal             Minimal installation"
+
+    - name: Parse Arguments
+      ansible.builtin.set_fact:
+        minimal: "{{ minimal | default(m) | default(false) }}"
+
+    - name: Prepare Arguments
+      ansible.builtin.set_fact:
+        debian_minimal: "{{ minimal | default(false) }}"
+
     - name: Include Role
       ansible.builtin.include_role:
         name: debian-12
