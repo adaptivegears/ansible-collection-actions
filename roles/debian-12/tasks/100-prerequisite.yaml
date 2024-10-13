@@ -1,4 +1,9 @@
 ---
+- name: Debian | Assert Debian 12
+  ansible.builtin.assert:
+    that: ansible_facts.os_family == "Debian" and ansible_facts.os_version == "12"
+    fail_msg: "This role is only supported on Debian 12"
+
 - name: Debian | Update APT cache
   ansible.builtin.apt:
     update_cache: true
