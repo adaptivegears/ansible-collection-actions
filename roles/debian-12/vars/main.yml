@@ -193,6 +193,9 @@ debian_packages_minimal:
   # python
   - python3-requests
 
+  # locale
+  - locales-all
+
   # cryptography
   - gnupg2
 
