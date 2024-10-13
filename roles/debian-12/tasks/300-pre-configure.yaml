@@ -4,7 +4,7 @@
     manager: auto
 
 - name: Debian | Update alternatives for iptables
-  when: "iptables" in ansible_facts.packages
+  when: '"iptables" in ansible_facts.packages'
   community.general.alternatives:
     name: "{{ item.name }}"
     link: "{{ item.link }}"
