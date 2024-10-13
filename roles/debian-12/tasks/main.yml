@@ -5,8 +5,11 @@
 - name: Debian | Auto Install
   ansible.builtin.import_tasks: 200-auto-install.yaml
 
-- name: Debian | Configure
-  ansible.builtin.import_tasks: 300-configure.yaml
+- name: Debian | Pre-configuration
+  ansible.builtin.import_tasks: 300-pre-configure.yaml
 
-- name: Debian | Auto Remove
-  ansible.builtin.import_tasks: 400-auto-remove.yaml
+- name: Debian | Auto Uninstall
+  ansible.builtin.import_tasks: 400-auto-uninstall.yaml
+
+- name: Debian | Post-configuration
+  ansible.builtin.import_tasks: 500-post-configuration.yaml

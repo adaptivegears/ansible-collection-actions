@@ -6,8 +6,6 @@ Base Image:
 - https://www.debian.org/CD/netinst/
 - https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-12.7.0-amd64-netinst.iso
 
-Minimal Installation that includes: OpenSSH server
-
 Fully functional but purposely bare minimal image of the server.
 
 ```shell
