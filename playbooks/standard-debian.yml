@@ -22,12 +22,15 @@
         install: "{{ install | default(i) | default(omit) }}"
         minimal: "{{ minimal | default(m) | default(omit) }}"
         prune: "{{ prune | default(p) | default(omit) }}"
+      ignore_errors: true
 
     - name: Prepare Arguments
       ansible.builtin.set_fact:
         debian_install: "{{ install | default(omit) }}"
         debian_minimal: "{{ minimal | default(omit) }}"
         debian_prune: "{{ prune | default(omit) }}"
+      ignore_errors: true
+
     - name: Include Role
       ansible.builtin.include_role:
         name: debian-12
