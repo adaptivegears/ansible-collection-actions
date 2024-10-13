@@ -1,5 +1,6 @@
 ---
 debian_locale: en_US.UTF-8
+debian_timezone: UTC
 
 debian_packages:
   # bootloader

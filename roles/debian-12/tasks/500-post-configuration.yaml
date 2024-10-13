@@ -16,3 +16,7 @@
         content: |
           LANG={{ debian_locale }}
         dest: /etc/default/locale
+
+- name: Debian | Configure timezone
+  community.general.timezone:
+    timezone: "{{ debian_timezone }}"
