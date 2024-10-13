@@ -16,6 +16,10 @@
   ansible.builtin.package_facts:
     manager: auto
 
+- name: Debian | Display marked packages
+  ansible.builtin.debug:
+    var: ansible_facts.packages
+
 - name: Debian | Mark packages as manually installed
   ansible.builtin.shell: |
     {% for package in debian_packages_dependencies %}
@@ -27,7 +31,7 @@
 
 - name: Debian | Get packages to remove
   ansible.builtin.set_fact:
-    debian_packages_remove: "{{ ansible_facts.packages.keys() | list | difference(debian_packages_dependencies) | sort }}"
+    debian_packages_remove: "{{ ansible_facts.packages.keys() | list | difference(debian_packages_dependencies) | unique | sort }}"
 
 - name: Debian | Display packages to remove
   ansible.builtin.debug:
