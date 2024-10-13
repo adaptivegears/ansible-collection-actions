@@ -44,6 +44,10 @@
     dpkg --get-selections | grep -w "install" | cut -f1
   register: debian_packages_installed
 
+- name: Debian | Display installed packages
+  ansible.builtin.debug:
+    var: debian_packages_installed
+
 - name: Debian | Get packages to autoremove
   ansible.builtin.set_fact:
     debian_packages_installed: "{{ debian_packages_installed.stdout | split('\n') | trim }}"
