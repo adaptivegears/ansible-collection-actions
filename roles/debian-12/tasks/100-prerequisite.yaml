@@ -1,17 +1,17 @@
 ---
-- name: Debian | Assert Debian 12
+- name: Debian | Ensure the system is running Debian 12
   ansible.builtin.assert:
     that:
       - ansible_distribution == "Debian"
       - ansible_distribution_major_version == "12"
     fail_msg: "This role is only supported on Debian 12"
 
-- name: Debian | Update APT cache
+- name: Debian | Update the APT package cache
   ansible.builtin.apt:
     update_cache: true
     cache_valid_time: 3600
 
-- name: Debian | Upgrade APT packages
+- name: Debian | Perform a distribution upgrade via APT
   ansible.builtin.apt:
     upgrade: dist
     autoremove: true
