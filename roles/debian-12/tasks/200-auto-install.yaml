@@ -5,22 +5,22 @@
 
 - name: Debian | Get installed packages
   ansible.builtin.set_fact:
-    debian_packages_installed: "{{ ansible_facts.packages.keys() | list }}"
+    debian__pkgs: "{{ ansible_facts.packages.keys() | list }}"
 
 - name: Debian | Get packages to install
   ansible.builtin.set_fact:
-    debian_packages_install: "{{ debian_packages | difference(debian_packages_installed) }}"
+    debian__pkgs_present: "{{ debian_packages | difference(debian__pkgs) }}"
 
 - name: Debian | Exclude specific packages from installation
   ansible.builtin.set_fact:
-    debian_packages_install: "{{ (debian_packages_install | difference(debian_packages_noinstall)) | unique | sort }}"
+    debian__pkgs_present: "{{ (debian__pkgs_present | difference(debian_packages_noinstall)) | unique | sort }}"
 
 - name: Debian | Display packages to install
   ansible.builtin.debug:
-    var: debian_packages_install
+    var: debian__pkgs_present
 
 - name: Debian | Install packages
   ansible.builtin.apt:
-    name: "{{ debian_packages_install }}"
+    name: "{{ debian__pkgs_present }}"
     state: present
     install_recommends: false
