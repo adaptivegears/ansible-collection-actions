@@ -42,10 +42,6 @@
   register: debian_packages_installed
   changed_when: false
 
-- name: Debian | Display packages to remove
-  ansible.builtin.debug:
-    var: debian_packages_installed.stdout_lines
-
 - name: Debian | Get packages to autoremove
   ansible.builtin.set_fact:
     debian_packages_remove: "{{ debian_packages_remove | intersect(debian_packages_installed.stdout_lines) }}"
