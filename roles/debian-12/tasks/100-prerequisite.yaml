@@ -12,17 +12,6 @@
       - ansible_architecture == "x86_64"
     fail_msg: "This role is only supported on amd64 (x86_64) architecture"
 
-- name: Debian | Update the APT package cache
-  ansible.builtin.apt:
-    update_cache: true
-    cache_valid_time: 3600
-
-- name: Debian | Perform a distribution upgrade via APT
-  ansible.builtin.apt:
-    upgrade: dist
-    autoremove: true
-    autoclean: true
-
 - name: Debian | Use minimal packages
   when: debian_minimal
   ansible.builtin.set_fact:
@@ -40,3 +29,14 @@
       when: debian__repos is changed
       ansible.builtin.apt:
         update_cache: true
+
+- name: Debian | Update the APT package cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Debian | Perform a distribution upgrade via APT
+  ansible.builtin.apt:
+    upgrade: dist
+    autoremove: true
+    autoclean: true
