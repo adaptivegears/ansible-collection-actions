@@ -21,21 +21,8 @@
     debian_packages_install: "{{ debian_packages_install | difference(debian_packages_qemu) }}"
 
 - name: Debian | Exclude specific packages from installation
-  vars:
-    debian_packages_install_exclude:
-      - efibootmgr
-      - grub-cloud-amd64
-      - grub-pc
-      - grub-efi-amd64
-      - grub-efi-amd64-signed
-      - shim-signed
-      - cloud-init
-      - cloud-utils
-      - cloud-initramfs-growroot
-      - intel-microcode
-      - amd64-microcode
   ansible.builtin.set_fact:
-    debian_packages_install: "{{ (debian_packages_install | difference(debian_packages_install_exclude)) | unique | sort }}"
+    debian_packages_install: "{{ (debian_packages_install | difference(debian_packages_noinstall)) | unique | sort }}"
 
 - name: Debian | Display packages to install
   ansible.builtin.debug:

@@ -149,3 +149,16 @@ debian_packages:
   - distro-info-data
   - publicsuffix
   - iso-codes
+
+debian_packages_noinstall:
+  - efibootmgr
+  - grub-cloud-amd64
+  - grub-pc
+  - grub-efi-amd64
+  - grub-efi-amd64-signed
+  - shim-signed
+  - cloud-init
+  - cloud-utils
+  - cloud-initramfs-growroot
+  - intel-microcode
+  - amd64-microcode
