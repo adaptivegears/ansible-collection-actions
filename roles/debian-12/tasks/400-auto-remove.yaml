@@ -37,8 +37,8 @@
   ansible.builtin.set_fact:
     debian_packages_remove: "{{ ansible_facts.packages.keys() | list | difference(debian_packages_dependencies) | unique | sort }}"
 
-- name: Debian | Gather manually installed packages
-  ansible.builtin.shell: apt-mark showmanual
+- name: Debian | Gather installed packages
+  ansible.builtin.shell: dpkg --get-selections | grep -w "install" | cut -f1 | sed 's/:amd64$//'
   register: debian_packages_installed
   changed_when: false
 
