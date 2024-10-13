@@ -16,10 +16,6 @@
   ansible.builtin.package_facts:
     manager: auto
 
-- name: Debian | Display marked packages
-  ansible.builtin.debug:
-    var: ansible_facts.packages
-
 - name: Debian | Mark packages as manually installed
   ansible.builtin.shell: |
     {% for package in debian_packages_dependencies %}
@@ -33,9 +29,15 @@
   ansible.builtin.set_fact:
     debian_packages_remove: "{{ ansible_facts.packages.keys() | list | difference(debian_packages_dependencies) | unique | sort }}"
 
+- name: Identify packages to autoremove
+  shell: |
+    dpkg --get-selections | grep -w "install" | cut -f1 | grep -vxF -f <(echo "{{ debian_packages_remove | join('\n') }}")
+  register: debian_packages_remove
+
 - name: Debian | Display packages to remove
   ansible.builtin.debug:
     var: debian_packages_remove
+
 
 # - name: Debian | Remove packages
 #   ansible.builtin.apt:
