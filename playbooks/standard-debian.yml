@@ -12,8 +12,8 @@
         msg:
           - "Usage: @adaptivegears/standard-debian [OPTIONS]"
           - "Options:"
-          - "  -m, --minimal             Minimal installation"
-          - "  -p, --prune               Prune unused packages"
+          - "  -m, --minimal       Minimal installation (DEBIAN_MINIMAL, default: false)"
+          - "  -p, --prune         Prune unused packages (DEBIAN_PRUNE, default: false)"
 
     - name: Parse Arguments
       ansible.builtin.set_fact:
