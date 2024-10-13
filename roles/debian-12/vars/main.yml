@@ -1,4 +1,6 @@
 ---
+debian_locale: en_US.UTF-8
+
 debian_packages:
   # bootloader
   - efibootmgr

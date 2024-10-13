@@ -6,13 +6,13 @@
 
 - name: Debian | Configure locales
   block:
-    - name: Debian | Generate en_US.UTF-8 locale
+    - name: Debian | Generate {{ debian_locale }} locale
       community.general.locale_gen:
-        name: en_US.UTF-8
+        name: "{{ debian_locale }}"
         state: present
 
     - name: Debian | Set default locale
       ansible.builtin.copy:
         content: |
-          LANG=en_US.UTF-8
+          LANG={{ debian_locale }}
         dest: /etc/default/locale
