@@ -24,7 +24,7 @@
         name: "{{ debian_timezone }}"
 
     - name: Debian | Use systemd-timesyncd
-      ansible.builtin.systemd:
+      ansible.builtin.systemd_service:
         name: systemd-timesyncd
         enabled: true
         active: true
