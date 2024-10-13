@@ -1,1 +1,5 @@
 ---
+- name: Debian | Set MOTD
+  ansible.builtin.copy:
+    content: "{{ lookup('file', 'motd.txt') }}"
+    dest: /etc/motd
