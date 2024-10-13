@@ -3,3 +3,16 @@
   ansible.builtin.copy:
     content: "{{ lookup('file', 'motd.txt') }}"
     dest: /etc/motd
+
+- name: Debian | Configure locales
+  block:
+    - name: Debian | Generate en_US.UTF-8 locale
+      community.general.locale_gen:
+        name: en_US.UTF-8
+        state: present
+
+    - name: Debian | Set default locale
+      ansible.builtin.copy:
+        content: |
+          LANG=en_US.UTF-8
+        dest: /etc/default/locale
