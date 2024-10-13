@@ -3,12 +3,12 @@
 
 - name: Debian | Gather package dependencies
   ansible.builtin.command: apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances {{ debian_packages | join(' ') }}
-  register: debian_packages_dependencies
+  register: debian__pkg_deps
   changed_when: false
 
 - name: Debian | Get unique dependencies
   ansible.builtin.set_fact:
-    debian_packages_dependencies: "{{ debian_packages_dependencies.stdout | split('\n') | reject('match', '^(\\s+|<)') | unique | sort }}"
+    debian__pkg_deps: "{{ debian__pkg_deps.stdout | split('\n') | reject('match', '^(\\s+|<)') | unique | sort }}"
 
 # Mark manual
 
@@ -18,12 +18,12 @@
 
 - name: Debian | Gather manually installed packages
   ansible.builtin.shell: apt-mark showmanual
-  register: debian_packages_installed
+  register: debian__pkgs_present
   changed_when: false
 
 - name: Debian | Mark packages as manually installed
   ansible.builtin.shell: |
-    {% for package in (debian_packages_dependencies | difference(debian_packages_installed.stdout_lines)) %}
+    {% for package in (debian__pkg_deps | difference(debian__pkgs_present.stdout_lines)) %}
     {% if package in ansible_facts.packages %}
     apt-mark manual "{{ package }}"
     {% endif %}
@@ -35,25 +35,25 @@
 
 - name: Debian | Get packages to remove
   ansible.builtin.set_fact:
-    debian_packages_remove: "{{ ansible_facts.packages.keys() | list | difference(debian_packages_dependencies) | unique | sort }}"
+    debian__pkgs_absent: "{{ ansible_facts.packages.keys() | list | difference(debian__pkg_deps) | unique | sort }}"
 
 - name: Debian | Gather installed packages
   ansible.builtin.shell: dpkg --get-selections | grep -w "install" | cut -f1 | sed 's/:amd64$//'
-  register: debian_packages_installed
+  register: debian__pkgs_present
   changed_when: false
 
 - name: Debian | Get packages to autoremove
   ansible.builtin.set_fact:
-    debian_packages_remove: "{{ (debian_packages_remove | intersect(debian_packages_installed.stdout_lines)) | unique | sort }}"
+    debian__pkgs_absent: "{{ (debian__pkgs_absent | intersect(debian__pkgs_present.stdout_lines)) | unique | sort }}"
 
 - name: Debian | Display packages to remove
   ansible.builtin.debug:
-    var: debian_packages_remove
+    var: debian__pkgs_absent
 
 - name: Debian | Remove packages
-  when: debian_packages_remove | length > 0
+  when: debian__pkgs_absent | length > 0
   ansible.builtin.apt:
-    name: "{{ debian_packages_remove }}"
+    name: "{{ debian__pkgs_absent }}"
     state: absent
     autoremove: true
     purge: true
