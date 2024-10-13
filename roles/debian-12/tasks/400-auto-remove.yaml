@@ -30,7 +30,7 @@
     debian_packages_remove: "{{ ansible_facts.packages.keys() | list | difference(debian_packages_dependencies) | unique | sort }}"
 
 - name: Identify packages to autoremove
-  shell: |
+  ansible.builtin.shell: |
     dpkg --get-selections | grep -w "install" | cut -f1 | grep -vxF -f <(echo "{{ debian_packages_remove | join('\n') }}")
   register: debian_packages_remove
 
