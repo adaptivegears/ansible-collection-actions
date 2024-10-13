@@ -43,3 +43,9 @@
       ansible.builtin.copy:
         content: "{{ lookup('file', 'sources.list') }}"
         dest: /etc/apt/sources.list
+      register: debian__repos
+
+    - name: Debian | Update APT cache
+      when: debian__repos is changed
+      ansible.builtin.apt:
+        update_cache: true
