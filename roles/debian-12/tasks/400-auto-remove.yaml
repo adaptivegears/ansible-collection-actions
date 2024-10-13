@@ -1,4 +1,6 @@
 ---
+# Dependencies
+
 - name: Debian | Gather package dependencies
   ansible.builtin.command: apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances {{ debian_packages | join(' ') }}
   register: debian_packages_dependencies
@@ -8,9 +10,7 @@
   ansible.builtin.set_fact:
     debian_packages_dependencies: "{{ debian_packages_dependencies.stdout | split('\n') | reject('match', '^(\\s+|<)') | unique | sort }}"
 
-- name: Debian | Display unique dependencies
-  ansible.builtin.debug:
-    var: debian_packages_dependencies
+# Mark manual
 
 - name: Debian | Gather APT packages
   ansible.builtin.package_facts:
@@ -31,6 +31,8 @@
     :
   changed_when: false
 
+# Autoremove
+
 - name: Debian | Get packages to remove
   ansible.builtin.set_fact:
     debian_packages_remove: "{{ ansible_facts.packages.keys() | list | difference(debian_packages_dependencies) | unique | sort }}"
@@ -42,7 +44,11 @@
 
 - name: Debian | Display installed packages
   ansible.builtin.debug:
-    var: debian_packages_installed
+    var: debian_packages_remove
+
+- name: Debian | Display installed packages
+  ansible.builtin.debug:
+    var: debian_packages_installed.stdout_lines
 
 - name: Debian | Get packages to autoremove
   ansible.builtin.set_fact:
