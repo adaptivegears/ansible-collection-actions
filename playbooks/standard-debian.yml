@@ -13,15 +13,17 @@
           - "Usage: @adaptivegears/standard-debian [OPTIONS]"
           - "Options:"
           - "  -m, --minimal             Minimal installation"
+          - "  -p, --prune               Prune unused packages"
 
     - name: Parse Arguments
       ansible.builtin.set_fact:
         minimal: "{{ minimal | default(m) | default(false) }}"
+        prune: "{{ prune | default(p) | default(false) }}"
 
     - name: Prepare Arguments
       ansible.builtin.set_fact:
         debian_minimal: "{{ minimal | default(false) }}"
-
+        debian_prune: "{{ prune | default(false) }}"
     - name: Include Role
       ansible.builtin.include_role:
         name: debian-12

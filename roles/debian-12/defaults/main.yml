@@ -1,2 +1,3 @@
 ---
 debian_minimal: "{{ lookup('env', 'DEBIAN_MINIMAL', default='false') | bool }}"
+debian_prune: "{{ lookup('env', 'DEBIAN_PRUNE', default='false') | bool }}"
