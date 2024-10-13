@@ -50,7 +50,7 @@
 
 - name: Debian | Get packages to autoremove
   ansible.builtin.set_fact:
-    debian_packages_installed: "{{ debian_packages_installed.stdout | split('\n') | trim }}"
+    debian_packages_installed: "{{ debian_packages_installed.stdout | split('\n') | map('trim') | reject('empty') }}"
     debian_packages_remove: "{{ debian_packages_remove | intersect(debian_packages_installed) }}"
 
 - name: Debian | Display packages to remove
