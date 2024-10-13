@@ -18,16 +18,16 @@
 
 - name: Debian | Gather manually installed packages
   ansible.builtin.shell: apt-mark showmanual
-  register: debian_packages_manual
+  register: debian_packages_installed
   changed_when: false
 
 - name: Debian | Set manually installed packages
   ansible.builtin.set_fact:
-    debian_packages_manual: "{{ debian_packages_manual.stdout | split('\n') | sort }}"
+    debian_packages_installed: "{{ debian_packages_installed.stdout | split('\n') | sort }}"
 
 - name: Debian | Mark packages as manually installed
   ansible.builtin.shell: |
-    {% for package in (debian_packages_dependencies | difference(debian_packages_manual)) %}
+    {% for package in (debian_packages_dependencies | difference(debian_packages_installed)) %}
     {% if package in ansible_facts.packages %}
     apt-mark manual "{{ package }}"
     {% endif %}
