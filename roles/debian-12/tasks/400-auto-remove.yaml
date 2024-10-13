@@ -32,6 +32,7 @@
     apt-mark manual "{{ package }}"
     {% endif %}
     {% endfor %}
+    :
   changed_when: false
 
 - name: Debian | Get packages to remove
