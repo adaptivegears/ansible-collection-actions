@@ -188,14 +188,10 @@ debian_packages_minimal:
   - bind9-dnsutils
   - socat
   - tcpdump
-  - curl
   - media-types
 
   # python
   - python3-requests
-
-  # locale
-  - locales-all
 
   # cryptography
   - gnupg2
