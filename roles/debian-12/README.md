@@ -1,5 +1,7 @@
 # Debian 12 (AMD64)
 
+`adaptivegears.standard-debian` is an Ansible role that automates the configuration of a fresh Debian 12 installation. It ensures that the resulting system is identical across different providers (Contabo, DigitalOcean, or bare metal).
+
 Base Image:
 - https://www.debian.org/CD/netinst/
 - https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-12.7.0-amd64-netinst.iso
