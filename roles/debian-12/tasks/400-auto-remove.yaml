@@ -51,6 +51,7 @@
     var: debian_packages_remove
 
 - name: Debian | Remove packages
+  when: debian_packages_remove | length > 0
   ansible.builtin.apt:
     name: "{{ debian_packages_remove }}"
     state: absent
