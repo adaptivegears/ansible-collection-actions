@@ -21,3 +21,16 @@
   when: debian_minimal
   ansible.builtin.set_fact:
     debian_packages: "{{ debian_packages | difference(debian_packages_minimal) }}"
+
+- name: Debian | Configure APT repositories
+  block:
+    - name: Debian | Configure sources.list to default
+      ansible.builtin.copy:
+        content: "{{ lookup('file', 'sources.list') }}"
+        dest: /etc/apt/sources.list
+      register: debian__repos
+
+    - name: Debian | Update APT cache
+      when: debian__repos is changed
+      ansible.builtin.apt:
+        update_cache: true

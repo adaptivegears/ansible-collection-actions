@@ -36,16 +36,3 @@
           NTP=0.debian.pool.ntp.org 1.debian.pool.ntp.org 2.debian.pool.ntp.org 3.debian.pool.ntp.org
         dest: /etc/systemd/timesyncd.conf
       notify: Restart systemd-timesyncd
-
-- name: Debian | Configure APT repositories
-  block:
-    - name: Debian | Configure sources.list to default
-      ansible.builtin.copy:
-        content: "{{ lookup('file', 'sources.list') }}"
-        dest: /etc/apt/sources.list
-      register: debian__repos
-
-    - name: Debian | Update APT cache
-      when: debian__repos is changed
-      ansible.builtin.apt:
-        update_cache: true
