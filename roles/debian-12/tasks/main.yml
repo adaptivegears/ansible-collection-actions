@@ -3,6 +3,7 @@
   ansible.builtin.import_tasks: 100-prerequisite.yaml
 
 - name: Debian | Auto Install
+  when: debian_install
   ansible.builtin.import_tasks: 200-auto-install.yaml
 
 - name: Debian | Pre-configuration

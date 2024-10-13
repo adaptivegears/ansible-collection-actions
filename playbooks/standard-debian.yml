@@ -12,16 +12,20 @@
         msg:
           - "Usage: @adaptivegears/standard-debian [OPTIONS]"
           - "Options:"
+          - "  -h, --help          Show this help message and exit"
+          - "  -i, --install       Install packages (DEBIAN_INSTALL, default: true)"
           - "  -m, --minimal       Minimal installation (DEBIAN_MINIMAL, default: false)"
           - "  -p, --prune         Prune unused packages (DEBIAN_PRUNE, default: false)"
 
     - name: Parse Arguments
       ansible.builtin.set_fact:
+        install: "{{ install | default(i) | default(true) }}"
         minimal: "{{ minimal | default(m) | default(false) }}"
         prune: "{{ prune | default(p) | default(false) }}"
 
     - name: Prepare Arguments
       ansible.builtin.set_fact:
+        debian_install: "{{ install | default(true) }}"
         debian_minimal: "{{ minimal | default(false) }}"
         debian_prune: "{{ prune | default(false) }}"
     - name: Include Role
