@@ -119,10 +119,6 @@ debian_packages:
   - curl
   - media-types
 
-  # virtualization
-  - qemu-guest-agent
-  - qemu-utils
-
   # cloud
   - cloud-init
   - cloud-utils

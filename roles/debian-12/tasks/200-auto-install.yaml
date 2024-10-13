@@ -11,15 +11,6 @@
   ansible.builtin.set_fact:
     debian_packages_install: "{{ debian_packages | difference(debian_packages_installed) }}"
 
-- name: Debian | Conditional installation for QEMU packages
-  when: ansible_virtualization_type != "qemu"
-  vars:
-    debian_packages_qemu:
-      - qemu-guest-agent
-      - qemu-utils
-  ansible.builtin.set_fact:
-    debian_packages_install: "{{ debian_packages_install | difference(debian_packages_qemu) }}"
-
 - name: Debian | Exclude specific packages from installation
   ansible.builtin.set_fact:
     debian_packages_install: "{{ (debian_packages_install | difference(debian_packages_noinstall)) | unique | sort }}"
