@@ -9,6 +9,7 @@
 
 - name: Debian | Get packages to install
   ansible.builtin.set_fact:
+    debian__pkgs_minimal: "{{ debian_packages | difference(debian_packages_minimal) }}"
     debian__pkgs_present: "{{ debian_packages | difference(debian__pkgs) }}"
 
 - name: Debian | Exclude specific packages from installation
