@@ -39,10 +39,10 @@
   ansible.builtin.set_fact:
     debian_packages_remove: "{{ ansible_facts.packages.keys() | list | difference(debian_packages_dependencies) | unique | sort }}"
 
-- name: Identify packages to autoremove
-  ansible.builtin.shell: |
-    dpkg --get-selections | grep -w "install" | cut -f1
+- name: Debian | Gather manually installed packages
+  ansible.builtin.shell: apt-mark showmanual
   register: debian_packages_installed
+  changed_when: false
 
 - name: Debian | Display installed packages
   ansible.builtin.debug:
