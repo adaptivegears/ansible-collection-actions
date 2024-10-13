@@ -17,6 +17,22 @@
           LANG={{ debian_locale }}
         dest: /etc/default/locale
 
-- name: Debian | Configure timezone
-  community.general.timezone:
-    name: "{{ debian_timezone }}"
+- name: Debian | Configure time
+  block:
+    - name: Debian | Set timezone
+      community.general.timezone:
+        name: "{{ debian_timezone }}"
+
+    - name: Debian | Use systemd-timesyncd
+      ansible.builtin.systemd:
+        name: systemd-timesyncd
+        enabled: true
+        active: true
+
+    - name: Debian | Set timesyncd configuration
+      ansible.builtin.copy:
+        content: |
+          [Time]
+          NTP=0.debian.pool.ntp.org 1.debian.pool.ntp.org 2.debian.pool.ntp.org 3.debian.pool.ntp.org
+        dest: /etc/systemd/timesyncd.conf
+      notify: Restart systemd-timesyncd
