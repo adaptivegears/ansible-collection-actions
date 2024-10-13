@@ -35,7 +35,7 @@
       - intel-microcode
       - amd64-microcode
   ansible.builtin.set_fact:
-    debian_packages_install: "{{ debian_packages_install | difference(debian_packages_install_exclude) }}"
+    debian_packages_install: "{{ (debian_packages_install | difference(debian_packages_install_exclude)) | unique | sort }}"
 
 - name: Debian | Display packages to install
   ansible.builtin.debug:
