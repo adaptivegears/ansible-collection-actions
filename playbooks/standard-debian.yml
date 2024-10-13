@@ -19,15 +19,15 @@
 
     - name: Parse Arguments
       ansible.builtin.set_fact:
-        install: "{{ install | default(i) | default(true) }}"
-        minimal: "{{ minimal | default(m) | default(false) }}"
-        prune: "{{ prune | default(p) | default(false) }}"
+        install: "{{ install | default(i) | default(omit) }}"
+        minimal: "{{ minimal | default(m) | default(omit) }}"
+        prune: "{{ prune | default(p) | default(omit) }}"
 
     - name: Prepare Arguments
       ansible.builtin.set_fact:
-        debian_install: "{{ install | default(true) }}"
-        debian_minimal: "{{ minimal | default(false) }}"
-        debian_prune: "{{ prune | default(false) }}"
+        debian_install: "{{ install | default(omit) }}"
+        debian_minimal: "{{ minimal | default(omit) }}"
+        debian_prune: "{{ prune | default(omit) }}"
     - name: Include Role
       ansible.builtin.include_role:
         name: debian-12
