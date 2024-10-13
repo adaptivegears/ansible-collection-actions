@@ -19,4 +19,4 @@
 
 - name: Debian | Configure timezone
   community.general.timezone:
-    timezone: "{{ debian_timezone }}"
+    name: "{{ debian_timezone }}"
