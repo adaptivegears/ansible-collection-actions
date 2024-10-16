@@ -1,7 +1,7 @@
 ---
 - name: Download Docker Image | check istio pilot
   ansible.builtin.stat:
-    path: "{{ k3s_path_image }}/istio-pilot-{{ k3s_version_istio }}.tar"
+    path: "{{ kubernetes_path_image }}/istio-pilot-{{ kubernetes_version_istio }}.tar"
   register: istiod_image
   changed_when: false
 
@@ -9,14 +9,14 @@
   when: not istiod_image.stat.exists
   ansible.builtin.shell: >
     skopeo copy --insecure-policy
-    docker://{{ k3s_download_image_registry }}/istio/pilot:{{ k3s_version_istio }}
-    docker-archive:{{ k3s_path_image }}/istio-pilot-{{ k3s_version_istio }}.tar:istio/pilot:{{ k3s_version_istio }}
+    docker://{{ kubernetes_download_image_registry }}/istio/pilot:{{ kubernetes_version_istio }}
+    docker-archive:{{ kubernetes_path_image }}/istio-pilot-{{ kubernetes_version_istio }}.tar:istio/pilot:{{ kubernetes_version_istio }}
   args:
-    creates: "{{ k3s_path_image }}/istio-pilot-{{ k3s_version_istio }}.tar"
+    creates: "{{ kubernetes_path_image }}/istio-pilot-{{ kubernetes_version_istio }}.tar"
 
 - name: Download Docker Image | check istio proxyv2
   ansible.builtin.stat:
-    path: "{{ k3s_path_image }}/istio-proxyv2-{{ k3s_version_istio }}.tar"
+    path: "{{ kubernetes_path_image }}/istio-proxyv2-{{ kubernetes_version_istio }}.tar"
   register: istiod_image
   changed_when: false
 
@@ -24,7 +24,7 @@
   when: not istiod_image.stat.exists
   ansible.builtin.shell: >
     skopeo copy --insecure-policy
-    docker://{{ k3s_download_image_registry }}/istio/proxyv2:{{ k3s_version_istio }}
-    docker-archive:{{ k3s_path_image }}/istio-proxyv2-{{ k3s_version_istio }}.tar:istio/proxyv2:{{ k3s_version_istio }}
+    docker://{{ kubernetes_download_image_registry }}/istio/proxyv2:{{ kubernetes_version_istio }}
+    docker-archive:{{ kubernetes_path_image }}/istio-proxyv2-{{ kubernetes_version_istio }}.tar:istio/proxyv2:{{ kubernetes_version_istio }}
   args:
-    creates: "{{ k3s_path_image }}/istio-proxyv2-{{ k3s_version_istio }}.tar"
+    creates: "{{ kubernetes_path_image }}/istio-proxyv2-{{ kubernetes_version_istio }}.tar"

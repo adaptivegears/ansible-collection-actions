@@ -11,15 +11,15 @@
 
 - name: Check Helm SHA256SUM
   ansible.builtin.stat:
-    path: "{{ k3s_path_cache }}/helm-v{{ k3s_version_helm }}.tar.gz.SHA256SUM"
+    path: "{{ kubernetes_path_cache }}/helm-v{{ kubernetes_version_helm }}.tar.gz.SHA256SUM"
   register: helm_checksum
 
 - name: Download Helm Checksum
   when: not helm_checksum.stat.exists
   ansible.builtin.get_url:
-    url: "https://get.helm.sh/helm-v{{ k3s_version_helm }}-linux-{{ helm_architecture }}.tar.gz.sha256"
-    dest: "{{ k3s_path_cache }}/helm-v{{ k3s_version_helm }}.tar.gz.SHA256SUM"
-    tmp_dest: "{{ k3s_path_tmp }}"
+    url: "https://get.helm.sh/helm-v{{ kubernetes_version_helm }}-linux-{{ helm_architecture }}.tar.gz.sha256"
+    dest: "{{ kubernetes_path_cache }}/helm-v{{ kubernetes_version_helm }}.tar.gz.SHA256SUM"
+    tmp_dest: "{{ kubernetes_path_tmp }}"
     mode: 0644
   register: helm_checksum_download
   until: helm_checksum_download is succeeded
@@ -29,16 +29,16 @@
 
 - name: Check Helm
   ansible.builtin.stat:
-    path: "{{ k3s_path_cache }}/helm-v{{ k3s_version_helm }}.tar.gz"
+    path: "{{ kubernetes_path_cache }}/helm-v{{ kubernetes_version_helm }}.tar.gz"
   register: helm_binary
 
 - name: Download Helm
   when: not helm_binary.stat.exists
   ansible.builtin.get_url:
-    url: "https://get.helm.sh/helm-v{{ k3s_version_helm }}-linux-{{ helm_architecture }}.tar.gz"
-    checksum: "sha256:file://{{ k3s_path_cache }}/helm-v{{ k3s_version_helm }}.tar.gz.SHA256SUM"
-    dest: "{{ k3s_path_cache }}/helm-v{{ k3s_version_helm }}.tar.gz"
-    tmp_dest: "{{ k3s_path_tmp }}"
+    url: "https://get.helm.sh/helm-v{{ kubernetes_version_helm }}-linux-{{ helm_architecture }}.tar.gz"
+    checksum: "sha256:file://{{ kubernetes_path_cache }}/helm-v{{ kubernetes_version_helm }}.tar.gz.SHA256SUM"
+    dest: "{{ kubernetes_path_cache }}/helm-v{{ kubernetes_version_helm }}.tar.gz"
+    tmp_dest: "{{ kubernetes_path_tmp }}"
     mode: 0644
   register: helm_binary_download
   until: helm_binary_download is succeeded

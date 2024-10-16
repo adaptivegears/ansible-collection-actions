@@ -1,7 +1,7 @@
 ---
 - name: Download | create directory for cache
   ansible.builtin.file:
-    path: "{{ k3s_path_cache }}"
+    path: "{{ kubernetes_path_cache }}"
     state: directory
     mode: 0755
     owner: root
@@ -9,7 +9,7 @@
 
 - name: Download | create directory for temporary files
   ansible.builtin.file:
-    path: "{{ k3s_path_tmp }}"
+    path: "{{ kubernetes_path_tmp }}"
     state: directory
     mode: 0755
     owner: root
@@ -19,7 +19,7 @@
   ansible.builtin.import_tasks: downloads/k3s.yml
 
 - name: Download | tools for server
-  when: k3s_role == 'server'
+  when: kubernetes_role == 'server'
   block:
     - name: Download | kubectl
       ansible.builtin.import_tasks: downloads/kubectl.yml

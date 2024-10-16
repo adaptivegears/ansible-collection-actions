@@ -10,7 +10,7 @@ Type=notify
 EnvironmentFile=-/etc/systemd/system/k3s.service.env
 ExecStartPre=-/sbin/modprobe br_netfilter
 ExecStartPre=-/sbin/modprobe overlay
-ExecStart={{ k3s_command }} {{ k3s_role }} {{ kubernetes_command_args[k3s_role] }}
+ExecStart={{ kubernetes_command }} {{ kubernetes_role }} {{ kubernetes_command_args[kubernetes_role] }}
 KillMode=process
 Delegate=yes
 

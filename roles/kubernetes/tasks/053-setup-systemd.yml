@@ -6,7 +6,7 @@
     owner: root
     group: root
     mode: 0644
-  register: k3s__env
+  register: kubernetes__env
 
 - name: Systemd | create service
   ansible.builtin.template:
@@ -15,17 +15,17 @@
     owner: root
     group: root
     mode: 0644
-  register: k3s__service
+  register: kubernetes__service
 
 - name: Systemd | get service state
   ansible.builtin.set_fact:
-    k3s_state: "{{ 'restarted' if k3s__config.changed or k3s__service.changed or k3s__env.changed or k3s__binary.changed else 'started' }}"
+    kubernetes_state: "{{ 'restarted' if kubernetes__config.changed or kubernetes__service.changed or kubernetes__env.changed or kubernetes__binary.changed else 'started' }}"
 
 - name: Systemd | set service state
   ansible.builtin.systemd:
-    daemon_reload: "{{ k3s__service.changed or k3s__env.changed }}"
+    daemon_reload: "{{ kubernetes__service.changed or kubernetes__env.changed }}"
     name: k3s
-    state: "{{ k3s_state }}"
+    state: "{{ kubernetes_state }}"
     enabled: true
   register: result
   until: result is succeeded

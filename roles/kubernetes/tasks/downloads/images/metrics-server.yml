@@ -1,7 +1,7 @@
 ---
 - name: Download Docker Image | check metric-server
   ansible.builtin.stat:
-    path: "{{ k3s_path_image }}/metrics-server-v0.7.0.tar"
+    path: "{{ kubernetes_path_image }}/metrics-server-v0.7.0.tar"
   register: metricsserver_image
   changed_when: false
 
@@ -9,7 +9,7 @@
   when: not metricsserver_image.stat.exists
   ansible.builtin.shell: >
     skopeo copy --insecure-policy
-    docker://{{ k3s_download_image_registry }}/rancher/mirrored-metrics-server:v0.7.0
-    docker-archive:{{ k3s_path_image }}/metrics-server-v0.7.0.tar:rancher/mirrored-metrics-server:v0.7.0
+    docker://{{ kubernetes_download_image_registry }}/rancher/mirrored-metrics-server:v0.7.0
+    docker-archive:{{ kubernetes_path_image }}/metrics-server-v0.7.0.tar:rancher/mirrored-metrics-server:v0.7.0
   args:
-    creates: "{{ k3s_path_image }}/metrics-server-v0.7.0.tar"
+    creates: "{{ kubernetes_path_image }}/metrics-server-v0.7.0.tar"

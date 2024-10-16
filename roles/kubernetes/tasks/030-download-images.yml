@@ -1,7 +1,7 @@
 ---
 - name: Download | create directory for images
   ansible.builtin.file:
-    path: "{{ k3s_path_image }}"
+    path: "{{ kubernetes_path_image }}"
     state: directory
     mode: 0755
     owner: root

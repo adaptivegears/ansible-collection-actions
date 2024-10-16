@@ -1,9 +1,9 @@
-{% if k3s__present %}
-server: https://{{ k3s_apiserver }}:6443
+{% if kubernetes__present %}
+server: https://{{ kubernetes_apiserver }}:6443
 {% else %}
-{% if k3s_apiserver == '127.0.0.1' %}
+{% if kubernetes_apiserver == '127.0.0.1' %}
 cluster-init: true
 {% else %}
-server: https://{{ k3s_apiserver }}:6443
+server: https://{{ kubernetes_apiserver }}:6443
 {% endif %}
 {% endif %}

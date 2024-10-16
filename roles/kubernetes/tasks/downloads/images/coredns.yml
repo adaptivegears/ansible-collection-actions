@@ -1,7 +1,7 @@
 ---
 - name: Download Docker Image | check coredns
   ansible.builtin.stat:
-    path: "{{ k3s_path_image }}/coredns-1.10.1.tar"
+    path: "{{ kubernetes_path_image }}/coredns-1.10.1.tar"
   register: coredns_image
   changed_when: false
 
@@ -9,7 +9,7 @@
   when: not coredns_image.stat.exists
   ansible.builtin.shell: >
     skopeo copy --insecure-policy
-    docker://{{ k3s_download_image_registry }}/rancher/mirrored-coredns-coredns:1.10.1
-    docker-archive:{{ k3s_path_image }}/coredns-1.10.1.tar:rancher/mirrored-coredns-coredns:1.10.1
+    docker://{{ kubernetes_download_image_registry }}/rancher/mirrored-coredns-coredns:1.10.1
+    docker-archive:{{ kubernetes_path_image }}/coredns-1.10.1.tar:rancher/mirrored-coredns-coredns:1.10.1
   args:
-    creates: "{{ k3s_path_image }}/coredns-1.10.1.tar"
+    creates: "{{ kubernetes_path_image }}/coredns-1.10.1.tar"

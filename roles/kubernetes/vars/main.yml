@@ -1,38 +1,38 @@
 ---
-k3s_path_statedir: /var/lib/rancher/k3s
-k3s_path_confdir: /etc/rancher/k3s
-k3s_path_cache: /var/cache/kubernetes
-k3s_path_image: /var/lib/rancher/k3s/agent/images
-k3s_path_tmp: /var/tmp/kubernetes
+kubernetes_path_statedir: /var/lib/rancher/k3s
+kubernetes_path_confdir: /etc/rancher/k3s
+kubernetes_path_cache: /var/cache/kubernetes
+kubernetes_path_image: /var/lib/rancher/k3s/agent/images
+kubernetes_path_tmp: /var/tmp/kubernetes
 
-k3s_version_k3s: v1.30.3+k3s1
-k3s_version_kubectl: 1.30.3
-k3s_version_helm: 3.15.0
-k3s_version_skopeo: 1.14.3
-k3s_version_gatewayapi: 1.1.0
-k3s_version_istio: 1.23.0
+kubernetes_version_k3s: v1.30.3+k3s1
+kubernetes_version_kubectl: 1.30.3
+kubernetes_version_helm: 3.15.0
+kubernetes_version_skopeo: 1.14.3
+kubernetes_version_gatewayapi: 1.1.0
+kubernetes_version_istio: 1.23.0
 
-k3s_download_image_registry: docker.io
+kubernetes_download_image_registry: docker.io
 
-k3s_command: /usr/local/bin/k3s
+kubernetes_command: /usr/local/bin/k3s
 kubernetes_command_args:
   server: >
-    --data-dir={{ k3s_path_statedir }}
-    {% if k3s_node != "" %}
-    --node-name={{ k3s_node }}
+    --data-dir={{ kubernetes_path_statedir }}
+    {% if kubernetes_node != "" %}
+    --node-name={{ kubernetes_node }}
     {% endif %}
-    {% if k3s_public_ip %}
-    --node-external-ip={{ k3s_public_ip }}
+    {% if kubernetes_public_ip %}
+    --node-external-ip={{ kubernetes_public_ip }}
     {% endif %}
-    --private-registry {{ k3s_path_confdir }}/registries.yaml
-    --cluster-cidr {{ k3s_pod_subnet }}
-    --service-cidr {{ k3s_service_subnet }}
+    --private-registry {{ kubernetes_path_confdir }}/registries.yaml
+    --cluster-cidr {{ kubernetes_pod_subnet }}
+    --service-cidr {{ kubernetes_service_subnet }}
   agent: >
-    --data-dir={{ k3s_path_statedir }}
-    {% if k3s_node != "" %}
-    --node-name={{ k3s_node }}
+    --data-dir={{ kubernetes_path_statedir }}
+    {% if kubernetes_node != "" %}
+    --node-name={{ kubernetes_node }}
     {% endif %}
-    {% if k3s_public_ip %}
-    --node-external-ip={{ k3s_public_ip }}
+    {% if kubernetes_public_ip %}
+    --node-external-ip={{ kubernetes_public_ip }}
     {% endif %}
-    --private-registry {{ k3s_path_confdir }}/registries.yaml
+    --private-registry {{ kubernetes_path_confdir }}/registries.yaml

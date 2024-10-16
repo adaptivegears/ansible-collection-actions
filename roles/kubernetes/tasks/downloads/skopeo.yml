@@ -11,15 +11,15 @@
 
 - name: Check Skopeo SHA256SUM
   ansible.builtin.stat:
-    path: "{{ k3s_path_cache }}/skopeo.SHA256SUM"
+    path: "{{ kubernetes_path_cache }}/skopeo.SHA256SUM"
   register: skopeo_checksum
 
 - name: Download Skopeo SHA256SUM
   when: not skopeo_checksum.stat.exists
   ansible.builtin.get_url:
-    url: "https://github.com/lework/skopeo-binary/releases/download/v{{ k3s_version_skopeo }}/skopeo-linux-{{ skopeo_architecture }}.sha256"
-    dest: "{{ k3s_path_cache }}/skopeo.SHA256SUM"
-    tmp_dest: "{{ k3s_path_tmp }}"
+    url: "https://github.com/lework/skopeo-binary/releases/download/v{{ kubernetes_version_skopeo }}/skopeo-linux-{{ skopeo_architecture }}.sha256"
+    dest: "{{ kubernetes_path_cache }}/skopeo.SHA256SUM"
+    tmp_dest: "{{ kubernetes_path_tmp }}"
     mode: 0644
     owner: root
     group: root
@@ -31,22 +31,22 @@
 
 - name: Rewrite Skopeo SHA256SUM
   ansible.builtin.replace:
-    path: "{{ k3s_path_cache }}/skopeo.SHA256SUM"
+    path: "{{ kubernetes_path_cache }}/skopeo.SHA256SUM"
     regexp: "./bin/skopeo"
     replace: "skopeo"
 
 - name: Check Skopeo
   ansible.builtin.stat:
-    path: "{{ k3s_path_cache }}/skopeo"
+    path: "{{ kubernetes_path_cache }}/skopeo"
   register: skopeo_binary
 
 - name: Download Skopeo
   when: not skopeo_binary.stat.exists
   ansible.builtin.get_url:
-    url: "https://github.com/lework/skopeo-binary/releases/download/v{{ k3s_version_skopeo }}/skopeo-linux-{{ skopeo_architecture }}"
-    checksum: "sha256:file://{{ k3s_path_cache }}/skopeo.SHA256SUM"
-    dest: "{{ k3s_path_cache }}/skopeo"
-    tmp_dest: "{{ k3s_path_tmp }}"
+    url: "https://github.com/lework/skopeo-binary/releases/download/v{{ kubernetes_version_skopeo }}/skopeo-linux-{{ skopeo_architecture }}"
+    checksum: "sha256:file://{{ kubernetes_path_cache }}/skopeo.SHA256SUM"
+    dest: "{{ kubernetes_path_cache }}/skopeo"
+    tmp_dest: "{{ kubernetes_path_tmp }}"
     mode: 0755
     owner: root
     group: root

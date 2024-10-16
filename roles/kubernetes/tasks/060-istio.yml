@@ -6,7 +6,7 @@
 
 - name: Istio | create namespace
   kubernetes.core.k8s:
-    kubeconfig: "{{ k3s_path_confdir }}/k3s.yaml"
+    kubeconfig: "{{ kubernetes_path_confdir }}/k3s.yaml"
     api_version: v1
     kind: Namespace
     name: "{{ item }}"
@@ -17,19 +17,19 @@
 
 - name: Istio | setup custom resource definitions
   kubernetes.core.helm:
-    kubeconfig: "{{ k3s_path_confdir }}/k3s.yaml"
+    kubeconfig: "{{ kubernetes_path_confdir }}/k3s.yaml"
     name: istio-base
     chart_ref: istio/base
-    chart_version: "{{ k3s_version_istio }}"
+    chart_version: "{{ kubernetes_version_istio }}"
     release_namespace: istio-system
     wait: true
 
 - name: Istio | setup istiod
   kubernetes.core.helm:
-    kubeconfig: "{{ k3s_path_confdir }}/k3s.yaml"
+    kubeconfig: "{{ kubernetes_path_confdir }}/k3s.yaml"
     name: istio
     chart_ref: istio/istiod
-    chart_version: "{{ k3s_version_istio }}"
+    chart_version: "{{ kubernetes_version_istio }}"
     release_namespace: istio-system
     wait: true
     values:
