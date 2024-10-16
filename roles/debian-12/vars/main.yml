@@ -2,6 +2,13 @@
 debian_locale: en_US.UTF-8
 debian_timezone: UTC
 
+debian_user: debian
+debian_user_groups:
+  - adm
+  - sudo
+debian_user_home: /home/debian
+debian_user_shell: /bin/bash
+
 debian_packages:
   # bootloader
   - efibootmgr

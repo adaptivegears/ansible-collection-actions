@@ -56,3 +56,23 @@
           CacheMaxAge=60
         dest: /etc/systemd/resolved.conf
       notify: Restart systemd-resolved
+
+- name: Debian | Configure "debian" user
+  block:
+    - name: Debian | Create "debian" user
+      ansible.builtin.user:
+        name: "{{ debian_user }}"
+        state: present
+        groups: "{{ debian_user_groups }}"
+        home: "{{ debian_user_home }}"
+        shell: "{{ debian_user_shell }}"
+        create_home: true
+        home: /home/debian
+
+    - name: Debian | Add "debian" user to sudoers
+      ansible.builtin.copy:
+        dest: /etc/sudoers.d/{{ debian_user }}
+        content: "{{ debian_user }} ALL=(ALL) NOPASSWD:ALL"
+        owner: root
+        group: root
+        mode: '0440'
