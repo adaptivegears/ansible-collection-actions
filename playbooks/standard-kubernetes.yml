@@ -41,7 +41,7 @@
       ansible.builtin.set_fact:
         role: "{{ COMMAND }}"
         install: "{{ install | default(i) | default(omit) }}"
-        token: "{{ token | default(t) | required }}"
+        token: "{{ token | default(t) | mandatory }}"
         join: "{{ join | default(omit) }}"
         public_ip: "{{ public_ip | default(omit) }}"
         node: "{{ node | default(n) | default('') }}"
