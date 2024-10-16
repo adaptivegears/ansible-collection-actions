@@ -1,17 +1,17 @@
 ---
 - name: Debian | Prerequisite
-  ansible.builtin.import_tasks: 100-prerequisite.yaml
+  ansible.builtin.import_tasks: 100-prerequisite.yml
 
 - name: Debian | Auto Install
   when: debian_install
-  ansible.builtin.import_tasks: 200-auto-install.yaml
+  ansible.builtin.import_tasks: 200-auto-install.yml
 
 - name: Debian | Pre-configuration
-  ansible.builtin.import_tasks: 300-pre-configure.yaml
+  ansible.builtin.import_tasks: 300-pre-configure.yml
 
 - name: Debian | Auto Uninstall
   when: debian_prune
-  ansible.builtin.import_tasks: 400-auto-uninstall.yaml
+  ansible.builtin.import_tasks: 400-auto-uninstall.yml
 
 - name: Debian | Post-configuration
-  ansible.builtin.import_tasks: 500-post-configuration.yaml
+  ansible.builtin.import_tasks: 500-post-configuration.yml
