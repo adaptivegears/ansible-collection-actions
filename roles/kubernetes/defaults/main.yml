@@ -10,4 +10,5 @@ kubernetes_enable_embeddedregistry: true
 kubernetes_pod_subnet: "10.42.0.0/16"
 kubernetes_service_subnet: "10.43.0.0/16"
 kubernetes_tailscale_authkey: "{{ lookup('ansible.builtin.env', 'KUBERNETES_TAILSCALE_AUTHKEY', default='') }}"
+kubernetes_tailscale_advertise_exit_node: "{{ lookup('ansible.builtin.env', 'KUBERNETES_TAILSCALE_ADVERTISE_EXIT_NODE', default='') | bool }}"
 kubernetes_public_ip: "{{ lookup('ansible.builtin.env', 'KUBERNETES_PUBLIC_IP', default='') }}"

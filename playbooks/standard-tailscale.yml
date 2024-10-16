@@ -27,7 +27,7 @@
         # -i or --install
         tailscale_install: "{{ install | default(omit) }}"
         # -t or --token
-        tailscale_authkey: "{{ token | mandatory }}"
+        tailscale_authkey: "{{ token | default(omit) }}"
         # --advertise-exit-node
         tailscale_advertise_exit_node: "{{ advertise_exit_node | default(omit) }}"
 
