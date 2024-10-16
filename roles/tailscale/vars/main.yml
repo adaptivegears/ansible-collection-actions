@@ -15,5 +15,5 @@ tailscale_download_src:
   amd64: "https://dl.tailscale.com/stable/tailscale_{{ tailscale_download_version }}_amd64.deb"
   arm64: "https://dl.tailscale.com/stable/tailscale_{{ tailscale_download_version }}_arm64.deb"
 tailscale_download_checksum:
-  amd64: "sha256:ed144ec02c916fab6c35febb5898351cff61bf398b7de7184a377051979f0039"
+  amd64: "sha256:aca5fda4b433b981356468d6c8f32557b3362c06a445812bc80be9ce0d06ba6f"
   arm64: "sha256:62d4bf2f20895d37d0b179d1686197e179c5062dd83dfaa885909809733a59f9"
