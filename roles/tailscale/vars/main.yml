@@ -9,7 +9,7 @@ tailscale_download_arch: >-
   {%- else -%}
   amd64
   {%- endif -%}
-tailscale_download_version: "1.68.0"
+tailscale_download_version: "1.76"
 tailscale_download_dst: "/var/cache/download"
 tailscale_download_src:
   amd64: "https://dl.tailscale.com/stable/tailscale_{{ tailscale_download_version }}_amd64.deb"
