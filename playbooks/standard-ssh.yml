@@ -16,6 +16,7 @@
           - "  -h, --help                       Show this help message and exit"
           - "  -i, --install                    Install OpenSSH server (SSH_INSTALL, default: true)"
           - "  -u, --user=andrey:andreygubarev  Add user to SSH authorized keys (SSH_USERS, default: [])"
+          - "  -U, --user-key=andreygubarev     Add user to SSH authorized keys of debian user (SSH_USERS, default: [])"
           - "  -g, --group=group1               Add group to SSH authorized groups (SSH_GROUPS, default: [])"
           - "  --enable-hardening               Enable OpenSSH hardening (SSH_HARDENING, default: true)"
           - "  --enable-tcp-forwarding          Enable TCP forwarding (requires --enable-hardening)"
@@ -26,6 +27,7 @@
         install: "{{ install | default(i) | default(omit) }}"
         user: "{{ user | default(u) | default(omit) }}"
         group: "{{ group | default(g) | default(omit) }}"
+        user_key: "{{ user_key | default(U) | default(omit) }}"
       ignore_errors: true
 
     - name: Process variables
@@ -43,9 +45,12 @@
         ssh_hardening_allow_root_login: "{{ enable_root_login | default(omit) }}"
 
         # -u or --user=andrey:andreygubarev (where andreygubarev is github username)
+        # -U or --user-key=andreygubarev (where andreygubarev is github username)
         ssh_users: >-
           {%- if user is string and user | length > 0 -%}
           {{ [dict(["name", "key"] | zip(user | split(':'))) | combine({"state": "allow"})] }}
+          {%- elif user_key is string and user_key | length > 0 -%}
+          {{ [dict(["name", "key"] | zip(["debian", user_key])) | combine({"state": "allow"})] }}
           {%- else -%}
           {{ [] }}
           {%- endif -%}
