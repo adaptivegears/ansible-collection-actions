@@ -1,0 +1,15 @@
+---
+- name: SSH | Prerequisites
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/000-prerequisites.yml"
+
+- name: SSH | Install server
+  when: ssh_openssh
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/100-install.yml"
+
+- name: SSH | Hardening
+  when: ssh_hardening
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/200-hardening.yml"
+
+- name: SSH | Access control
+  when: ssh_users | length > 0 or ssh_groups | length > 0
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/300-access-control.yml"

@@ -1,0 +1,195 @@
+# OpenSSH Server Hardening
+
+###############################################################################
+# CIS 5.2 - OpenSSH Server Configuration
+###############################################################################
+
+- name: Ensure permissions on /etc/ssh/sshd_config are configured (CIS 5.2.1)
+  ansible.builtin.file:
+    path: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Ensure permissions on SSH private host key files are configured (CIS 5.2.2)
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: root
+    group: root
+    mode: "0600"
+  with_fileglob:
+    - /etc/ssh/ssh_host_*_key
+
+- name: Ensure permissions on SSH public host key files are configured (CIS 5.2.3)
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: root
+    group: root
+    mode: "0644"
+  with_fileglob:
+    - /etc/ssh/ssh_host_*_key.pub
+
+- name: Ensure SSH Protocol is set to 2 (CIS 5.2.4)
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?Protocol"
+    line: "Protocol 2"
+  notify: Restart OpenSSH
+
+- name: Ensure SSH LogLevel is appropriate (CIS 5.2.5)
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?LogLevel"
+    line: "LogLevel VERBOSE"
+  notify: Restart OpenSSH
+
+- name: Ensure SSH X11 forwarding is disabled (CIS 5.2.6)
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?X11Forwarding"
+    line: "X11Forwarding no"
+  notify: Restart OpenSSH
+
+- name: Ensure SSH MaxAuthTries is set to 4 or less (CIS 5.2.7)
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?MaxAuthTries"
+    line: "MaxAuthTries 3"
+  notify: Restart OpenSSH
+
+- name: Ensure SSH IgnoreRhosts is enabled (CIS 5.2.8)
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?IgnoreRhosts"
+    line: "IgnoreRhosts yes"
+  notify: Restart OpenSSH
+
+- name: Ensure SSH HostbasedAuthentication is disabled (CIS 5.2.9)
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?HostbasedAuthentication"
+    line: "HostbasedAuthentication no"
+  notify: Restart OpenSSH
+
+- name: Ensure SSH root login (CIS 5.2.10)
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?PermitRootLogin"
+    line: "PermitRootLogin {{ ssh_hardening_allow_root_login | ternary('yes', 'no') }}"
+  notify: Restart OpenSSH
+
+- name: Ensure SSH PermitEmptyPasswords is disabled (CIS 5.2.11)
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?PermitEmptyPasswords"
+    line: "PermitEmptyPasswords no"
+  notify: Restart OpenSSH
+
+- name: Ensure SSH PermitUserEnvironment is disabled (CIS 5.2.12)
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?PermitUserEnvironment"
+    line: "PermitUserEnvironment no"
+  notify: Restart OpenSSH
+
+- name: Ensure only strong Ciphers are used (CIS 5.2.13)
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?Ciphers"
+    line: "Ciphers aes256-ctr,aes192-ctr,aes128-ctr"
+  notify: Restart OpenSSH
+
+- name: Ensure only strong MAC algorithms are used (CIS 5.2.14)
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?MACs"
+    line: "MACs hmac-sha2-512,hmac-sha2-256"
+  notify: Restart OpenSSH
+
+- name: Ensure only strong Key Exchange algorithms are used (CIS 5.2.15)
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?KexAlgorithms"
+    line: "KexAlgorithms ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256"
+  notify: Restart OpenSSH
+
+- name: Ensure SSH Idle Timeout Interval is configured (CIS 5.2.16)
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?{{ item.key }}"
+    line: "{{ item.key }} {{ item.value }}"
+  with_items:
+    - key: ClientAliveInterval
+      value: 300
+    - key: ClientAliveCountMax
+      value: 0
+  notify: Restart OpenSSH
+
+- name: Ensure SSH LoginGraceTime is set to one minute or less (CIS 5.2.17)
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?LoginGraceTime"
+    line: "LoginGraceTime 60"
+  notify: Restart OpenSSH
+
+# - name: Ensure SSH access is limited (CIS 5.2.18)
+
+- name: Ensure SSH warning banner is configured (CIS 5.2.19)
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?Banner"
+    line: "Banner none"
+  notify: Restart OpenSSH
+
+- name: Ensure SSH PAM is enabled (CIS 5.2.20)
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?UsePAM"
+    line: "UsePAM yes"
+  notify: Restart OpenSSH
+
+- name: Ensure SSH AllowTcpForwarding (CIS 5.2.21)
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?AllowTcpForwarding"
+    line: "AllowTcpForwarding {{ ssh_hardening_allow_tcp_forwarding | ternary('yes', 'no') }}"
+  notify: Restart OpenSSH
+
+- name: Ensure SSH MaxStartups is configured (CIS 5.2.22)
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?MaxStartups"
+    line: "MaxStartups 10:30:60"
+  notify: Restart OpenSSH
+
+- name: Ensure SSH MaxSessions is set to 4 or less (CIS 5.2.23)
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?MaxSessions"
+    line: "MaxSessions 3"
+  notify: Restart OpenSSH
+
+###############################################################################
+# Additional Hardening
+###############################################################################
+
+- name: Ensure SSH Public Key Authentication is enabled
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?PubkeyAuthentication"
+    line: "PubkeyAuthentication yes"
+  notify: Restart OpenSSH
+
+- name: Ensure SSH Password Authentication is disabled
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?PasswordAuthentication"
+    line: "PasswordAuthentication no"
+  notify: Restart OpenSSH
+
+- name: Ensure only strong Host Key Algorithms are used
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?HostKeyAlgorithms"
+    line: "HostKeyAlgorithms ecdsa-sha2-nistp521,ecdsa-sha2-nistp384,ecdsa-sha2-nistp256"
+  notify: Restart OpenSSH
