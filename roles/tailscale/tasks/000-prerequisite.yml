@@ -1,0 +1,8 @@
+---
+- name: Tailscale | assert supported distribution
+  ansible.builtin.assert:
+    that:
+      - ansible_distribution in ['Ubuntu', 'Debian']
+      - ansible_distribution_release in ['focal', 'jammy', 'bullseye', 'bookworm']
+    success_msg: "Supported OS detected: {{ ansible_distribution }} {{ ansible_distribution_release }}"
+    fail_msg: "Unsupported OS detected: {{ ansible_distribution }} {{ ansible_distribution_release }}"

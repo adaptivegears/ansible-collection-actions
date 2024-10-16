@@ -1,0 +1,12 @@
+---
+- name: Tailscale | prerequisites
+  when: tailscale_install
+  ansible.builtin.include_tasks: 000-prerequisite.yml
+
+- name: Tailscale | install
+  when: tailscale_install
+  ansible.builtin.include_tasks: 010-install.yml
+
+- name: Tailscale | configuration
+  when: tailscale_authkey or tailscale_advertise_exit_node
+  ansible.builtin.include_tasks: 020-configuration.yml

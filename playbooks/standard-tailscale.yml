@@ -1,0 +1,36 @@
+---
+- name: Standard Tailscale
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  become: true
+  tasks:
+    - name: Print Usage
+      when: help | default(h) | default(false)
+      failed_when: help | default(h) | default(false)
+      ansible.builtin.debug:
+        msg:
+          - "Usage: @andreygubarev/tailscale [OPTIONS]"
+          - "Options:"
+          - "  -i, --install             Install Tailscale Client"
+          - "  -t, --token               Tailscale AuthKey"
+          - "  --advertise-exit-node     Advertise Exit Node"
+
+    - name: Parse Arguments
+      ansible.builtin.set_fact:
+        install: "{{ install | default(i) | default(omit) }}"
+        token: "{{ token | default(t) | default(omit) }}"
+        advertise_exit_node: "{{ advertise_exit_node | default(omit) }}"
+
+    - name: Prepare Arguments
+      ansible.builtin.set_fact:
+        # -i or --install
+        tailscale_install: "{{ install | default(omit) }}"
+        # -t or --token
+        tailscale_authkey: "{{ token | mandatory }}"
+        # --advertise-exit-node
+        tailscale_advertise_exit_node: "{{ advertise_exit_node | default(omit) }}"
+
+    - name: Include Role
+      ansible.builtin.include_role:
+        name: tailscale
