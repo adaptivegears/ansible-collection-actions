@@ -1,13 +1,13 @@
 ---
 kubernetes_node: ""
-kubernetes_labels: "{{ lookup('ansible.builtin.env', 'K3S_LABELS', default=[]) }}"
+kubernetes_labels: "{{ lookup('ansible.builtin.env', 'KUBERNETES_LABELS', default=[]) }}"
 kubernetes_install: false
-kubernetes_token: "{{ lookup('ansible.builtin.env', 'K3S_TOKEN', default='') }}"
+kubernetes_token: "{{ lookup('ansible.builtin.env', 'KUBERNETES_TOKEN', default='') }}"
 kubernetes_role: server
-kubernetes_apiserver: "{{ lookup('ansible.builtin.env', 'K3S_APISERVER', default='127.0.0.1') }}"
+kubernetes_apiserver: "{{ lookup('ansible.builtin.env', 'KUBERNETES_APISERVER', default='127.0.0.1') }}"
 kubernetes_enable_localstorage: false
 kubernetes_enable_embeddedregistry: true
 kubernetes_pod_subnet: "10.42.0.0/16"
 kubernetes_service_subnet: "10.43.0.0/16"
-kubernetes_tailscale_authkey: "{{ lookup('ansible.builtin.env', 'K3S_TAILSCALE_AUTHKEY', default='') }}"
-kubernetes_public_ip: "{{ lookup('ansible.builtin.env', 'K3S_PUBLIC_IP', default='') }}"
+kubernetes_tailscale_authkey: "{{ lookup('ansible.builtin.env', 'KUBERNETES_TAILSCALE_AUTHKEY', default='') }}"
+kubernetes_public_ip: "{{ lookup('ansible.builtin.env', 'KUBERNETES_PUBLIC_IP', default='') }}"
