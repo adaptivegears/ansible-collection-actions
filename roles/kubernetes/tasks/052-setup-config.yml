@@ -96,3 +96,5 @@
     owner: root
     group: root
     mode: 0644
+  notify:
+    - Kubernetes | restart k3s
