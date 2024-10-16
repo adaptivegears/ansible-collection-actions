@@ -40,7 +40,7 @@
     - name: Parse Arguments
       ansible.builtin.set_fact:
         role: "{{ COMMAND }}"
-        install: "{{ install | default(i) | default(omit) }}"
+        install: "{{ install | default(i) | default(true) }}"
         token: "{{ token | default(t) | mandatory }}"
         join: "{{ join | default(omit) }}"
         public_ip: "{{ public_ip | default(omit) }}"
