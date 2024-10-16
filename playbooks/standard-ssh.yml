@@ -1,5 +1,5 @@
 ---
-- name: Setup SSH server
+- name: Standard SSH
   hosts: localhost
   connection: local
   gather_facts: true
@@ -13,12 +13,13 @@
           - "Usage: @andreygubarev/ssh [OPTIONS]"
           - ""
           - "Options:"
-          - "  -i, --install             Install OpenSSH server"
-          - "  -u, --user=andrey:andreygubarev (where andreygubarev is github username)"
-          - "  -g, --group=group1"
-          - "  --enable-hardening        Enable OpenSSH hardening"
-          - "  --enable-tcp-forwarding   Enable TCP forwarding (requires --enable-hardening)"
-          - "  --enable-root-login       Enable root login (requires --enable-hardening)"
+          - "  -h, --help                       Show this help message and exit"
+          - "  -i, --install                    Install OpenSSH server (SSH_INSTALL, default: true)"
+          - "  -u, --user=andrey:andreygubarev  Add user to SSH authorized keys (SSH_USERS, default: [])"
+          - "  -g, --group=group1               Add group to SSH authorized groups (SSH_GROUPS, default: [])"
+          - "  --enable-hardening               Enable OpenSSH hardening (SSH_HARDENING, default: true)"
+          - "  --enable-tcp-forwarding          Enable TCP forwarding (requires --enable-hardening)"
+          - "  --enable-root-login            Enable root login (requires --enable-hardening)"
 
     - name: Process aliases
       ansible.builtin.set_fact:

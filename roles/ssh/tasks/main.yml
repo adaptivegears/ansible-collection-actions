@@ -1,6 +1,6 @@
 ---
 - name: SSH | Prerequisites
-  ansible.builtin.include_tasks: "{{ role_path }}/tasks/000-prerequisites.yml"
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/000-prerequisite.yml"
 
 - name: SSH | Install server
   when: ssh_openssh
