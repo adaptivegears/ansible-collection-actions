@@ -10,7 +10,7 @@
       failed_when: help | default(h) | default(false)
       ansible.builtin.debug:
         msg:
-          - "Usage: @andreygubarev/ssh [OPTIONS]"
+          - "Usage: @adaptivegears/ssh [OPTIONS]"
           - "Options:"
           - "  -h, --help                       Show this help message and exit"
           - "  -i, --install                    Install OpenSSH server (SSH_INSTALL, default: true)"
