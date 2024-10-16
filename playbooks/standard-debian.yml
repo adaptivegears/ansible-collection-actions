@@ -16,6 +16,9 @@
           - "  -i, --install       Install packages (DEBIAN_INSTALL, default: true)"
           - "  -m, --minimal       Minimal installation (DEBIAN_MINIMAL, default: false)"
           - "  -p, --prune         Prune unused packages (DEBIAN_PRUNE, default: false)"
+          - "Examples:"
+          - "  $ getansible.sh -- @adaptivegears/standard-debian"
+          - "  $ getansible.sh -- @adaptivegears/standard-debian --prune"
 
     - name: Parse Arguments
       ansible.builtin.set_fact:
