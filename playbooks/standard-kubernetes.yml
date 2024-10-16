@@ -76,7 +76,7 @@
         # --enable-tailscale
         kubernetes_tailscale_authkey: "{{ tailscale | default(omit) }}"
         # --tailscale-advertise-exit-node
-        kubernetes_tailscale_advertise_exit_node: "{{ tailscale_exit_node | default(omit) }}"
+        kubernetes_tailscale_advertise_exit_node: "{{ tailscale_advertise_exit_node | default(omit) }}"
         # --pod-subnet
         kubernetes_pod_subnet: "{{ pod_subnet | default(omit) }}"
         # --service-subnet
