@@ -16,7 +16,6 @@
           - "  agent                     Install k3s as an agent"
           - "Options:"
           - "  -i, --install             Install k3s"
-          - "  -u, --upgrade             Upgrade k3s"
           - "  -l, --labels=LABELS       Set the labels for the node"
           - "  -n, --node=NAME           Set the name of the node"
           - "  -t, --token=TOKEN         Token for joining a cluster"
@@ -27,6 +26,9 @@
           - "  --tailscale=TOKEN         Enable Tailscale Integration"
           - "  --enable-embeddedregistry Enable embedded registry (default: true)"
           - "  --enable-localstorage     Enable local storage (default: false)"
+          - "Examples:"
+          - "  $ getansible.sh -- @adaptivegears/standard-kubernetes server -t secret"
+          - "  $ getansible.sh -- @adaptivegears/standard-kubernetes agent -t secret -j 127.0.0.1"
 
     - name: Assert Arguments
       ansible.builtin.assert:
@@ -38,9 +40,8 @@
     - name: Parse Arguments
       ansible.builtin.set_fact:
         role: "{{ COMMAND }}"
-        install: "{{ install | default(i) | default(false) }}"
-        upgrade: "{{ upgrade | default(u) | default(false) }}"
-        token: "{{ token | default(t) | default('') }}"
+        install: "{{ install | default(i) | default(omit) }}"
+        token: "{{ token | default(t) | required }}"
         join: "{{ join | default(omit) }}"
         public_ip: "{{ public_ip | default(omit) }}"
         node: "{{ node | default(n) | default('') }}"
