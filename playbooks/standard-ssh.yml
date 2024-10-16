@@ -16,7 +16,7 @@
           - "  -h, --help                       Show this help message and exit"
           - "  -i, --install                    Install OpenSSH server (SSH_INSTALL, default: true)"
           - "  -u, --user=andrey:andreygubarev  Add user to SSH authorized keys (SSH_USERS, default: [])"
-          - "  -U, --user-key=andreygubarev     Add user to SSH authorized keys of debian user"
+          - "  -U                               Authorize Github user to login as debian user"
           - "  -g, --group=group1               Add group to SSH authorized groups (SSH_GROUPS, default: [])"
           - "  --enable-hardening               Enable OpenSSH hardening (SSH_HARDENING, default: true)"
           - "  --enable-tcp-forwarding          Enable TCP forwarding (requires --enable-hardening)"
