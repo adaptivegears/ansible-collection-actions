@@ -1,0 +1,70 @@
+---
+- name: Set K3S architecture (amd64)
+  when: ansible_architecture == 'x86_64'
+  ansible.builtin.set_fact:
+    k3s_architecture: amd64
+
+- name: Set K3S architecture (arm64)
+  when: ansible_architecture == 'aarch64'
+  ansible.builtin.set_fact:
+    k3s_architecture: arm64
+
+- name: Check K3S SHA256SUM
+  ansible.builtin.stat:
+    path: "{{ k3s_path_cache }}/k3s.SHA256SUM"
+  register: k3s_checksum
+
+- name: Download K3S Checksum
+  when: not k3s_checksum.stat.exists
+  ansible.builtin.get_url:
+    url: "https://github.com/k3s-io/k3s/releases/download/{{ k3s_version_k3s }}/sha256sum-{{ k3s_architecture }}.txt"
+    dest: "{{ k3s_path_cache }}/k3s.SHA256SUM"
+    tmp_dest: "{{ k3s_path_tmp }}"
+    mode: 0644
+    owner: root
+    group: root
+  register: k3s_checksum_download
+  until: k3s_checksum_download is succeeded
+  retries: 5
+  delay: 5
+  timeout: 60
+
+- name: Check K3S
+  ansible.builtin.stat:
+    path: "{{ k3s_path_cache }}/k3s"
+  register: k3s__binary
+
+- name: Download K3S
+  when: not k3s__binary.stat.exists
+  block:
+    - name: Download K3S (amd64)
+      when: k3s_architecture == 'amd64'
+      ansible.builtin.get_url:
+        url: "https://github.com/k3s-io/k3s/releases/download/{{ k3s_version_k3s }}/k3s"
+        checksum: sha256:file://{{ k3s_path_cache }}/k3s.SHA256SUM
+        dest: "{{ k3s_path_cache }}/k3s"
+        tmp_dest: "{{ k3s_path_tmp }}"
+        owner: root
+        group: root
+        mode: 0755
+      register: kubernetes_binary
+      until: kubernetes_binary is succeeded
+      retries: 5
+      delay: 5
+      timeout: 300
+
+    - name: Download K3S (arm64)
+      when: k3s_architecture == 'arm64'
+      ansible.builtin.get_url:
+        url: "https://github.com/k3s-io/k3s/releases/download/{{ k3s_version_k3s }}/k3s-arm64"
+        checksum: sha256:file://{{ k3s_path_cache }}/k3s.SHA256SUM
+        dest: "{{ k3s_path_cache }}/k3s"
+        tmp_dest: "{{ k3s_path_tmp }}"
+        owner: root
+        group: root
+        mode: 0755
+      register: kubernetes_binary
+      until: kubernetes_binary is succeeded
+      retries: 5
+      delay: 5
+      timeout: 300

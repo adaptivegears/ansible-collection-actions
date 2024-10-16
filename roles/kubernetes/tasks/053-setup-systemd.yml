@@ -1,0 +1,33 @@
+---
+- name: Systemd | create environment file
+  ansible.builtin.template:
+    src: k3s.service.env.j2
+    dest: /etc/systemd/system/k3s.service.env
+    owner: root
+    group: root
+    mode: 0644
+  register: k3s__env
+
+- name: Systemd | create service
+  ansible.builtin.template:
+    src: k3s.service.j2
+    dest: /etc/systemd/system/k3s.service
+    owner: root
+    group: root
+    mode: 0644
+  register: k3s__service
+
+- name: Systemd | get service state
+  ansible.builtin.set_fact:
+    k3s_state: "{{ 'restarted' if k3s__config.changed or k3s__service.changed or k3s__env.changed or k3s__binary.changed else 'started' }}"
+
+- name: Systemd | set service state
+  ansible.builtin.systemd:
+    daemon_reload: "{{ k3s__service.changed or k3s__env.changed }}"
+    name: k3s
+    state: "{{ k3s_state }}"
+    enabled: true
+  register: result
+  until: result is succeeded
+  retries: 5
+  delay: 10

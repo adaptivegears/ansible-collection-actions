@@ -1,0 +1,45 @@
+---
+- name: Install K3S
+  ansible.builtin.copy:
+    src: "{{ k3s_path_cache }}/k3s"
+    remote_src: true
+    dest: "{{ k3s_command }}"
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Install | install tools for server
+  when: k3s_role == 'server'
+  block:
+    - name: Install kubectl
+      ansible.builtin.copy:
+        src: "{{ k3s_path_cache }}/kubectl"
+        remote_src: true
+        dest: /usr/local/bin/kubectl
+        mode: 0755
+        owner: root
+        group: root
+
+    - name: Install Helm
+      ansible.builtin.unarchive:
+        src: "{{ k3s_path_cache }}/helm-v{{ k3s_version_helm }}.tar.gz"
+        dest: /usr/local/bin
+        remote_src: true
+        include:
+          - linux-{{ helm_architecture }}/helm
+        extra_opts:
+          - --transform
+          - s|linux-{{ helm_architecture }}/||g
+        creates: /usr/local/bin/helm
+        mode: 0755
+        owner: root
+        group: root
+
+    - name: Install Skopeo
+      ansible.builtin.copy:
+        src: "{{ k3s_path_cache }}/skopeo"
+        remote_src: true
+        dest: /usr/local/bin/skopeo
+        mode: 0755
+        owner: root
+        group: root

@@ -1,0 +1,49 @@
+---
+- name: Set kubectl architecture (amd64)
+  when: ansible_architecture == 'x86_64'
+  ansible.builtin.set_fact:
+    kubectl_architecture: amd64
+
+- name: Set kubectl architecture (arm64)
+  when: ansible_architecture == 'aarch64'
+  ansible.builtin.set_fact:
+    kubectl_architecture: arm64
+
+- name: Check kubectl SHA256SUM
+  ansible.builtin.stat:
+    path: "{{ k3s_path_cache }}/kubectl.SHA256SUM"
+  register: kubectl_checksum
+
+- name: Download kubectl Checksum
+  when: not kubectl_checksum.stat.exists
+  ansible.builtin.get_url:
+    url: "https://dl.k8s.io/release/v{{ k3s_version_kubectl }}/bin/linux/{{ kubectl_architecture }}/kubectl.sha256"
+    dest: "{{ k3s_path_cache }}/kubectl.SHA256SUM"
+    tmp_dest: "{{ k3s_path_tmp }}"
+    mode: 0644
+  register: kubectl_checksum_download
+  until: kubectl_checksum_download is succeeded
+  retries: 5
+  delay: 5
+  timeout: 60
+
+- name: Check kubectl
+  ansible.builtin.stat:
+    path: "{{ k3s_path_cache }}/kubectl"
+  register: kubectl_binary
+
+- name: Download kubectl
+  when: not kubectl_binary.stat.exists
+  ansible.builtin.get_url:
+    url: "https://dl.k8s.io/release/v{{ k3s_version_kubectl }}/bin/linux/{{ kubectl_architecture }}/kubectl"
+    checksum: "sha256:file://{{ k3s_path_cache }}/kubectl.SHA256SUM"
+    dest: "{{ k3s_path_cache }}/kubectl"
+    tmp_dest: "{{ k3s_path_tmp }}"
+    mode: 0755
+    owner: root
+    group: root
+  register: kubectl_binary
+  until: kubectl_binary is succeeded
+  retries: 5
+  delay: 5
+  timeout: 300

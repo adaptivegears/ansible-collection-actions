@@ -1,0 +1,20 @@
+---
+- name: Download | create directory for images
+  ansible.builtin.file:
+    path: "{{ k3s_path_image }}"
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Download | image of coredns
+  ansible.builtin.import_tasks: downloads/images/coredns.yml
+
+- name: Download | image of metrics server
+  ansible.builtin.import_tasks: downloads/images/metrics-server.yml
+
+- name: Download | image of pause
+  ansible.builtin.import_tasks: downloads/images/pause.yml
+
+- name: Download | image of etcd
+  ansible.builtin.import_tasks: downloads/images/istio.yml

@@ -1,0 +1,98 @@
+---
+- name: Kubernetes | set api server
+  when: k3s__present and k3s_apiserver == '127.0.0.1'
+  ansible.builtin.set_fact:
+    k3s_apiserver: "{{ ansible_default_ipv4.address }}"
+
+- name: Kubernetes | create configuration
+  ansible.builtin.template:
+    src: config.yaml.j2
+    dest: "{{ k3s_path_confdir }}/config.yaml"
+    owner: root
+    group: root
+    mode: 0644
+  register: k3s__config
+
+- name: Kubernetes | create directory for configuration
+  ansible.builtin.file:
+    path: "{{ k3s_path_confdir }}/config.yaml.d"
+    state: directory
+    mode: "0755"
+
+- name: Kubernetes | set configuration for server network
+  when: k3s_role == 'server'
+  ansible.builtin.template:
+    src: config.yaml.d/000-network.yaml.j2
+    dest: "{{ k3s_path_confdir }}/config.yaml.d/000-network.yaml"
+    owner: root
+    group: root
+
+- name: Kubernetes | get configuration for token
+  ansible.builtin.stat:
+    path: "{{ k3s_path_confdir }}/config.yaml.d/010-token.yaml"
+  register: k3s__token
+
+- name: Kubernetes | assert configuration for token
+  when: not k3s__token.stat.exists
+  ansible.builtin.assert:
+    that:
+      - k3s_token is defined
+      - k3s_token is string
+      - k3s_token | length > 0
+    fail_msg: "Kubernetes | configuration for token is not valid"
+    success_msg: "Kubernetes | configuration for token is valid"
+
+- name: Kubernetes | set configuration for token
+  when: not k3s__token.stat.exists
+  ansible.builtin.template:
+    src: config.yaml.d/010-token.yaml.j2
+    dest: "{{ k3s_path_confdir }}/config.yaml.d/010-token.yaml"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Kubernetes | set configuration for embedded registry
+  when: k3s_role == 'server'
+  ansible.builtin.template:
+    src: config.yaml.d/020-embedded-registry.yaml.j2
+    dest: "{{ k3s_path_confdir }}/config.yaml.d/020-embedded-registry.yaml"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Kubernetes | get configuration for node labels (when string)
+  when: (k3s_labels | type_debug) == 'string'
+  ansible.builtin.set_fact:
+    k3s__labels: "{{ k3s_labels | split(',') }}"
+
+- name: Kubernetes | get configuration for node labels (when list)
+  when: (k3s_labels | type_debug) == 'list'
+  ansible.builtin.set_fact:
+    k3s__labels: "{{ k3s_labels }}"
+
+- name: Kubernetes | set configuration for node labels
+  when: k3s__labels is defined and k3s__labels | length > 0
+  ansible.builtin.template:
+    src: config.yaml.d/030-labels.yaml.j2
+    dest: "{{ k3s_path_confdir }}/config.yaml.d/030-labels.yaml"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Kubernetes | set configuration for servicelb
+  when: k3s_public_ip
+  ansible.builtin.template:
+    src: config.yaml.d/031-labels-enablelb.yaml.j2
+    dest: "{{ k3s_path_confdir }}/config.yaml.d/031-labels-enablelb.yaml.j2"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Kubernetes | set configuration for tailscale
+  when: k3s_tailscale_authkey
+  ansible.builtin.template:
+    src: config.yaml.d/040-vpn-auth.yaml.j2
+    dest: "{{ k3s_path_confdir }}/config.yaml.d/040-vpn-auth.yaml"
+    owner: root
+    group: root
+    mode: 0644

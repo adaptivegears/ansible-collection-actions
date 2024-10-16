@@ -1,0 +1,13 @@
+---
+k3s_node: ""
+k3s_labels: "{{ lookup('ansible.builtin.env', 'K3S_LABELS', default=[]) }}"
+k3s_install: false
+k3s_token: "{{ lookup('ansible.builtin.env', 'K3S_TOKEN', default='') }}"
+k3s_role: server
+k3s_apiserver: "{{ lookup('ansible.builtin.env', 'K3S_APISERVER', default='127.0.0.1') }}"
+k3s_enable_localstorage: false
+k3s_enable_embeddedregistry: true
+k3s_pod_subnet: "10.42.0.0/16"
+k3s_service_subnet: "10.43.0.0/16"
+k3s_tailscale_authkey: "{{ lookup('ansible.builtin.env', 'K3S_TAILSCALE_AUTHKEY', default='') }}"
+k3s_public_ip: "{{ lookup('ansible.builtin.env', 'K3S_PUBLIC_IP', default='') }}"

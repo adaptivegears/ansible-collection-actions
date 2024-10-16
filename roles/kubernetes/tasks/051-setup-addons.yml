@@ -1,0 +1,27 @@
+---
+- name: Kubernetes | create directory for addons
+  ansible.builtin.file:
+    path: "{{ k3s_path_statedir }}/server/manifests"
+    state: directory
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Kubernetes | enable gateway api
+  ansible.builtin.get_url:
+    url: "https://github.com/kubernetes-sigs/gateway-api/releases/download/v{{ k3s_version_gatewayapi }}/experimental-install.yaml"
+    dest: "{{ k3s_path_statedir }}/server/manifests/gatewayapi.yaml"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Kubernetes | enable local-storage
+  when: not k3s_enable_localstorage
+  ansible.builtin.file:
+    path: "{{ k3s_path_statedir }}/server/manifests/local-storage.yaml.skip"
+    state: touch
+    owner: root
+    group: root
+    mode: 0644
+    modification_time: preserve
+    access_time: preserve

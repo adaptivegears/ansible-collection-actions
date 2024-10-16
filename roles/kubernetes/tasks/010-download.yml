@@ -1,0 +1,31 @@
+---
+- name: Download | create directory for cache
+  ansible.builtin.file:
+    path: "{{ k3s_path_cache }}"
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Download | create directory for temporary files
+  ansible.builtin.file:
+    path: "{{ k3s_path_tmp }}"
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Download | k3s
+  ansible.builtin.import_tasks: downloads/k3s.yml
+
+- name: Download | tools for server
+  when: k3s_role == 'server'
+  block:
+    - name: Download | kubectl
+      ansible.builtin.import_tasks: downloads/kubectl.yml
+
+    - name: Download | helm
+      ansible.builtin.import_tasks: downloads/helm.yml
+
+    - name: Download | skopeo
+      ansible.builtin.import_tasks: downloads/skopeo.yml
