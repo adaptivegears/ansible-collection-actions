@@ -1,9 +1,22 @@
 ---
+- name: Debian > Metadata | Gather facts
+  ansible.builtin.setup:
+    gather_subset:
+      - all
+
 - name: Debian > Metadata | Create Directory
   ansible.builtin.file:
     path: /var/lib/instance-metadata/
     state: directory
     mode: '0755'
+    owner: root
+    group: root
+
+- name: Debian > Metadata | Save hostname
+  ansible.builtin.copy:
+    content: "{{ ansible_facts.hostname }}"
+    dest: /var/lib/instance-metadata/hostname
+    mode: '0644'
     owner: root
     group: root
 
