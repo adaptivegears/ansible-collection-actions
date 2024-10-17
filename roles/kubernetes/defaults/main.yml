@@ -1,6 +1,6 @@
 ---
-kubernetes_node: "{{ lookup('ansible.builtin.env', 'DEBIAN_HOSTNAME') }}"
-kubernetes_install: "{{ lookup('ansible.builtin.env', 'KUBERNETES_INSTALL', default=true) | bool}}"
+kubernetes_node: "{{ lookup('ansible.builtin.env', 'DEBIAN_HOSTNAME') | default(lookup('ansible.builtin.file', '/var/lib/instance-metadata/hostname')) }}"
+kubernetes_install: "{{ lookup('ansible.builtin.env', 'KUBERNETES_INSTALL', default=true) | bool }}"
 kubernetes_token: "{{ lookup('ansible.builtin.env', 'KUBERNETES_TOKEN', default='') | mandatory }}"
 kubernetes_labels: "{{ lookup('ansible.builtin.env', 'KUBERNETES_LABELS', default=[]) }}"
 kubernetes_role: server
@@ -13,7 +13,7 @@ kubernetes_public_ip: "{{ lookup('ansible.builtin.env', 'KUBERNETES_PUBLIC_IP', 
 
 kubernetes_tailscale_authkey: "{{ lookup('ansible.builtin.env', 'TAILSCALE_AUTHKEY', default='') }}"
 kubernetes_tailscale_advertise_exit_node: "{{ lookup('ansible.builtin.env', 'TAILSCALE_ADVERTISE_EXIT_NODE', default='') | bool }}"
-kubernetes_tailscale_hostname: "{{ lookup('ansible.builtin.env', 'TAILSCALE_HOSTNAME', default='') }}"
+kubernetes_tailscale_hostname: "{{ lookup('ansible.builtin.env', 'TAILSCALE_HOSTNAME') | default(lookup('ansible.builtin.file', '/var/lib/instance-metadata/hostname')) }}"
 kubernetes_tailscale_extra_args: >
   {% if kubernetes_tailscale_advertise_exit_node %}
   --advertise-exit-node
