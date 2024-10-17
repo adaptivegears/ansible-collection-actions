@@ -58,13 +58,13 @@
       ansible.builtin.set_fact:
         kubernetes_role: "{{ role }}"
         # -n or --node
-        kubernetes_node: "{{ node | default('') }}"
+        kubernetes_node: "{{ node | default(omit) }}"
         # -l or --labels
         kubernetes_labels: "{{ labels | default([]) }}"
         # -i or --install
         kubernetes_install: "{{ install | default(false) }}"
         # --token=secret
-        kubernetes_token: "{{ token | default('') }}"
+        kubernetes_token: "{{ token | default(omit) }}"
         # --join=127.0.0.1 (default: 127.0.0.1)
         kubernetes_apiserver: "{{ join | default('127.0.0.1') }}"
         # --public-ip=1.1.1.1
