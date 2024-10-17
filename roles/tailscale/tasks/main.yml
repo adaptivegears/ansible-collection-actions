@@ -7,6 +7,6 @@
   when: tailscale_install
   ansible.builtin.include_tasks: 010-install.yml
 
-- name: Tailscale | configuration
+- name: Tailscale | Configure
   when: tailscale_authkey or tailscale_advertise_exit_node
   ansible.builtin.include_tasks: 020-configuration.yml

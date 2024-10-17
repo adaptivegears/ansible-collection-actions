@@ -1,11 +1,11 @@
 ---
-- name: Tailscale | wait for readiness
+- name: Tailscale > Config | Wait for readiness
   ansible.builtin.wait_for:
     path: "{{ tailscale_socket }}"
     state: present
     timeout: 60
 
-- name: Tailscale | get status
+- name: Tailscale > Config | Get status
   ansible.builtin.command: >-
     tailscale
     --socket {{ tailscale_socket }}
@@ -13,10 +13,10 @@
   register: tailscale_status
   changed_when: false
 
-- name: Tailscale | login
+- name: Tailscale > Config | Login
   when: (tailscale_status.stdout | from_json)['BackendState'] == 'NeedsLogin'
   block:
-    - name: Tailscale | assert auth key
+    - name: Tailscale > Login | Assert auth key
       ansible.builtin.assert:
         that:
           - tailscale_authkey is defined
@@ -24,35 +24,23 @@
         success_msg: "Tailscale auth key is defined"
         fail_msg: "Tailscale auth key is not defined"
 
-    - name: Tailscale | login
+    - name: Tailscale > Login | Login
       ansible.builtin.command: >-
         tailscale
         --socket="{{ tailscale_socket }}"
         up
         --auth-key="{{ tailscale_authkey }}"
-        --hostname="{{ ansible_hostname }}"
+        --hostname="{{ tailscale__hostname }}"
         {% if tailscale_login_server %}
         --login-server="{{ tailscale_login_server }}"
         {% endif %}
       changed_when: true
 
-- name: Tailscale | enable ip forwarding
-  when: tailscale_advertise_exit_node
-  ansible.builtin.sysctl:
-    name: "{{ item }}"
-    value: 1
-    state: present
-    sysctl_set: true
-    reload: true
-  with_items:
-    - net.ipv4.ip_forward
-    - net.ipv6.conf.all.forwarding
-
-- name: Tailscale | advertise exit node
+- name: Tailscale > Config | Advertise exit node
   ansible.builtin.command: >-
     tailscale
     --socket {{ tailscale_socket }}
     up
-    --hostname {{ ansible_hostname }}
+    --hostname {{ tailscale__hostname }}
     --advertise-exit-node={{ tailscale_advertise_exit_node | ternary('true', 'false') }}
   changed_when: true

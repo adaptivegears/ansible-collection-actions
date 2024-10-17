@@ -6,3 +6,7 @@
       - ansible_distribution_release in ['bookworm']
     success_msg: "Supported OS detected: {{ ansible_distribution }} {{ ansible_distribution_release }}"
     fail_msg: "Unsupported OS detected: {{ ansible_distribution }} {{ ansible_distribution_release }}"
+
+- name: Tailscale > Prerequisites | Get hostname
+  ansible.builtin.set_fact:
+    tailscale__hostname: "{{ lookup('file', '/var/lib/instance-metadata/hostname') }}"
