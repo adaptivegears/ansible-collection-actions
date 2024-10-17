@@ -1,9 +1,7 @@
 ---
 - name: Kubernetes > Metadata | Get IPv4 for local traffic
-  ansible.builtin.shell: >
-    tailscale
-    --socket {{ tailscale_socket }}
-    ip -4
+  ansible.builtin.shell: |
+    tailscale ip -4
   register: tailscale__ipv4
 
 - name: Kubernetes > Metadata | Save IPv4 for local traffic
