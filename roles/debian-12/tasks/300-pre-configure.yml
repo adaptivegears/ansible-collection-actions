@@ -1,9 +1,9 @@
 ---
-- name: Debian > Pre-configure | Gather APT packages
+- name: Debian > Pre-configure | Get installed packages
   ansible.builtin.package_facts:
     manager: auto
 
-- name: Debian > Pre-configure | Update alternatives for iptables
+- name: Debian > Pre-configure | Iptables
   when: '"iptables" in ansible_facts.packages'
   community.general.alternatives:
     name: "{{ item.name }}"
