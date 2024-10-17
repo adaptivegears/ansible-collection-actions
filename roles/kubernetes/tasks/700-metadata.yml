@@ -2,7 +2,7 @@
 - name: Kubernetes > Metadata | Save Tailscale Auth Key
   ansible.builtin.copy:
     content: "{{ kubernetes_tailscale_authkey }}"
-    dest: /var/lib/instance-metadata/secret-tailscale
+    dest: /var/lib/instance-metadata/tailscale-authkey
     mode: '0400'
     owner: root
     group: root

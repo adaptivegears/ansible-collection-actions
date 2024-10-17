@@ -16,7 +16,7 @@
 - name: Kubernetes > Config | Save Token
   ansible.builtin.copy:
     content: "{{ kubernetes_token }}"
-    dest: /var/lib/instance-metadata/secret-kubernetes
+    dest: /var/lib/instance-metadata/kubernetes-token
     mode: '0400'
     owner: root
     group: root
