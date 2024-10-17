@@ -43,7 +43,7 @@
     up
     --hostname {{ tailscale__hostname }}
     --advertise-exit-node={{ tailscale_advertise_exit_node | ternary('true', 'false') }}
-  changed_when: true
+  changed_when: false
 
 - name: Tailscale > Metadata | Save Tailscale Auth Key
   when: tailscale_authkey | length > 0
