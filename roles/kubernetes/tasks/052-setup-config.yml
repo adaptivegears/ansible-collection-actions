@@ -13,6 +13,14 @@
     mode: 0644
   register: kubernetes__config
 
+- name: Kubernetes > Config | Save Token
+  ansible.builtin.copy:
+    content: "{{ kubernetes_token }}"
+    dest: /var/lib/instance-metadata/secret-kubernetes
+    mode: '0400'
+    owner: root
+    group: root
+
 - name: Kubernetes | create directory for configuration
   ansible.builtin.file:
     path: "{{ kubernetes_path_confdir }}/config.yaml.d"
