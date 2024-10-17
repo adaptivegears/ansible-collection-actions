@@ -1,4 +1,12 @@
 ---
+- name: Kubernetes > Metadata | Save Tailscale Auth Key
+  ansible.builtin.copy:
+    content: "{{ kubernetes_tailscale_authkey }}"
+    dest: /var/lib/instance-metadata/secret-tailscale
+    mode: '0400'
+    owner: root
+    group: root
+
 - name: Kubernetes > Metadata | Get IPv4 for local traffic
   ansible.builtin.shell: |
     tailscale ip -4

@@ -24,7 +24,7 @@
         success_msg: "Tailscale auth key is defined"
         fail_msg: "Tailscale auth key is not defined"
 
-    - name: Tailscale > Login | Save Auth Key
+    - name: Tailscale > Metadata | Save Tailscale Auth Key
       ansible.builtin.copy:
         content: "{{ tailscale_authkey }}"
         dest: /var/lib/instance-metadata/secret-tailscale
@@ -53,14 +53,14 @@
     --advertise-exit-node={{ tailscale_advertise_exit_node | ternary('true', 'false') }}
   changed_when: true
 
-- name: Tailscale > Config | Get IPv4
+- name: Tailscale > Metadata | Get IPv4
   ansible.builtin.shell: >
     tailscale
     --socket {{ tailscale_socket }}
     ip -4
   register: tailscale__ipv4
 
-- name: Tailscale > Config | Save IPv4 for local traffic
+- name: Tailscale > Metadata | Save IPv4 for local traffic
   ansible.builtin.copy:
     content: "{{ tailscale__ipv4 }}"
     dest: /var/lib/instance-metadata/ipv4-private
