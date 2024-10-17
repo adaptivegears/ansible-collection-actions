@@ -1,20 +1,20 @@
 ---
-- name: Kubernetes > Metadata | Save Tailscale Auth Key
-  when: kubernetes_tailscale_authkey | length > 0
+- name: Tailscale > Metadata | Save Tailscale Auth Key
+  when: tailscale_authkey | length > 0
   ansible.builtin.copy:
-    content: "{{ kubernetes_tailscale_authkey }}"
+    content: "{{ tailscale_authkey }}"
     dest: /var/lib/instance-metadata/tailscale-authkey
     mode: '0400'
     owner: root
     group: root
 
-- name: Kubernetes > Metadata | Get IPv4 for local traffic
+- name: Tailscale > Metadata | Get IPv4
   ansible.builtin.shell: |
     tailscale ip -4
   changed_when: false
   register: tailscale__ipv4
 
-- name: Kubernetes > Metadata | Save IPv4 for local traffic
+- name: Tailscale > Metadata | Save IPv4 for local traffic
   when: (tailscale__ipv4.stdout | trim) | length > 0
   ansible.builtin.copy:
     content: "{{ tailscale__ipv4.stdout | trim }}"

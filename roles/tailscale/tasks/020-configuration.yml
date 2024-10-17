@@ -45,25 +45,5 @@
     --advertise-exit-node={{ tailscale_advertise_exit_node | ternary('true', 'false') }}
   changed_when: false
 
-- name: Tailscale > Metadata | Save Tailscale Auth Key
-  when: tailscale_authkey | length > 0
-  ansible.builtin.copy:
-    content: "{{ tailscale_authkey }}"
-    dest: /var/lib/instance-metadata/tailscale-authkey
-    mode: '0400'
-    owner: root
-    group: root
-
-- name: Tailscale > Metadata | Get IPv4
-  ansible.builtin.shell: |
-    tailscale ip -4
-  changed_when: false
-  register: tailscale__ipv4
-
-- name: Tailscale > Metadata | Save IPv4 for local traffic
-  ansible.builtin.copy:
-    content: "{{ tailscale__ipv4.stdout | trim }}"
-    dest: /var/lib/instance-metadata/ipv4-private
-    mode: '0644'
-    owner: root
-    group: root
+- name: Tailscale | Metadata
+  ansible.builtin.import_tasks: 300-metadata.yml
