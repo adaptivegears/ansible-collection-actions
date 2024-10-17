@@ -16,6 +16,7 @@
           - "  -i, --install       Install packages (DEBIAN_INSTALL, default: true)"
           - "  -m, --minimal       Minimal installation (DEBIAN_MINIMAL, default: false)"
           - "  -p, --prune         Prune unused packages (DEBIAN_PRUNE, default: false)"
+          - "  --hostname          Set hostname (env: HOSTNAME)"
           - "Examples:"
           - "  $ getansible.sh -- @adaptivegears/standard-debian"
           - "  $ getansible.sh -- @adaptivegears/standard-debian --prune"
@@ -25,6 +26,7 @@
         install: "{{ install | default(i) | default(omit) }}"
         minimal: "{{ minimal | default(m) | default(omit) }}"
         prune: "{{ prune | default(p) | default(omit) }}"
+        hostname: "{{ hostname | default(h) | default(omit) }}"
       ignore_errors: true
 
     - name: Prepare Arguments
@@ -32,6 +34,7 @@
         debian_install: "{{ install | default(omit) }}"
         debian_minimal: "{{ minimal | default(omit) }}"
         debian_prune: "{{ prune | default(omit) }}"
+        debian_hostname: "{{ hostname | default(omit) }}"
       ignore_errors: true
 
     - name: Include Role

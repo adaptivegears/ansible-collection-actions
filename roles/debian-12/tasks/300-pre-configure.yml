@@ -1,4 +1,9 @@
 ---
+- name: Debian > Pre-configure | Set hostname
+  when: debian_hostname | length > 0
+  ansible.builtin.hostname:
+    name: "{{ debian_hostname }}"
+
 - name: Debian > Pre-configure | Get installed packages
   ansible.builtin.package_facts:
     manager: auto
