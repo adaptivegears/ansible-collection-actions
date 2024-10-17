@@ -64,10 +64,9 @@
         name: "{{ debian_user }}"
         state: present
         groups: "{{ debian_user_groups }}"
-        home: "{{ debian_user_home }}"
         shell: "{{ debian_user_shell }}"
         create_home: true
-        home: /home/debian
+        home: "{{ debian_user_home }}"
 
     - name: Debian | Add "debian" user to sudoers
       ansible.builtin.copy:
