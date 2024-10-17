@@ -4,7 +4,7 @@ kubernetes_install: "{{ lookup('ansible.builtin.env', 'KUBERNETES_INSTALL', defa
 kubernetes_token: "{{ lookup('ansible.builtin.env', 'KUBERNETES_TOKEN', default='') | default(lookup('ansible.builtin.file', '/var/lib/instance-metadata/kubernetes-token', errors='ignore')) | mandatory }}"
 kubernetes_labels: "{{ lookup('ansible.builtin.env', 'KUBERNETES_LABELS', default=[]) }}"
 kubernetes_role: server
-kubernetes_apiserver: "{{ lookup('ansible.builtin.env', 'KUBERNETES_APISERVER', default='127.0.0.1') }}"
+kubernetes_apiserver: "{{ lookup('ansible.builtin.env', 'KUBERNETES_APISERVER') | default('127.0.0.1') }}"
 kubernetes_enable_localstorage: false
 kubernetes_enable_embeddedregistry: true
 kubernetes_pod_subnet: "10.42.0.0/16"
