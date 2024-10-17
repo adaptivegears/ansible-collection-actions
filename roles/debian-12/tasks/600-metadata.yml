@@ -1,5 +1,5 @@
 ---
-- name: Debian > Metadata | Create metadata directory
+- name: Debian > Metadata | Create Directory
   ansible.builtin.file:
     path: /var/lib/instance-metadata/
     state: directory
