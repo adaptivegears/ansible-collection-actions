@@ -1,5 +1,5 @@
 ---
-- name: Standard Tailscale
+- name: Standard Network (Tailscale)
   hosts: localhost
   connection: local
   gather_facts: true
@@ -10,9 +10,9 @@
       failed_when: help | default(h) | default(false)
       ansible.builtin.debug:
         msg:
-          - "Usage: @andreygubarev/tailscale [OPTIONS]"
+          - "Usage: @adaptivegears/network [OPTIONS]"
           - "Options:"
-          - "  -i, --install             Install Tailscale Client"
+          - "  -i, --install             Install Tailscale Client (default: true)"
           - "  -t, --token               Tailscale AuthKey"
           - "  --advertise-exit-node     Advertise Exit Node"
 
