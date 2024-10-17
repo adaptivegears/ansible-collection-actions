@@ -17,7 +17,7 @@
 
 - name: Debian > Metadata | Save IPv4 of outbound traffic
   ansible.builtin.shell: |
-    exip -4 > /var/lib/instance-metadata/ipv4-public-egress
+    exip -p 4 > /var/lib/instance-metadata/ipv4-public-egress
   args:
     creates: /var/lib/instance-metadata/ipv4-public-egress
 
