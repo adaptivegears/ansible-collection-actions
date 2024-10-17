@@ -15,3 +15,6 @@
 
 - name: Debian | Post-configuration
   ansible.builtin.import_tasks: 500-post-configuration.yml
+
+- name: Debian | Metadata
+  ansible.builtin.import_tasks: 600-metadata.yml

@@ -1,0 +1,40 @@
+---
+- name: Debian | Create metadata directory
+  ansible.builtin.file:
+    path: /var/lib/instance-metadata/
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Debian | Create `ipv4-private` file that contains local ipv4
+  ansible.builtin.copy:
+    content: "{{ ansible_facts.default_ipv4.address }}"
+    dest: /var/lib/instance-metadata/ipv4-private
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: Debian | Get public ipv4 for outbound traffic
+  ansible.builtin.command: exip
+  register: debian__ipv4_public_egress
+
+- name: Debian | Create `ipv4-public-egress` file that contains public ipv4 for outbound traffic
+  ansible.builtin.copy:
+    content: "{{ debian__ipv4_public_egress.stdout }}"
+    dest: /var/lib/instance-metadata/ipv4-public-egress
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: Debian | Create `ipv4-public-ingress` file that contains public ipv4 for ingress traffic
+  ansible.builtin.shell: |
+    flags=$(stun -v stun.l.google.com:19302 2>&1 | grep -E 'mapped IP same = 1|hairpin = 1|preserver port = 1' | wc -l)
+    if [ "$flags" -eq 3 ]; then
+      cp /var/lib/instance-metadata/ipv4-public-egress /var/lib/instance-metadata/ipv4-public-ingress
+    else
+      rm -f /var/lib/instance-metadata/ipv4-public-ingress
+      touch /var/lib/instance-metadata/ipv4-public-ingress
+    fi
+
+
