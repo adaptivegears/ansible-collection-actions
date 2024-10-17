@@ -1,10 +1,10 @@
 ---
-- name: Istio | add helm repository
+- name: Kubernetes > Istio | Create Helm Repository
   kubernetes.core.helm_repository:
     name: istio
     repo_url: https://istio-release.storage.googleapis.com/charts
 
-- name: Istio | create namespace
+- name: Kubernetes > Istio | Create Namespace
   kubernetes.core.k8s:
     kubeconfig: "{{ kubernetes_path_confdir }}/k3s.yaml"
     api_version: v1
@@ -15,7 +15,7 @@
     - istio-system
     - istio-ingress
 
-- name: Istio | setup custom resource definitions
+- name: Kubernetes > Istio | Install CRDs
   kubernetes.core.helm:
     kubeconfig: "{{ kubernetes_path_confdir }}/k3s.yaml"
     name: istio-base
@@ -24,7 +24,7 @@
     release_namespace: istio-system
     wait: true
 
-- name: Istio | setup istiod
+- name: Kubernetes > Istio | Install
   kubernetes.core.helm:
     kubeconfig: "{{ kubernetes_path_confdir }}/k3s.yaml"
     name: istio
