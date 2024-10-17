@@ -24,14 +24,6 @@
         success_msg: "Tailscale auth key is defined"
         fail_msg: "Tailscale auth key is not defined"
 
-    - name: Tailscale > Metadata | Save Tailscale Auth Key
-      ansible.builtin.copy:
-        content: "{{ tailscale_authkey }}"
-        dest: /var/lib/instance-metadata/tailscale-authkey
-        mode: '0400'
-        owner: root
-        group: root
-
     - name: Tailscale > Login | Login
       ansible.builtin.command: >-
         tailscale
@@ -52,6 +44,15 @@
     --hostname {{ tailscale__hostname }}
     --advertise-exit-node={{ tailscale_advertise_exit_node | ternary('true', 'false') }}
   changed_when: true
+
+- name: Tailscale > Metadata | Save Tailscale Auth Key
+  when: tailscale_authkey | length > 0
+  ansible.builtin.copy:
+    content: "{{ tailscale_authkey }}"
+    dest: /var/lib/instance-metadata/tailscale-authkey
+    mode: '0400'
+    owner: root
+    group: root
 
 - name: Tailscale > Metadata | Get IPv4
   ansible.builtin.shell: |
