@@ -125,6 +125,7 @@ debian_packages:
   - socat
   - tcpdump
   - stun-client
+  - exip
   - ca-certificates
   - wget
   - curl
@@ -200,6 +201,7 @@ debian_packages_minimal:
   - socat
   - tcpdump
   - stun-client
+  - exip
   - media-types
 
   # python
