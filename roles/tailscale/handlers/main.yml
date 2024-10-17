@@ -1,5 +1,6 @@
 ---
 - name: Restart Tailscale
+  when: tailscale_authkey | length > 0
   ansible.builtin.systemd:
     name: tailscaled
     state: restarted
