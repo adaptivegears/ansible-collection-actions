@@ -1,7 +1,7 @@
 ---
 kubernetes_node: "{{ lookup('ansible.builtin.env', 'DEBIAN_HOSTNAME') | default(lookup('ansible.builtin.file', '/var/lib/instance-metadata/hostname', errors='ignore')) }}"
 kubernetes_install: "{{ lookup('ansible.builtin.env', 'KUBERNETES_INSTALL', default=true) | bool }}"
-kubernetes_token: "{{ lookup('ansible.builtin.env', 'KUBERNETES_TOKEN') | default(lookup('ansible.builtin.file', '/var/lib/instance-metadata/kubernetes-token', errors='ignore')) | mandatory }}"
+kubernetes_token: "{{ (lookup('ansible.builtin.env', 'KUBERNETES_TOKEN') or lookup('ansible.builtin.file', '/var/lib/instance-metadata/kubernetes-token', errors='ignore')) | mandatory }}"
 kubernetes_labels: "{{ lookup('ansible.builtin.env', 'KUBERNETES_LABELS', default=[]) }}"
 kubernetes_role: server
 kubernetes_apiserver: "{{ lookup('ansible.builtin.env', 'KUBERNETES_APISERVER') | default('127.0.0.1') }}"
@@ -11,8 +11,8 @@ kubernetes_pod_subnet: "10.42.0.0/16"
 kubernetes_service_subnet: "10.43.0.0/16"
 kubernetes_public_ip: "{{ lookup('ansible.builtin.env', 'KUBERNETES_PUBLIC_IP', default='') }}"
 
-kubernetes_tailscale_authkey: "{{ lookup('ansible.builtin.env', 'TAILSCALE_AUTHKEY') | default(lookup('ansible.builtin.file', '/var/lib/instance-metadata/tailscale-authkey', errors='ignore')) | default('') }}"
-kubernetes_tailscale_advertise_exit_node: "{{ lookup('ansible.builtin.env', 'TAILSCALE_ADVERTISE_EXIT_NODE', default='') | bool }}"
+kubernetes_tailscale_authkey: "{{ (lookup('ansible.builtin.env', 'TAILSCALE_AUTHKEY') or lookup('ansible.builtin.file', '/var/lib/instance-metadata/tailscale-authkey', errors='ignore')) | default('') }}"
+kubernetes_tailscale_advertise_exit_node: "{{ (lookup('ansible.builtin.env', 'TAILSCALE_ADVERTISE_EXIT_NODE', default='') | bool) }}"
 kubernetes_tailscale_extra_args: >
   --hostname {{ lookup('ansible.builtin.file', '/var/lib/instance-metadata/hostname') }}
   {% if kubernetes_tailscale_advertise_exit_node %}
