@@ -7,7 +7,7 @@
     owner: root
     group: root
 
-- name: Debian > Metadata | Create `ipv4-private` file that contains local ipv4
+- name: Debian > Metadata | Get IPv4 for local traffic
   ansible.builtin.copy:
     content: "{{ ansible_facts.default_ipv4.address }}"
     dest: /var/lib/instance-metadata/ipv4-private
