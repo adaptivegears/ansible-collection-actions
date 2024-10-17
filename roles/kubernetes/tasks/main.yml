@@ -62,3 +62,6 @@
 
         - name: Systemd | service state
           ansible.builtin.import_tasks: 053-setup-systemd.yml
+
+- name: Kubernetes | Metadata
+  ansible.builtin.import_tasks: 700-metadata.yml
