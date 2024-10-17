@@ -43,7 +43,7 @@
         role: "{{ COMMAND }}"
         install: "{{ install | default(i) | default(true) }}"
         token: "{{ token | default(t) | default(omit) }}"
-        join: "{{ join | default(omit) }}"
+        join: "{{ join | default(j) | default(omit) }}"
         public_ip: "{{ public_ip | default(omit) }}"
         node: "{{ node | default(n) | default('') }}"
         labels: "{{ labels | default(l) | default([]) }}"
