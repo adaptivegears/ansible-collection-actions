@@ -66,7 +66,7 @@
         # --token=secret
         kubernetes_token: "{{ token | default(omit) }}"
         # --join=127.0.0.1 (default: 127.0.0.1)
-        kubernetes_apiserver: "{{ join | default('127.0.0.1') }}"
+        kubernetes_apiserver: "{{ join | default(omit) }}"
         # --public-ip=1.1.1.1
         kubernetes_public_ip: "{{ public_ip | default(omit) }}"
         # --enable-embeddedregistry
