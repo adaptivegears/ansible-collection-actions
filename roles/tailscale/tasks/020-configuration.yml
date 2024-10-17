@@ -24,6 +24,14 @@
         success_msg: "Tailscale auth key is defined"
         fail_msg: "Tailscale auth key is not defined"
 
+    - name: Tailscale > Login | Save Auth Key
+      ansible.builtin.copy:
+        content: "{{ tailscale_authkey }}"
+        dest: /var/lib/instance-metadata/secret-tailscale
+        mode: '0400'
+        owner: root
+        group: root
+
     - name: Tailscale > Login | Login
       ansible.builtin.command: >-
         tailscale
