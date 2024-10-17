@@ -33,5 +33,10 @@
 - name: Tailscale | enable systemd service
   ansible.builtin.systemd:
     name: tailscaled
-    state: started
     enabled: true
+
+- name: Tailscale | start systemd service
+  when: tailscale_authkey | length > 0
+  ansible.builtin.systemd:
+    name: tailscaled
+    state: started
