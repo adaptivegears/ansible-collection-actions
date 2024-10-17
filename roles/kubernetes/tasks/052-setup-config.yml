@@ -16,7 +16,7 @@
 - name: Kubernetes > Config | Save Token
   when: kubernetes_token | length > 0
   ansible.builtin.copy:
-    content: "{{ kubernetes_token }}"
+    content: "{{ kubernetes_token | trim }}"
     dest: /var/lib/instance-metadata/kubernetes-token
     mode: '0400'
     owner: root

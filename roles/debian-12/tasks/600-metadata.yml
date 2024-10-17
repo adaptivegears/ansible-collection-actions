@@ -14,7 +14,7 @@
 
 - name: Debian > Metadata | Save hostname
   ansible.builtin.copy:
-    content: "{{ ansible_facts.hostname }}"
+    content: "{{ ansible_facts.hostname | trim }}"
     dest: /var/lib/instance-metadata/hostname
     mode: '0644'
     owner: root
@@ -22,7 +22,7 @@
 
 - name: Debian > Metadata | Save IPv4 of local traffic
   ansible.builtin.copy:
-    content: "{{ ansible_facts.default_ipv4.address }}"
+    content: "{{ ansible_facts.default_ipv4.address | trim }}"
     dest: /var/lib/instance-metadata/ipv4-private
     mode: '0644'
     owner: root
