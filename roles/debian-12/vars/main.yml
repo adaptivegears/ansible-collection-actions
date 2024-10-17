@@ -124,6 +124,7 @@ debian_packages:
   - bind9-dnsutils
   - socat
   - tcpdump
+  - stun-client
   - ca-certificates
   - wget
   - curl
@@ -198,6 +199,7 @@ debian_packages_minimal:
   - bind9-dnsutils
   - socat
   - tcpdump
+  - stun-client
   - media-types
 
   # python
