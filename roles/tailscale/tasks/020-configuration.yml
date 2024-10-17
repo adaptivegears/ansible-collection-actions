@@ -54,10 +54,9 @@
   changed_when: true
 
 - name: Tailscale > Metadata | Get IPv4
-  ansible.builtin.shell: >
-    tailscale
-    --socket {{ tailscale_socket }}
-    ip -4
+  ansible.builtin.shell: |
+    tailscale ip -4
+  changed_when: false
   register: tailscale__ipv4
 
 - name: Tailscale > Metadata | Save IPv4 for local traffic
