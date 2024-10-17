@@ -9,6 +9,15 @@ kubernetes_enable_localstorage: false
 kubernetes_enable_embeddedregistry: true
 kubernetes_pod_subnet: "10.42.0.0/16"
 kubernetes_service_subnet: "10.43.0.0/16"
+kubernetes_public_ip: "{{ lookup('ansible.builtin.env', 'KUBERNETES_PUBLIC_IP', default='') }}"
+
 kubernetes_tailscale_authkey: "{{ lookup('ansible.builtin.env', 'TAILSCALE_AUTHKEY', default='') }}"
 kubernetes_tailscale_advertise_exit_node: "{{ lookup('ansible.builtin.env', 'TAILSCALE_ADVERTISE_EXIT_NODE', default='') | bool }}"
-kubernetes_public_ip: "{{ lookup('ansible.builtin.env', 'KUBERNETES_PUBLIC_IP', default='') }}"
+kubernetes_tailscale_hostname: "{{ lookup('ansible.builtin.env', 'TAILSCALE_HOSTNAME', default='') }}"
+kubernetes_tailscale_extra_args: >
+  {% if kubernetes_tailscale_advertise_exit_node %}
+  --advertise-exit-node
+  {% endif %}
+  {% if kubernetes_tailscale_hostname %}
+  --hostname {{ kubernetes_tailscale_hostname }}
+  {% endif %}

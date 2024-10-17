@@ -1,1 +1,1 @@
-vpn-auth: name=tailscale,joinKey={{ kubernetes_tailscale_authkey }}{% if kubernetes_tailscale_advertise_exit_node %},extraArgs=--advertise-exit-node{% endif %}
+vpn-auth: name=tailscale,joinKey={{ kubernetes_tailscale_authkey }}{% if kubernetes_tailscale_extra_args | trim | lenght > 0 %},extraArgs={{ kubernetes_tailscale_extra_args | trim }}{% endif %}
