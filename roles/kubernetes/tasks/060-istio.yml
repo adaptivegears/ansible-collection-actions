@@ -33,6 +33,9 @@
     release_namespace: istio-system
     wait: true
     values:
+      global:
+        proxy:
+          privileged: true
       pilot:
         env:
           PILOT_ENABLE_ALPHA_GATEWAY_API: true
