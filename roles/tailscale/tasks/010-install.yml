@@ -28,7 +28,7 @@
   ansible.builtin.apt:
     deb: "{{ tailscale_download_dst }}/tailscale_{{ tailscale_download_version }}.deb"
     state: present
-  notify: Restart Tailscale
+  notify: Tailscale | Restart
 
 - name: Tailscale | enable systemd service
   ansible.builtin.systemd:
