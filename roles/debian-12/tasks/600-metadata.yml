@@ -7,7 +7,7 @@
     owner: root
     group: root
 
-- name: Debian > Metadata | Get IPv4 for local traffic
+- name: Debian > Metadata | Save IPv4 of local traffic
   ansible.builtin.copy:
     content: "{{ ansible_facts.default_ipv4.address }}"
     dest: /var/lib/instance-metadata/ipv4-private
@@ -15,13 +15,13 @@
     owner: root
     group: root
 
-- name: Debian > Metadata | Get IPv4 for outbound traffic
+- name: Debian > Metadata | Save IPv4 of outbound traffic
   ansible.builtin.shell: |
     exip -4 > /var/lib/instance-metadata/ipv4-public-egress
   args:
     creates: /var/lib/instance-metadata/ipv4-public-egress
 
-- name: Debian > Metadata | Get IPv4 for inbound traffic
+- name: Debian > Metadata | Save IPv4 of inbound traffic
   ansible.builtin.shell: |
     flags=$(stun -v stun.l.google.com:19302 2>&1 | grep -E 'mapped IP same = 1|hairpin = 1|preserver port = 1' | wc -l)
     if [ "$flags" -eq 3 ]; then
