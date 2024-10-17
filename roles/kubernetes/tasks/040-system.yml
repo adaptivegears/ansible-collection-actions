@@ -1,48 +1,10 @@
 ---
-- name: Linux | enable ipv4 forwarding
-  ansible.posix.sysctl:
-    name: net.ipv4.ip_forward
-    value: "1"
-    state: present
-    reload: true
+- name: Kubernetes > System | Get public IP
+  ansible.builtin.set_fact:
+    kubernetes__public_ip: "{{ lookup('ansible.builtin.file', '/var/lib/instance-metadata/ipv4-public-ingress') }}"
 
-- name: Linux | enable ipv6 forwarding
-  ansible.posix.sysctl:
-    name: net.ipv6.conf.all.forwarding
-    value: "1"
-    state: present
-    reload: true
+- name: Kubernetes > System | Set public IP
+  when: kubernetes_public_ip | length == 0 and kubernetes__public_ip | length > 0
+  ansible.builtin.set_fact:
+    kubernetes_public_ip: "{{ kubernetes__public_ip }}"
 
-- name: Linux | enable ipv6 router advertisements
-  ansible.posix.sysctl:
-    name: net.ipv6.conf.all.accept_ra
-    value: "2"
-    state: present
-    reload: true
-
-- name: Linux | harden kernel parameters
-  ansible.posix.sysctl:
-    name: "{{ item.name }}"
-    value: "{{ item.value }}"
-    state: present
-    reload: true
-  with_items:
-    - name: vm.panic_on_oom
-      value: "0"
-    - name: vm.overcommit_memory
-      value: "1"
-    - name: kernel.panic
-      value: "10"
-    - name: kernel.panic_on_oops
-      value: "1"
-
-- name: Linux | disable swap
-  ansible.builtin.command: swapoff -a
-  changed_when: false
-
-- name: Linux | disable swap in fstab
-  ansible.builtin.replace:
-    path: /etc/fstab
-    regexp: "^.*swap.*$"
-    replace: ""
-    backup: true
