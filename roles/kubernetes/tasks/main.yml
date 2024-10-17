@@ -23,13 +23,8 @@
 - name: Kubernetes | install
   when: kubernetes_install
   block:
-    - name: Linux | modify kernel parameters
+    - name: Kubernetes > System | Update
       ansible.builtin.import_tasks: 040-system.yml
-
-    - name: Kubernetes | set node name
-      when: kubernetes_node == ""
-      ansible.builtin.set_fact:
-        kubernetes_node: "{{ ansible_facts.hostname }}"
 
     - name: Kubernetes | setup
       when: not kubernetes__present

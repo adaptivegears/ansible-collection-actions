@@ -1,5 +1,5 @@
 ---
-kubernetes_node: ""
+kubernetes_node: "{{ lookup('ansible.builtin.env', 'DEBIAN_HOSTNAME') }}"
 kubernetes_install: "{{ lookup('ansible.builtin.env', 'KUBERNETES_INSTALL', default=true) | bool}}"
 kubernetes_token: "{{ lookup('ansible.builtin.env', 'KUBERNETES_TOKEN', default='') | mandatory }}"
 kubernetes_labels: "{{ lookup('ansible.builtin.env', 'KUBERNETES_LABELS', default=[]) }}"

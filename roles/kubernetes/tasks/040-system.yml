@@ -1,4 +1,10 @@
 ---
+- name: Kubernetes > System | Set node name
+  when: kubernetes_node == ""
+  ansible.builtin.set_fact:
+    kubernetes_node: "{{ ansible_facts.hostname }}"
+
+
 - name: Kubernetes > System | Get public IP
   ansible.builtin.set_fact:
     kubernetes__public_ip: "{{ lookup('ansible.builtin.file', '/var/lib/instance-metadata/ipv4-public-ingress') }}"
