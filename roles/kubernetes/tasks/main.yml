@@ -48,7 +48,7 @@
 
         - name: Istio | setup
           when: kubernetes_role == 'server'
-          ansible.builtin.import_tasks: 060-istio.yml
+          ansible.builtin.import_tasks: 600-istio.yml
 
         - name: Kubernetes | set state to present
           ansible.builtin.set_fact:
