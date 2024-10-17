@@ -79,19 +79,6 @@
     group: root
     mode: 0644
 
-# curl ifconfig.me
-# curl icanhazip.com
-# dig +short @ns1-1.akamaitech.net ANY whoami.akamai.net
-# dig +short TXT o-o.myaddr.l.google.com @ns1.google.com
-# stun stun.l.google.com:19302
-
-# - name: Kubernetes | set configuration for public ip
-#   when: not kubernetes_public_ip
-#   community.general.dig:
-#     query: "o-o.myaddr.l.google.com"
-#     server: "ns1.google.com"
-#   register: kubernetes__public_ip
-
 - name: Kubernetes | set configuration for servicelb
   when: kubernetes_public_ip
   ansible.builtin.template:

@@ -1,35 +1,35 @@
 ---
-- name: Debian | Set MOTD
+- name: Debian > MOTD | Set
   ansible.builtin.copy:
     content: "{{ lookup('file', 'motd.txt') }}"
     dest: /etc/motd
 
-- name: Debian | Configure locales
+- name: Debian > Locale | Configure
   block:
-    - name: Debian | Generate {{ debian_locale }} locale
+    - name: Debian > Locale | Generate {{ debian_locale }}
       community.general.locale_gen:
         name: "{{ debian_locale }}"
         state: present
 
-    - name: Debian | Set default locale
+    - name: Debian > Locale | Set default
       ansible.builtin.copy:
         content: |
           LANG={{ debian_locale }}
         dest: /etc/default/locale
 
-- name: Debian | Configure time
+- name: Debian > Time | Configure
   block:
-    - name: Debian | Set timezone
+    - name: Debian > Time | Set TZ
       community.general.timezone:
         name: "{{ debian_timezone }}"
 
-    - name: Debian | Use systemd-timesyncd
+    - name: Debian > Time | Enable systemd-timesyncd
       ansible.builtin.systemd_service:
         name: systemd-timesyncd
         state: started
         enabled: true
 
-    - name: Debian | Set timesyncd configuration
+    - name: Debian > Time | Set NTP
       ansible.builtin.copy:
         content: |
           [Time]
@@ -37,15 +37,15 @@
         dest: /etc/systemd/timesyncd.conf
       notify: Restart systemd-timesyncd
 
-- name: Debian | Configure DNS using systemd-resolved
+- name: Debian > DNS | Configure
   block:
-    - name: Debian | Use systemd-resolved
+    - name: Debian > DNS | Enable systemd-resolved
       ansible.builtin.systemd_service:
         name: systemd-resolved
         state: started
         enabled: true
 
-    - name: Debian | Set DNS servers
+    - name: Debian > DNS | Set DNS servers
       ansible.builtin.copy:
         content: |
           [Resolve]
@@ -57,9 +57,9 @@
         dest: /etc/systemd/resolved.conf
       notify: Restart systemd-resolved
 
-- name: Debian | Configure "debian" user
+- name: Debian > User | Configure
   block:
-    - name: Debian | Create "debian" user
+    - name: Debian > User | Create user
       ansible.builtin.user:
         name: "{{ debian_user }}"
         state: present
@@ -68,7 +68,7 @@
         create_home: true
         home: "{{ debian_user_home }}"
 
-    - name: Debian | Add "debian" user to sudoers
+    - name: Debian > User | Grant sudo
       ansible.builtin.copy:
         dest: /etc/sudoers.d/{{ debian_user }}
         content: "{{ debian_user }} ALL=(ALL) NOPASSWD:ALL"
