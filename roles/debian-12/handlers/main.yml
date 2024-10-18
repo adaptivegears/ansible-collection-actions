@@ -4,7 +4,7 @@
     name: systemd-timesyncd
     state: restarted
 
-- name: Restart systemd-resolved
+- name: Debian > DNS | Restart
   ansible.builtin.systemd_service:
     name: systemd-resolved
     state: restarted
