@@ -52,7 +52,7 @@
       register: debian__resolvconf
 
     - name: Debian > DNS | Remove /etc/resolv.conf
-      when: debian__resolvconf.stat.exists and debian__resolvconf.stat.type == 'file'
+      when: debian__resolvconf.stat.exists and debian__resolvconf.stat.isreg
       ansible.builtin.file:
         path: /etc/resolv.conf
         state: absent
