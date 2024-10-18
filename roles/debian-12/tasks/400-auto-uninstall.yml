@@ -44,7 +44,17 @@
 
 - name: Debian > Packages | Get packages to autoremove
   ansible.builtin.set_fact:
-    debian__pkgs_absent: "{{ (debian__pkgs_absent | intersect(debian__pkgs_present.stdout_lines)) | unique | sort }}"
+    debian__pkgs_absent: >-
+      {{
+        (
+          debian__pkgs_absent
+          | intersect(debian__pkgs_present.stdout_lines)
+          | reject('match', '^linux-image-.*')
+          | reject('match', '^linux-headers-.*')
+          | unique
+          | sort
+        )
+      }}
 
 - name: Debian > Packages | Display packages to remove
   ansible.builtin.debug:
