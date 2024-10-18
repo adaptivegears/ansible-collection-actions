@@ -1,41 +1,41 @@
 ---
-- name: Debian | Ensure the system is running Debian 12
+- name: Debian > Prerequisites | Assert distribution and architecture
   ansible.builtin.assert:
     that:
       - ansible_distribution == "Debian"
       - ansible_distribution_major_version == "12"
     fail_msg: "This role is only supported on Debian 12"
 
-- name: Debian | Ensure the architecture is supported
+- name: Debian > Prerequisites | Assert architecture
   ansible.builtin.assert:
     that:
       - ansible_architecture == "x86_64"
     fail_msg: "This role is only supported on amd64 (x86_64) architecture"
 
-- name: Debian | Use minimal packages
+- name: Debian > APT | Set minimal packages
   when: debian_minimal
   ansible.builtin.set_fact:
     debian_packages: "{{ debian_packages | difference(debian_packages_minimal) }}"
 
-- name: Debian | Configure APT repositories
+- name: Debian > APT | Update cache
   block:
-    - name: Debian | Configure sources.list to default
+    - name: Debian > APT | Use default repositories
       ansible.builtin.copy:
         content: "{{ lookup('file', 'sources.list') }}"
         dest: /etc/apt/sources.list
       register: debian__repos
 
-    - name: Debian | Update APT cache
+    - name: Debian > APT | Update
       when: debian__repos is changed
       ansible.builtin.apt:
         update_cache: true
 
-- name: Debian | Update the APT package cache
+- name: Debian > APT | Update
   ansible.builtin.apt:
     update_cache: true
     cache_valid_time: 3600
 
-- name: Debian | Perform a distribution upgrade via APT
+- name: Debian > APT | Upgrade
   ansible.builtin.apt:
     upgrade: dist
     autoremove: true
