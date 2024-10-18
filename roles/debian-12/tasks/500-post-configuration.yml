@@ -50,7 +50,6 @@
       ansible.builtin.file:
         src: /run/systemd/resolve/stub-resolv.conf
         dest: /etc/resolv.conf
-        mode: '0644'
         owner: root
         group: root
         state: link
