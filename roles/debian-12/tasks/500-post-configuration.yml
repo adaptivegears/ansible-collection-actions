@@ -46,6 +46,16 @@
       with_fileglob:
         - /etc/systemd/resolved.conf.d/*
 
+    - name: Debian > DNS | Symlink stub-resolv.conf
+      ansible.builtin.file:
+        src: /run/systemd/resolve/stub-resolv.conf
+        dest: /etc/resolv.conf
+        mode: '0644'
+        owner: root
+        group: root
+        state: link
+      notify: Debian > DNS | Restart
+
     - name: Debian > DNS | Enable systemd-resolved
       ansible.builtin.systemd_service:
         name: systemd-resolved
