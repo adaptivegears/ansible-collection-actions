@@ -22,3 +22,11 @@
     mode: '0644'
     owner: root
     group: root
+
+- name: Kubernetes > Metadata | Save API Server
+  ansible.builtin.copy:
+    content: "{{ kubernetes_apiserver | trim }}"
+    dest: /var/lib/instance-metadata/apiserver
+    mode: '0444'
+    owner: root
+    group: root
