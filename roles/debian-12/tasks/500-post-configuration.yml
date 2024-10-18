@@ -46,6 +46,17 @@
       with_fileglob:
         - /etc/systemd/resolved.conf.d/*
 
+    - name: Debian > DNS | Get state of /etc/resolv.conf
+      ansible.builtin.stat:
+        path: /etc/resolv.conf
+      register: debian__resolvconf
+
+    - name: Debian > DNS | Remove /etc/resolv.conf
+      when: debian__resolvconf.stat.exists and debian__resolvconf.stat.type == 'file'
+      ansible.builtin.file:
+        path: /etc/resolv.conf
+        state: absent
+
     - name: Debian > DNS | Symlink stub-resolv.conf
       ansible.builtin.file:
         src: /run/systemd/resolve/stub-resolv.conf
