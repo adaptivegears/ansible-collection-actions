@@ -24,6 +24,7 @@
     group: root
 
 - name: Kubernetes > Metadata | Save API Server
+  when: (kubernetes_apiserver | trim) | length > 0
   ansible.builtin.copy:
     content: "{{ kubernetes_apiserver | trim }}"
     dest: /var/lib/instance-metadata/kubernetes-apiserver
