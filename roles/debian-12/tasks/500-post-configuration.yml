@@ -50,8 +50,6 @@
       ansible.builtin.file:
         src: /run/systemd/resolve/stub-resolv.conf
         dest: /etc/resolv.conf
-        owner: root
-        group: root
         state: link
       notify: Debian > DNS | Restart
 
