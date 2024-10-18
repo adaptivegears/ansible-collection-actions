@@ -1,11 +1,16 @@
 ---
-- name: Tailscale | assert supported distribution
+- name: Debian > Prerequisites | Assert distribution and architecture
   ansible.builtin.assert:
     that:
-      - ansible_distribution in ['Debian']
-      - ansible_distribution_release in ['bookworm']
-    success_msg: "Supported OS detected: {{ ansible_distribution }} {{ ansible_distribution_release }}"
-    fail_msg: "Unsupported OS detected: {{ ansible_distribution }} {{ ansible_distribution_release }}"
+      - ansible_distribution == "Debian"
+      - ansible_distribution_major_version == "12"
+    fail_msg: "This role is only supported on Debian 12"
+
+- name: Debian > Prerequisites | Assert architecture
+  ansible.builtin.assert:
+    that:
+      - ansible_architecture == "x86_64"
+    fail_msg: "This role is only supported on amd64 (x86_64) architecture"
 
 - name: Tailscale > Prerequisites | Get hostname
   ansible.builtin.set_fact:

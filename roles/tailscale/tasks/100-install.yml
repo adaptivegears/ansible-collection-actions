@@ -1,42 +1,30 @@
 ---
-- name: Tailscale | update apt cache
-  ansible.builtin.apt:
-    update_cache: true
-    cache_valid_time: 3600
-
-- name: Tailscale | install dependencies
-  ansible.builtin.apt:
-    name:
-      - ca-certificates
-      - iptables
-    state: present
-
-- name: Tailscale | create download directory
+- name: Tailscale > Package | Create download directory
   ansible.builtin.file:
     path: "{{ tailscale_download_dst }}"
     state: directory
     mode: 0755
 
-- name: Tailscale | download deb package
+- name: Tailscale > Package | Download
   ansible.builtin.get_url:
     dest: "{{ tailscale_download_dst }}/tailscale_{{ tailscale_download_version }}.deb"
     url: "{{ tailscale_download_src[tailscale_download_arch] }}"
     checksum: "{{ tailscale_download_checksum[tailscale_download_arch] }}"
     mode: 0644
 
-- name: Tailscale | install deb package
+- name: Tailscale > Package | Install
   ansible.builtin.apt:
     deb: "{{ tailscale_download_dst }}/tailscale_{{ tailscale_download_version }}.deb"
     state: present
   notify: Tailscale | Restart
 
-- name: Tailscale | enable systemd service
+- name: Tailscale > Systemd | Enable
   ansible.builtin.systemd:
     name: tailscaled
     enabled: true
 
-- name: Tailscale | start systemd service
-  when: tailscale_authkey | length > 0
+- name: Tailscale > Systemd | Start
+  when: (tailscale_authkey | trim) | length > 0
   ansible.builtin.systemd:
     name: tailscaled
     state: started
