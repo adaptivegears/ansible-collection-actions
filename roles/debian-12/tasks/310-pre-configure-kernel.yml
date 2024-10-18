@@ -1,19 +1,19 @@
 
-- name: Debian > Kernel | Enable ipv4 forwarding
+- name: Debian > Kernel | Enable IPv4 forwarding
   ansible.posix.sysctl:
     name: net.ipv4.ip_forward
     value: "1"
     state: present
     reload: true
 
-- name: Debian > Kernel | Enable ipv6 forwarding
+- name: Debian > Kernel | Enable IPv6 forwarding
   ansible.posix.sysctl:
     name: net.ipv6.conf.all.forwarding
     value: "1"
     state: present
     reload: true
 
-- name: Debian > Kernel | Enable ipv6 router advertisements
+- name: Debian > Kernel | Enable IPv6 router advertisements
   ansible.posix.sysctl:
     name: net.ipv6.conf.all.accept_ra
     value: "2"

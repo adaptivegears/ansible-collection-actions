@@ -22,16 +22,8 @@
       link: "/usr/sbin/ip6tables"
       path: "/usr/sbin/ip6tables-nft"
 
-- name: Debian > Pre-configure | Disable swap
-  ansible.builtin.command: swapoff -a
-  changed_when: false
-
-- name: Debian > Pre-configure | Disable swap in fstab
-  ansible.builtin.replace:
-    path: /etc/fstab
-    regexp: "^.*swap.*$"
-    replace: ""
-    backup: true
-
-- name: Debian > Pre-configure | Configure Kernel
+- name: Debian > Pre-configure | Kernel
   ansible.builtin.import_tasks: 310-pre-configure-kernel.yml
+
+- name: Debian > Pre-configure | Swap
+  ansible.builtin.import_tasks: 320-pre-configure-swap.yml
