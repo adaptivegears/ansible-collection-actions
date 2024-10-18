@@ -16,11 +16,17 @@
   ansible.builtin.copy:
     content: "{{ ansible_facts.hostname | trim }}"
     dest: /var/lib/instance-metadata/hostname
-    mode: '0644'
+    mode: '0444'
     owner: root
     group: root
 
+- name: Debian > Metadata | Get IPv4 of local traffic
+  ansible.builtin.stat:
+    path: /var/lib/instance-metadata/ipv4-private
+  register: debian__ipv4_private
+
 - name: Debian > Metadata | Save IPv4 of local traffic
+  when: not debian__ipv4_private.stat.exists
   ansible.builtin.copy:
     content: "{{ ansible_facts.default_ipv4.address | trim }}"
     dest: /var/lib/instance-metadata/ipv4-private
