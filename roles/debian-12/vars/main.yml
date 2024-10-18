@@ -87,6 +87,7 @@ debian_packages:
   - psmisc
   - lsof
   - file
+  - tree
   - readline-common
   - ncurses-bin
   - ncurses-term
@@ -187,6 +188,7 @@ debian_packages_minimal:
   # shells
   - psmisc
   - file
+  - tree
 
   # compression
   - bzip2
