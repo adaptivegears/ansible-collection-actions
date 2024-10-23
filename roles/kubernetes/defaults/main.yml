@@ -39,6 +39,7 @@ kubernetes_tailscale_authkey: >-
 kubernetes_tailscale_advertise_exit_node: "{{ (lookup('ansible.builtin.env', 'TAILSCALE_ADVERTISE_EXIT_NODE', default='') | bool) }}"
 kubernetes_tailscale_extra_args: >
   --hostname {{ lookup('ansible.builtin.file', '/var/lib/instance-metadata/hostname') }}
+  --accept-dns=false
   {% if kubernetes_tailscale_advertise_exit_node %}
   --advertise-exit-node
   {% endif %}
