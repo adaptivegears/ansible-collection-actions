@@ -47,11 +47,13 @@
       when: debian__repos is changed
       ansible.builtin.apt:
         update_cache: true
+      changed_when: false
 
 - name: Debian > APT | Update
   ansible.builtin.apt:
     update_cache: true
     cache_valid_time: 3600
+  changed_when: false
 
 - name: Debian > APT | Upgrade
   ansible.builtin.apt:
