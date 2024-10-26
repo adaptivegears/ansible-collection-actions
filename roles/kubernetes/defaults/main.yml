@@ -8,6 +8,11 @@ kubernetes_apiserver: >-
     lookup('ansible.builtin.file', '/var/lib/instance-metadata/kubernetes-apiserver', errors='ignore') or
     '127.0.0.1'
   }}
+kubernetes_datastore: >-
+  {{
+    lookup('ansible.builtin.env', 'KUBERNETES_DATASTORE') or
+    lookup('ansible.builtin.file', '/var/lib/instance-metadata/kubernetes-datastore', errors='ignore')
+  }}
 
 kubernetes_node: >-
   {{

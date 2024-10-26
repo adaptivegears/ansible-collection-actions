@@ -18,6 +18,9 @@ kubernetes_command: /usr/local/bin/k3s
 kubernetes_command_args:
   server: >
     --data-dir={{ kubernetes_path_statedir }}
+    {% if kubernetes_datastore %}
+    --datastore-endpoint={{ kubernetes_datastore }}
+    {% endif %}
     {% if kubernetes_node != "" %}
     --node-name={{ kubernetes_node }}
     {% endif %}

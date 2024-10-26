@@ -19,7 +19,8 @@
           - "  -l, --labels=LABELS       Set the labels for the node"
           - "  -n, --node=NAME           Set the name of the node"
           - "  -t, --token=TOKEN         Token for joining a cluster"
-          - "  --public-ip=IP          Set the external IP of the node"
+          - "  --datastore=DS            Set the datastore"
+          - "  --public-ip=IP            Set the external IP of the node"
           - "  --join=IP                 Join a cluster"
           - "  --pod-subnet=SUBNET       Set the pod subnet"
           - "  --service-subnet=SUBNET   Set the service subnet"
@@ -44,6 +45,7 @@
         role: "{{ COMMAND }}"
         install: "{{ install | default(i) | default(true) }}"
         token: "{{ token | default(t) | default(omit) }}"
+        datastore: "{{ datastore | default(omit) }}"
         join: "{{ join | default(j) | default(omit) }}"
         public_ip: "{{ public_ip | default(omit) }}"
         node: "{{ node | default(n) | default('') }}"
@@ -69,6 +71,8 @@
         kubernetes_token: "{{ token | default(omit) }}"
         # --join=127.0.0.1 (default: 127.0.0.1)
         kubernetes_apiserver: "{{ join | default(omit) }}"
+        # --datastore=sqlite3:///var/lib/rancher/k3s/server/db/sqlite.db
+        kubernetes_datastore: "{{ datastore | default(omit) }}"
         # --public-ip=1.1.1.1
         kubernetes_public_ip: "{{ public_ip | default(omit) }}"
         # --enable-embeddedregistry

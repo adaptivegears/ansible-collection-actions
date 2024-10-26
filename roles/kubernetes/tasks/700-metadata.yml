@@ -39,3 +39,12 @@
     mode: "0444"
     owner: root
     group: root
+
+- name: Kubernetes > Metadata | Save Datastore
+  when: (kubernetes_datastore | trim) | length > 0
+  ansible.builtin.copy:
+    content: "{{ kubernetes_datastore | trim }}"
+    dest: /var/lib/instance-metadata/kubernetes-datastore
+    mode: "0444"
+    owner: root
+    group: root
