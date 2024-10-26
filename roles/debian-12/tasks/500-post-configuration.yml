@@ -1,13 +1,17 @@
 ---
 - name: Debian > Kernel | Enable performance mode
-  ansible.builtin.shell: |
-    echo 'performance' | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
-  changed_when: false
+  ansible.builtin.cron:
+    name: "Enable performance mode"
+    special_time: reboot
+    job: >-
+      echo 'performance' | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
 
 - name: Debian > Kernel | Disable Transparent Hugepages
-  ansible.builtin.shell: |
-    echo 'madvise' | sudo tee /sys/kernel/mm/transparent_hugepage/enabled
-  changed_when: false
+  ansible.builtin.cron:
+    name: "Disable Transparent Hugepages"
+    special_time: reboot
+    job: >-
+      echo 'madvise' | sudo tee /sys/kernel/mm/transparent_hugepage/enabled
 
 - name: Debian > MOTD | Set
   ansible.builtin.copy:
