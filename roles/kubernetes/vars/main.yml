@@ -20,6 +20,7 @@ kubernetes_command_args:
     --data-dir={{ kubernetes_path_statedir }}
     {% if kubernetes_datastore %}
     --datastore-endpoint={{ kubernetes_datastore }}
+    --disable-etcd
     {% endif %}
     {% if kubernetes_node != "" %}
     --node-name={{ kubernetes_node }}
