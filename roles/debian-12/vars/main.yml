@@ -88,6 +88,7 @@ debian_packages:
   - lsof
   - file
   - tree
+  - htop
   - readline-common
   - ncurses-bin
   - ncurses-term
@@ -205,6 +206,7 @@ debian_packages_minimal:
   - stun-client
   - exip
   - media-types
+  - htop
 
   # python
   - python3-requests
