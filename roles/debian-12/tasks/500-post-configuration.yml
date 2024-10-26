@@ -1,4 +1,14 @@
 ---
+- name: Debian > Kernel | Enable performance mode
+  ansible.builtin.shell: |
+    echo 'performance' | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+  changed_when: false
+
+- name: Debian > Kernel | Disable Transparent Hugepages
+  ansible.builtin.shell: |
+    echo 'madvise' | sudo tee /sys/kernel/mm/transparent_hugepage/enabled
+  changed_when: false
+
 - name: Debian > MOTD | Set
   ansible.builtin.copy:
     content: "{{ lookup('file', 'motd.txt') }}"
