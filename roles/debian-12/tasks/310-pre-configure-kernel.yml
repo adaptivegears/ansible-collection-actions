@@ -1,3 +1,19 @@
+- name: Debian > Kernel | Enable performance mode
+  ansible.builtin.shell: |
+    echo 'performance' | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+  changed_when: false
+
+- name: Debian > Kernel | Disable Transparent Hugepages
+  ansible.builtin.shell: |
+    echo 'madvise' | sudo tee /sys/kernel/mm/transparent_hugepage/enabled
+  changed_when: false
+
+- name: Debian > Kernel | Enable task_delay
+  ansible.builtin.sysctl:
+    name: kernel.task_delayacct
+    value: "1"
+    state: present
+    reload: true
 
 - name: Debian > Kernel | Enable IPv4 forwarding
   ansible.posix.sysctl:
@@ -35,4 +51,3 @@
       value: "10"
     - name: kernel.panic_on_oops
       value: "1"
-
