@@ -1,4 +1,12 @@
 ---
+- name: K3S > Install containerd
+  ansible.builtin.apt:
+    name:
+      - containerd
+      - containernetworking-plugins
+    state: present
+    install_recommends: false
+
 - name: Install K3S
   ansible.builtin.copy:
     src: "{{ kubernetes_path_cache }}/k3s"
