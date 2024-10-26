@@ -17,7 +17,6 @@ kubernetes_download_image_registry: docker.io
 kubernetes_command: /usr/local/bin/k3s
 kubernetes_command_args:
   server: >
-    --container-runtime-endpoint=unix:///run/containerd/containerd.sock
     --data-dir={{ kubernetes_path_statedir }}
     {% if kubernetes_datastore %}
     --datastore-endpoint={{ kubernetes_datastore }}
@@ -32,7 +31,6 @@ kubernetes_command_args:
     --cluster-cidr {{ kubernetes_pod_subnet }}
     --service-cidr {{ kubernetes_service_subnet }}
   agent: >
-    --container-runtime-endpoint=/run/containerd/containerd.sock
     --data-dir={{ kubernetes_path_statedir }}
     {% if kubernetes_node != "" %}
     --node-name={{ kubernetes_node }}
