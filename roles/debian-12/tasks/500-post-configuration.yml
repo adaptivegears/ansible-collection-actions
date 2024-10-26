@@ -1,5 +1,5 @@
 ---
-- name: Debian > Kernel | Enable performance mode
+- name: Debian > Kernel | Enable Performance Mode
   ansible.builtin.cron:
     name: "Enable performance mode"
     special_time: reboot
