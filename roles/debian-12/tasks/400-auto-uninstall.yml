@@ -67,3 +67,5 @@
     state: absent
     autoremove: true
     purge: true
+  notify:
+    - Debian > System | Restart journald
