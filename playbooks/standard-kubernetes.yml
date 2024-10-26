@@ -25,6 +25,7 @@
           - "  --service-subnet=SUBNET   Set the service subnet"
           - "  --enable-embeddedregistry Enable embedded registry (default: true)"
           - "  --enable-localstorage     Enable local storage (default: false)"
+          - "  --enable-istio            Enable Istio (env: KUBERNETES_ENABLE_ISTIO, default: false)"
           - "  --tailscale=TOKEN         Enable Tailscale Integration (env: TAILSCALE_AUTHKEY)"
           - "  --tailscale-advertise-exit-node     Enable Tailscale Exit Node (env: TAILSCALE_ADVERTISE_EXIT_NODE)"
           - "Examples:"
@@ -49,6 +50,7 @@
         labels: "{{ labels | default(l) | default([]) }}"
         enable_embeddedregistry: "{{ enable_embeddedregistry | default(true) }}"
         enable_localstorage: "{{ enable_localstorage | default(false) }}"
+        enable_istio: "{{ enable_istio | default(omit) }}"
         tailscale: "{{ tailscale | default(omit) }}"
         tailscale_advertise_exit_node: "{{ tailscale_advertise_exit_node | default(omit) }}"
         pod_subnet: "{{ pod_subnet | default(omit) }}"
@@ -73,6 +75,8 @@
         kubernetes_enable_embeddedregistry: "{{ enable_embeddedregistry | default(true) }}"
         # --enable-localstorage
         kubernetes_enable_localstorage: "{{ enable_localstorage | default(false) }}"
+        # --enable-istio
+        kubernetes_enable_istio: "{{ enable_istio | default(omit) }}"
         # --enable-tailscale
         kubernetes_tailscale_authkey: "{{ tailscale | default(omit) }}"
         # --tailscale-advertise-exit-node

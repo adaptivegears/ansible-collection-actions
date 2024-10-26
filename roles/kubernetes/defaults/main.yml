@@ -25,6 +25,13 @@ kubernetes_token: >-
 
 kubernetes_enable_localstorage: false
 kubernetes_enable_embeddedregistry: true
+kubernetes_enable_istio: >-
+  {{
+    (
+      lookup('ansible.builtin.env', 'KUBERNETES_ENABLE_ISTIO', default=false) or
+      lookup('ansible.builtin.file', '/var/lib/instance-metadata/kubernetes-enable-istio', errors='ignore')
+    ) | bool
+  }}
 
 kubernetes_pod_subnet: "10.42.0.0/16"
 kubernetes_service_subnet: "10.43.0.0/16"

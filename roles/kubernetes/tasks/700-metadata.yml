@@ -4,7 +4,7 @@
   ansible.builtin.copy:
     content: "{{ kubernetes_tailscale_authkey | trim }}"
     dest: /var/lib/instance-metadata/tailscale-authkey
-    mode: '0400'
+    mode: "0400"
     owner: root
     group: root
 
@@ -19,7 +19,15 @@
   ansible.builtin.copy:
     content: "{{ tailscale__ipv4.stdout | trim }}"
     dest: /var/lib/instance-metadata/ipv4-private
-    mode: '0644'
+    mode: "0644"
+    owner: root
+    group: root
+
+- name: Kubernetes > Metadata | Save Istio Status
+  ansible.builtin.copy:
+    content: "{{ kubernetes_enable_istio | bool | ternary('true', 'false') }}"
+    dest: /var/lib/instance-metadata/kubernetes-enable-istio
+    mode: "0444"
     owner: root
     group: root
 
@@ -28,6 +36,6 @@
   ansible.builtin.copy:
     content: "{{ kubernetes_apiserver | trim }}"
     dest: /var/lib/instance-metadata/kubernetes-apiserver
-    mode: '0444'
+    mode: "0444"
     owner: root
     group: root

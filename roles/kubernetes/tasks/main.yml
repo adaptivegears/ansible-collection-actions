@@ -47,7 +47,7 @@
             state: started
 
         - name: Kubernetes > Istio | Install
-          when: kubernetes_role == 'server'
+          when: kubernetes_role == 'server' and kubernetes_enable_istio
           ansible.builtin.import_tasks: 600-istio.yml
 
         - name: Kubernetes | set state to present
