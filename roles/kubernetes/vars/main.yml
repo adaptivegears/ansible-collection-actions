@@ -17,7 +17,7 @@ kubernetes_download_image_registry: docker.io
 kubernetes_command: /usr/local/bin/k3s
 kubernetes_command_args:
   server: >
-    --container-runtime-endpoint=/run/containerd/containerd.sock
+    --container-runtime-endpoint=unix:///run/containerd/containerd.sock
     --data-dir={{ kubernetes_path_statedir }}
     {% if kubernetes_datastore %}
     --datastore-endpoint={{ kubernetes_datastore }}
