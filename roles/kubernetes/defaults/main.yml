@@ -29,7 +29,7 @@ kubernetes_token: >-
   }}
 
 kubernetes_enable_localstorage: false
-kubernetes_enable_embeddedregistry: true
+kubernetes_enable_embeddedregistry: false
 kubernetes_enable_istio: >-
   {{
     (
