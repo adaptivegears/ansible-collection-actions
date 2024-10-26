@@ -20,10 +20,6 @@
   vars:
     debian_provisioned_date: "{{ ansible_date_time.date }}"
 
-  ansible.builtin.copy:
-    content: "{{ lookup('file', 'motd.txt') }}"
-    dest: /etc/motd
-
 - name: Debian > Locale | Configure
   block:
     - name: Debian > Locale | Generate {{ debian_locale }}
