@@ -46,10 +46,6 @@
             timeout: 90
             state: started
 
-        - name: Kubernetes > Istio | Install
-          when: kubernetes_role == 'server' and kubernetes_enable_istio
-          ansible.builtin.import_tasks: 600-istio.yml
-
         - name: Kubernetes | set state to present
           ansible.builtin.set_fact:
             kubernetes__present: true

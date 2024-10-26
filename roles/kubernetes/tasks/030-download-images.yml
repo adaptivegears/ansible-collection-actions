@@ -15,6 +15,3 @@
 
 - name: Download | image of pause
   ansible.builtin.import_tasks: downloads/images/pause.yml
-
-- name: Download | image of etcd
-  ansible.builtin.import_tasks: downloads/images/istio.yml

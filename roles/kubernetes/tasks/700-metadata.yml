@@ -26,14 +26,6 @@
         owner: root
         group: root
 
-- name: Kubernetes > Metadata | Save Istio Status
-  ansible.builtin.copy:
-    content: "{{ kubernetes_enable_istio | bool | ternary('true', 'false') }}"
-    dest: /var/lib/instance-metadata/kubernetes-enable-istio
-    mode: "0444"
-    owner: root
-    group: root
-
 - name: Kubernetes > Metadata | Save API Server
   when: (kubernetes_apiserver | trim) | length > 0
   ansible.builtin.copy:

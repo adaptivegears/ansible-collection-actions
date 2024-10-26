@@ -10,7 +10,6 @@ kubernetes_version_kubectl: 1.30.3
 kubernetes_version_helm: 3.15.0
 kubernetes_version_skopeo: 1.14.3
 kubernetes_version_gatewayapi: 1.1.0
-kubernetes_version_istio: 1.23.0
 
 kubernetes_download_image_registry: docker.io
 
