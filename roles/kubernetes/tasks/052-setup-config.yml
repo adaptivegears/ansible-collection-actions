@@ -60,15 +60,6 @@
     group: root
     mode: 0644
 
-- name: Kubernetes | set configuration for embedded registry
-  when: kubernetes_role == 'server' and kubernetes_enable_embeddedregistry
-  ansible.builtin.template:
-    src: config.yaml.d/020-embedded-registry.yaml.j2
-    dest: "{{ kubernetes_path_confdir }}/config.yaml.d/020-embedded-registry.yaml"
-    owner: root
-    group: root
-    mode: 0644
-
 - name: Kubernetes | get configuration for node labels (when string)
   when: (kubernetes_labels | type_debug) == 'string'
   ansible.builtin.set_fact:
