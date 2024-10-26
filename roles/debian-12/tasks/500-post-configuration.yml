@@ -14,6 +14,12 @@
       echo 'madvise' | sudo tee /sys/kernel/mm/transparent_hugepage/enabled
 
 - name: Debian > MOTD | Set
+  ansible.builtin.template:
+    src: motd.txt.j2
+    dest: /etc/motd
+  vars:
+    debian_provisioned_date: "{{ ansible_date_time.date }}"
+
   ansible.builtin.copy:
     content: "{{ lookup('file', 'motd.txt') }}"
     dest: /etc/motd
