@@ -1,5 +1,5 @@
 ---
-- name: Kubernetes | create directory for addons
+- name: Kubernetes > Addon | Create manifests directory
   ansible.builtin.file:
     path: "{{ kubernetes_path_statedir }}/server/manifests"
     state: directory
@@ -7,7 +7,7 @@
     group: root
     mode: 0644
 
-- name: Kubernetes | enable gateway api
+- name: Kubernetes > Addon | Enable Gateway API
   ansible.builtin.get_url:
     url: "https://github.com/kubernetes-sigs/gateway-api/releases/download/v{{ kubernetes_version_gatewayapi }}/experimental-install.yaml"
     dest: "{{ kubernetes_path_statedir }}/server/manifests/gatewayapi.yaml"
@@ -15,8 +15,7 @@
     group: root
     mode: 0644
 
-- name: Kubernetes | enable local-storage
-  when: not kubernetes_enable_localstorage
+- name: Kubernetes > Addon | Disable local-storage
   ansible.builtin.file:
     path: "{{ kubernetes_path_statedir }}/server/manifests/local-storage.yaml.skip"
     state: touch
