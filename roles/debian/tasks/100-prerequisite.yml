@@ -1,7 +1,7 @@
 ---
-- name: STD-001 | Debian > Prerequisites
+- name: (STD-001) Debian > Prerequisites
   block:
-    - name: STD-001 | Debian > Prerequisites | Assert distribution and architecture
+    - name: (STD-001) Debian > Prerequisites | Assert distribution and architecture
       ansible.builtin.assert:
         that:
           - ansible_distribution == "Debian"

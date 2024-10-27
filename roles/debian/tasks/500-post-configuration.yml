@@ -85,7 +85,7 @@
         name: systemd-resolved
         state: started
         enabled: true
-      notify: Debian > DNS | Restart
+      notify: Debian | Restart systemd-resolved
 
     - name: Debian > DNS | Set DNS servers
       ansible.builtin.copy:
@@ -100,12 +100,33 @@
           DNSStubListener=yes
         dest: /etc/systemd/resolved.conf
       register: debian__resolvconf
-      notify: Debian > DNS | Restart
+      notify: Debian | Restart systemd-resolved
 
-    - name: Debian > DNS | Restart
+    - name: Debian | Restart systemd-resolved
       when: debian__resolver.changed or debian__resolvconf.changed
       ansible.builtin.systemd:
         name: systemd-resolved
+        state: restarted
+
+    - name: (STD-003) Debian > DNS | Disable DHCP DNS
+      ansible.builtin.copy:
+        content: |
+          [Match]
+          Name=*
+          [Network]
+          DHCP=yes
+          [DHCP]
+          UseDNS=false
+        dest: /etc/systemd/network/99-default.network
+      register: debian__networkd
+      notify:
+        - Debian | Restart systemd-resolved
+        - Debian | Restart systemd-networkd
+
+    - name: Debian | Restart systemd-networkd
+      when: debian__networkd.changed
+      ansible.builtin.systemd:
+        name: systemd-networkd
         state: restarted
 
 - name: Debian > User | Configure

@@ -9,7 +9,12 @@
     name: systemd-journald
     state: restarted
 
-- name: Debian > DNS | Restart
+- name: Debian | Restart systemd-resolved
   ansible.builtin.systemd_service:
     name: systemd-resolved
+    state: restarted
+
+- name: Debian | Restart systemd-networkd
+  ansible.builtin.systemd_service:
+    name: systemd-networkd
     state: restarted
