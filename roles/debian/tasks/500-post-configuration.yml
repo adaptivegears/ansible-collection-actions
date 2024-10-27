@@ -96,6 +96,8 @@
           Cache=yes
           CacheFromLocalhost=no
           CacheMaxAge=60
+          Domains=~.
+          DNSStubListener=yes
         dest: /etc/systemd/resolved.conf
       register: debian__resolvconf
       notify: Debian > DNS | Restart
