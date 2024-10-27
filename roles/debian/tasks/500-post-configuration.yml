@@ -113,9 +113,10 @@
           [Match]
           Name=*
           [Network]
-          DHCP=true
+          DHCP=yes
+          SetHostname=no
           [DHCP]
-          UseDNS=false
+          UseDNS=no
         dest: /etc/systemd/network/99-default.network
         mode: "0644"
       register: debian__networkd
