@@ -123,7 +123,7 @@
       ansible.builtin.copy:
         content: |
           [Match]
-          Name=*
+          Name={{ ansible_default_ipv4.interface }}
           Type=ether
           [Network]
           DHCP=yes
