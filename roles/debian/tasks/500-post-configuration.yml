@@ -120,6 +120,7 @@
           Name=*
           [Network]
           DHCP=yes
+          UseDomains=false
           [DHCPv4]
           UseHostname=false
           UseDNS=false
