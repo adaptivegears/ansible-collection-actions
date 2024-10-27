@@ -117,6 +117,7 @@
           [DHCP]
           UseDNS=false
         dest: /etc/systemd/network/99-default.network
+        mode: "0644"
       register: debian__networkd
       notify:
         - Debian | Restart systemd-resolved
