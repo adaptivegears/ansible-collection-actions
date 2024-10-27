@@ -114,7 +114,7 @@
           [Match]
           Name=*
           [Network]
-          DHCP=yes
+          DHCP=true
           [DHCP]
           UseDNS=false
         dest: /etc/systemd/network/99-default.network
