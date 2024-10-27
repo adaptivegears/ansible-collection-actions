@@ -13,6 +13,12 @@
     job: >-
       echo 'madvise' | sudo tee /sys/kernel/mm/transparent_hugepage/enabled
 
+- name: Debian > Network | Enable systemd-networkd
+  ansible.builtin.systemd_service:
+    name: systemd-networkd
+    state: started
+    enabled: true
+
 - name: Debian > MOTD | Set
   ansible.builtin.template:
     src: motd.txt.j2
