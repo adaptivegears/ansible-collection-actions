@@ -118,6 +118,7 @@
         content: |
           [Match]
           Name=*
+          Type=ether
           [Network]
           DHCP=yes
           UseDomains=false
