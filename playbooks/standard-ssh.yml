@@ -51,7 +51,7 @@
           {%- if user is string and user | length > 0 -%}
           {{ [dict(["name", "key"] | zip(user | split(':'))) | combine({"state": "allow"})] }}
           {%- elif user_key is string and user_key | length > 0 -%}
-          {{ [dict(["name", "key"] | zip(["debian", user_key])) | combine({"state": "allow"})] }}
+          {{ [dict(["name", "key"] | zip(["admin", user_key])) | combine({"state": "allow"})] }}
           {%- else -%}
           {{ [] }}
           {%- endif -%}
@@ -64,7 +64,6 @@
           {{ [] }}
           {%- endif -%}
       ignore_errors: true
-
 
     - name: Include SSH role
       ansible.builtin.include_role:
