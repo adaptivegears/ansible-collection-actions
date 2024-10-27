@@ -120,9 +120,17 @@
           Name=*
           [Network]
           DHCP=yes
-          SetHostname=no
-          [DHCP]
-          UseDNS=no
+          [DHCPv4]
+          UseHostname=false
+          UseDNS=false
+          UseDomains=false
+          UseNTP=false
+          UseTimezone=false
+          [DHCPv6]
+          UseHostname=false
+          UseDNS=false
+          UseDomains=false
+          UseNTP=false
         dest: /etc/systemd/network/99-default.network
         mode: "0644"
       register: debian__networkd
