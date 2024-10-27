@@ -1,8 +1,19 @@
 ---
-- name: Debian > Pre-configure | Set hostname
+- name: Debian > Pre-configure | Hostname
   when: debian_hostname | length > 0
-  ansible.builtin.hostname:
-    name: "{{ debian_hostname }}"
+
+  block:
+    - name: Debian > Pre-configure | Set Hostname
+      ansible.builtin.hostname:
+        name: "{{ debian_hostname }}"
+
+    - name: Debian > Pre-configure | Set Hosts
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        line: "{{ item }}"
+      with_items:
+        - "127.0.0.1  localhost {{ debian_hostname }}"
+        - "::1        localhost {{ debian_hostname }}"
 
 - name: Debian > Pre-configure | Get installed packages
   ansible.builtin.package_facts:
