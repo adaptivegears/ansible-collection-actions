@@ -51,6 +51,3 @@
     set
     --accept-dns={{ tailscale_accept_dns | ternary('true', 'false') }}
   changed_when: false
-
-- name: Tailscale | Metadata
-  ansible.builtin.import_tasks: 300-metadata.yml
