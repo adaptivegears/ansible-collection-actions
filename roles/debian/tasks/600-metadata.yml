@@ -37,6 +37,7 @@
 - name: Debian > Metadata | Get IPv4 of outbound traffic
   ansible.builtin.shell: |
     exip -p 4
+  changed_when: false
   register: debian__ipv4_public_egress
 
 - name: Debian > Metadata | Save IPv4 of outbound traffic
