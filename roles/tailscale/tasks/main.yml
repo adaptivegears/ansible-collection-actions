@@ -8,5 +8,7 @@
   ansible.builtin.include_tasks: 100-install.yml
 
 - name: Tailscale | Configure
-  when: tailscale_authkey or tailscale_advertise_exit_node
   ansible.builtin.include_tasks: 200-configuration.yml
+
+- name: Tailscale | Metadata
+  ansible.builtin.import_tasks: 300-metadata.yml
