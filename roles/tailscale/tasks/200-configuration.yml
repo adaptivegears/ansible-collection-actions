@@ -37,25 +37,25 @@
       changed_when: true
 
 - name: Tailscale > Config | Advertise exit node
-  when: tailscale_advertise_exit_node != ''
+  when: (tailscale_advertise_exit_node | trim) | length > 0
   ansible.builtin.command: >-
     tailscale
     --socket {{ tailscale_socket }}
     set
-    --advertise-exit-node={{ tailscale_advertise_exit_node | bool | ternary('true', 'false') }}
+    --advertise-exit-node={{ (tailscale_advertise_exit_node | trim) | bool | ternary('true', 'false') }}
 
 - name: Tailscale > Config | Accept DNS
-  when: tailscale_accept_dns != ''
+  when: (tailscale_accept_dns | trim) | length > 0
   ansible.builtin.command: >-
     tailscale
     --socket {{ tailscale_socket }}
     set
-    --accept-dns={{ tailscale_accept_dns | bool | ternary('true', 'false') }}
+    --accept-dns={{ (tailscale_accept_dns | trim) | bool | ternary('true', 'false') }}
 
 - name: Tailscale > Config | Accept routes
-  when: tailscale_accept_routes != ''
+  when: (tailscale_accept_routes | trim) | length > 0
   ansible.builtin.command: >-
     tailscale
     --socket {{ tailscale_socket }}
     set
-    --accept-routes={{ tailscale_accept_routes | bool | ternary('true', 'false') }}
+    --accept-routes={{ (tailscale_accept_routes | trim) | bool | ternary('true', 'false') }}

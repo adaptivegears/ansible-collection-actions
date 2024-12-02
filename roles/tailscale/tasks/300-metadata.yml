@@ -1,6 +1,6 @@
 ---
 - name: Tailscale > Metadata | Save Tailscale Auth Key
-  when: tailscale_authkey | length > 0
+  when: (tailscale_authkey | trim) | length > 0
   ansible.builtin.copy:
     content: "{{ tailscale_authkey | trim }}"
     dest: /var/lib/instance-metadata/tailscale-authkey
