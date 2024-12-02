@@ -27,8 +27,8 @@
           - "  --tailscale=TOKEN         Enable Tailscale Integration (env: TAILSCALE_AUTHKEY)"
           - "  --tailscale-advertise-exit-node     Enable Tailscale Exit Node (env: TAILSCALE_ADVERTISE_EXIT_NODE)"
           - "Examples:"
-          - "  $ getansible.sh -- @adaptivegears/standard-kubernetes server -t secret"
-          - "  $ getansible.sh -- @adaptivegears/standard-kubernetes agent -t secret -j 127.0.0.1"
+          - "  $ bootstrap -- @adaptivegears/standard-kubernetes server -t secret"
+          - "  $ bootstrap -- @adaptivegears/standard-kubernetes agent -t secret -j 127.0.0.1"
 
     - name: Assert Arguments
       ansible.builtin.assert:

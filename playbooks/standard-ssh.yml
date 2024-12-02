@@ -21,7 +21,7 @@
           - "  --enable-tcp-forwarding          Enable TCP forwarding (requires --enable-hardening)"
           - "  --enable-root-login              Enable root login (requires --enable-hardening)"
           - "Examples:"
-          - "  $ getansible.sh -- @adaptivegears/standard-ssh -U andreygubarev"
+          - "  $ bootstrap -- @adaptivegears/standard-ssh -U andreygubarev"
 
     - name: Process aliases
       ansible.builtin.set_fact:

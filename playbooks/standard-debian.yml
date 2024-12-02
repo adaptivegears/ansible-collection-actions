@@ -18,8 +18,8 @@
           - "  -p, --prune         Prune unused packages (DEBIAN_PRUNE, default: false)"
           - "  --hostname          Set hostname (env: HOSTNAME)"
           - "Examples:"
-          - "  $ getansible.sh -- @adaptivegears/standard-debian"
-          - "  $ getansible.sh -- @adaptivegears/standard-debian --prune"
+          - "  $ bootstrap -- @adaptivegears/standard-debian"
+          - "  $ bootstrap -- @adaptivegears/standard-debian --prune"
 
     - name: Parse Arguments
       ansible.builtin.set_fact:
