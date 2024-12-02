@@ -38,6 +38,7 @@
         msg: "Role is required and must be either 'server' or 'agent'"
 
     - name: Parse Arguments
+      ignore_errors: true
       ansible.builtin.set_fact:
         role: "{{ COMMAND }}"
         install: "{{ install | default(i) | default(true) }}"
@@ -53,6 +54,7 @@
         service_subnet: "{{ service_subnet | default(omit) }}"
 
     - name: Prepare Variables
+      ignore_errors: true
       ansible.builtin.set_fact:
         kubernetes_role: "{{ role }}"
         # -n or --node

@@ -24,14 +24,15 @@
           - "  $ bootstrap -- @adaptivegears/standard-ssh -U andreygubarev"
 
     - name: Parse Arguments
+      ignore_errors: true
       ansible.builtin.set_fact:
         install: "{{ install | default(i) | default(omit) }}"
         user: "{{ user | default(u) | default(omit) }}"
         group: "{{ group | default(g) | default(omit) }}"
         user_key: "{{ user_key | default(U) | default(omit) }}"
-      ignore_errors: true
 
     - name: Prepare Variables
+      ignore_errors: true
       ansible.builtin.set_fact:
         # -i or --install
         ssh_openssh: "{{ install | default(omit) }}"
@@ -63,7 +64,6 @@
           {%- else -%}
           {{ [] }}
           {%- endif -%}
-      ignore_errors: true
 
     - name: Include Role
       ansible.builtin.include_role:

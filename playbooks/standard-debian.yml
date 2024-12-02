@@ -22,20 +22,20 @@
           - "  $ bootstrap -- @adaptivegears/standard-debian --prune"
 
     - name: Parse Arguments
+      ignore_errors: true
       ansible.builtin.set_fact:
         install: "{{ install | default(i) | default(omit) }}"
         minimal: "{{ minimal | default(m) | default(omit) }}"
         prune: "{{ prune | default(p) | default(omit) }}"
-        hostname: "{{ hostname | default(h) | default(omit) }}"
-      ignore_errors: true
+        hostname: "{{ hostname | default(omit) }}"
 
     - name: Prepare Variables
+      ignore_errors: true
       ansible.builtin.set_fact:
         debian_install: "{{ install | default(omit) }}"
         debian_minimal: "{{ minimal | default(omit) }}"
         debian_prune: "{{ prune | default(omit) }}"
         debian_hostname: "{{ hostname | default(omit) }}"
-      ignore_errors: true
 
     - name: Include Role
       ansible.builtin.include_role:
