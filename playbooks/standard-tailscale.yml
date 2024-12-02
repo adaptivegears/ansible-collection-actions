@@ -34,11 +34,11 @@
         # -t or --token
         tailscale_authkey: "{{ token | default(omit) }}"
         # --advertise-exit-node
-        tailscale_advertise_exit_node: "{{ advertise_exit_node | default(omit) }}"
+        tailscale_advertise_exit_node: "{{ advertise_exit_node | default('') }}"
         # --accept-dns
-        tailscale_accept_dns: "{{ accept_dns | default(omit) }}"
+        tailscale_accept_dns: "{{ accept_dns | default('') }}"
         # --accept-routes
-        tailscale_accept_routes: "{{ accept_routes | default(omit) }}"
+        tailscale_accept_routes: "{{ accept_routes | default('') }}"
       ignore_errors: true
 
     - name: Include Role
