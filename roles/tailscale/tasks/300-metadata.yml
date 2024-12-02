@@ -4,7 +4,7 @@
   ansible.builtin.copy:
     content: "{{ tailscale_authkey | trim }}"
     dest: /var/lib/instance-metadata/tailscale-authkey
-    mode: '0400'
+    mode: "0400"
     owner: root
     group: root
 
@@ -19,6 +19,6 @@
   ansible.builtin.copy:
     content: "{{ tailscale__ipv4.stdout | trim }}"
     dest: /var/lib/instance-metadata/ipv4-private
-    mode: '0644'
+    mode: "0644"
     owner: root
     group: root

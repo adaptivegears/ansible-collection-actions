@@ -8,7 +8,7 @@
   ansible.builtin.file:
     path: /var/lib/instance-metadata/
     state: directory
-    mode: '0755'
+    mode: "0755"
     owner: root
     group: root
 
@@ -16,7 +16,7 @@
   ansible.builtin.copy:
     content: "{{ ansible_facts.hostname | trim }}"
     dest: /var/lib/instance-metadata/hostname
-    mode: '0444'
+    mode: "0444"
     owner: root
     group: root
 
@@ -30,13 +30,14 @@
   ansible.builtin.copy:
     content: "{{ ansible_facts.default_ipv4.address | trim }}"
     dest: /var/lib/instance-metadata/ipv4-private
-    mode: '0644'
+    mode: "0644"
     owner: root
     group: root
 
 - name: Debian > Metadata | Save IPv4 of outbound traffic
   ansible.builtin.shell: |
     exip -p 4 > /var/lib/instance-metadata/ipv4-public-egress
+    chmod 0644 /var/lib/instance-metadata/ipv4-public-egress
   args:
     creates: /var/lib/instance-metadata/ipv4-public-egress
 
@@ -49,7 +50,6 @@
       rm -f /var/lib/instance-metadata/ipv4-public-ingress
       touch /var/lib/instance-metadata/ipv4-public-ingress
     fi
+    chmod 0644 /var/lib/instance-metadata/ipv4-public-ingress
   args:
     creates: /var/lib/instance-metadata/ipv4-public-ingress
-
-
