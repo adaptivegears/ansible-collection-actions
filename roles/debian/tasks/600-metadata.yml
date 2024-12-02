@@ -34,12 +34,18 @@
     owner: root
     group: root
 
-- name: Debian > Metadata | Save IPv4 of outbound traffic
+- name: Debian > Metadata | Get IPv4 of outbound traffic
   ansible.builtin.shell: |
-    exip -p 4 > /var/lib/instance-metadata/ipv4-public-egress
-    chmod 0644 /var/lib/instance-metadata/ipv4-public-egress
-  args:
-    creates: /var/lib/instance-metadata/ipv4-public-egress
+    exip -p 4
+  register: debian__ipv4_public_egress
+
+- name: Debian > Metadata | Save IPv4 of outbound traffic
+  ansible.builtin.copy:
+    content: "{{ debian__ipv4_public_egress.stdout | trim }}"
+    dest: /var/lib/instance-metadata/ipv4-public-egress
+    mode: "0644"
+    owner: root
+    group: root
 
 - name: Debian > Metadata | Save IPv4 of inbound traffic
   ansible.builtin.shell: |
