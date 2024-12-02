@@ -15,12 +15,14 @@
           - "  -i, --install             Install Tailscale Client (default: true)"
           - "  -t, --token               Tailscale AuthKey"
           - "  --advertise-exit-node     Advertise Exit Node"
+          - "  --accept-dns              Accept DNS"
 
     - name: Parse Arguments
       ansible.builtin.set_fact:
         install: "{{ install | default(i) | default(omit) }}"
         token: "{{ token | default(t) | default(omit) }}"
         advertise_exit_node: "{{ advertise_exit_node | default(omit) }}"
+        accept_dns: "{{ accept_dns | default(omit) }}"
       ignore_errors: true
 
     - name: Prepare Arguments
@@ -31,6 +33,8 @@
         tailscale_authkey: "{{ token | default(omit) }}"
         # --advertise-exit-node
         tailscale_advertise_exit_node: "{{ advertise_exit_node | default(omit) }}"
+        # --accept-dns
+        tailscale_accept_dns: "{{ accept_dns | default(omit) }}"
       ignore_errors: true
 
     - name: Include Role

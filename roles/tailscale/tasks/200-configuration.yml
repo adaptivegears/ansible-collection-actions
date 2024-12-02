@@ -40,9 +40,16 @@
   ansible.builtin.command: >-
     tailscale
     --socket {{ tailscale_socket }}
-    up
-    --hostname {{ tailscale__hostname }}
+    set
     --advertise-exit-node={{ tailscale_advertise_exit_node | ternary('true', 'false') }}
+  changed_when: false
+
+- name: Tailscale > Config | Accept DNS
+  ansible.builtin.command: >-
+    tailscale
+    --socket {{ tailscale_socket }}
+    set
+    --accept-dns={{ tailscale_accept_dns | ternary('true', 'false') }}
   changed_when: false
 
 - name: Tailscale | Metadata
