@@ -16,6 +16,7 @@
           - "  -t, --token               Tailscale AuthKey"
           - "  --advertise-exit-node     Advertise Exit Node"
           - "  --accept-dns              Accept DNS"
+          - "  --accept-routes           Accept Routes"
 
     - name: Parse Arguments
       ansible.builtin.set_fact:
@@ -23,6 +24,7 @@
         token: "{{ token | default(t) | default(omit) }}"
         advertise_exit_node: "{{ advertise_exit_node | default(omit) }}"
         accept_dns: "{{ accept_dns | default(omit) }}"
+        accept_routes: "{{ accept_routes | default(omit) }}"
       ignore_errors: true
 
     - name: Prepare Arguments
@@ -35,6 +37,8 @@
         tailscale_advertise_exit_node: "{{ advertise_exit_node | default(omit) }}"
         # --accept-dns
         tailscale_accept_dns: "{{ accept_dns | default(omit) }}"
+        # --accept-routes
+        tailscale_accept_routes: "{{ accept_routes | default(omit) }}"
       ignore_errors: true
 
     - name: Include Role
