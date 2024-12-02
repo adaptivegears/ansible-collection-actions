@@ -29,7 +29,7 @@
         hostname: "{{ hostname | default(h) | default(omit) }}"
       ignore_errors: true
 
-    - name: Prepare Arguments
+    - name: Prepare Variables
       ansible.builtin.set_fact:
         debian_install: "{{ install | default(omit) }}"
         debian_minimal: "{{ minimal | default(omit) }}"

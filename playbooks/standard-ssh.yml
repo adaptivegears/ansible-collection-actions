@@ -23,7 +23,7 @@
           - "Examples:"
           - "  $ bootstrap -- @adaptivegears/standard-ssh -U andreygubarev"
 
-    - name: Process aliases
+    - name: Parse Arguments
       ansible.builtin.set_fact:
         install: "{{ install | default(i) | default(omit) }}"
         user: "{{ user | default(u) | default(omit) }}"
@@ -31,7 +31,7 @@
         user_key: "{{ user_key | default(U) | default(omit) }}"
       ignore_errors: true
 
-    - name: Process variables
+    - name: Prepare Variables
       ansible.builtin.set_fact:
         # -i or --install
         ssh_openssh: "{{ install | default(omit) }}"
@@ -65,6 +65,6 @@
           {%- endif -%}
       ignore_errors: true
 
-    - name: Include SSH role
+    - name: Include Role
       ansible.builtin.include_role:
         name: ssh

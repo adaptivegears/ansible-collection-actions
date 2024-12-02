@@ -27,7 +27,7 @@
         accept_routes: "{{ accept_routes | default(omit) }}"
       ignore_errors: true
 
-    - name: Prepare Arguments
+    - name: Prepare Variables
       ansible.builtin.set_fact:
         # -i or --install
         tailscale_install: "{{ install | default(omit) }}"
