@@ -4,9 +4,12 @@
   connection: local
   gather_facts: true
   become: true
+  vars:
+    usage: "{{ help | default(h) | default(false) }}"
   tasks:
     - name: Print Usage
-      failed_when: help | default(h) | default(false)
+      when: usage
+      failed_when: usage
       ansible.builtin.debug:
         msg:
           - "Usage: @adaptivegears/standard-kubernetes"
