@@ -1,4 +1,8 @@
 ---
-- name: Kubernetes > Prerequisites > Debug
-  ansible.builtin.debug:
-    msg: "Kubernetes > Prerequisites > Debug"
+- name: Kubernetes > Prerequisites > Containerd
+  ansible.builtin.apt:
+    name:
+      - containerd
+      - containernetworking-plugins
+    state: present
+    install_recommends: false
