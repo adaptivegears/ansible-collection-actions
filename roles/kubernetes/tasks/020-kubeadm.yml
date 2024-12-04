@@ -18,6 +18,8 @@
       - kubeadm
       - kubectl
       - kubelet
+      - ebtables
+      - ethtool
 
 - name: Kubernetes > Prerequisites > Kubeadm > Hold
   ansible.builtin.dpkg_selections:
