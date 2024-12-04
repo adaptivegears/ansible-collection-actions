@@ -13,3 +13,7 @@
       ansible.builtin.debug:
         msg:
           - "Usage: @adaptivegears/standard-kubernetes"
+
+    - name: Include Role
+      ansible.builtin.include_role:
+        name: kubernetes
