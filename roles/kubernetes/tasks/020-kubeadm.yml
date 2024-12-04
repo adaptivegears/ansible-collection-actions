@@ -1,20 +1,14 @@
 ---
-- name: Kubernetes > Prerequisites > Kubeadm > Apt
-  ansible.builtin.apt:
-    state: present
-    install_recommends: false
-    update_cache: true
-    cache_valid_time: 3600
-    name:
-      - apt-transport-https
-      - curl
-      - gnupg
-      - lsb-release
-
 - name: Kubernetes > Prerequisites > Kubeadm > Create Keyrings Directory
   ansible.builtin.file:
     state: directory
-    mode: "0755"
     owner: root
     group: root
+    mode: "0755"
     path: /etc/apt/keyrings
+
+- name: Kubernetes > Prerequisites > Kubeadm > Add Key
+  ansible.builtin.apt_key:
+    state: present
+    dest: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+    url: "https://pkgs.k8s.io/core:/stable:/v{{ kubernetes_version }}/deb/Release.key"
