@@ -1,9 +1,0 @@
-{% if kubernetes__present %}
-server: https://{{ kubernetes_apiserver }}:6443
-{% else %}
-{% if kubernetes_apiserver == '127.0.0.1' %}
-cluster-init: true
-{% else %}
-server: https://{{ kubernetes_apiserver }}:6443
-{% endif %}
-{% endif %}

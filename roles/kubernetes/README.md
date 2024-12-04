@@ -1,1 +1,0 @@
-# `adaptivegears.kubernetes`
