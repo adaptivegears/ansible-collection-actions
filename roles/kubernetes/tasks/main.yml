@@ -1,4 +1,4 @@
 ---
 - name: Kubernetes > Prerequisites
   ansible.builtin.include_tasks:
-    file: 000-prerequisites.yaml
+    file: 000-prerequisites.yml

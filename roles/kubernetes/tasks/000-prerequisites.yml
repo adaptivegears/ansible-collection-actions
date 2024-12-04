@@ -1,0 +1,4 @@
+---
+- name: Kubernetes > Prerequisites > Containerd
+  ansible.builtin.include_tasks:
+    file: 010-containerd.yml
