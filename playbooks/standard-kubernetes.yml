@@ -1,0 +1,12 @@
+---
+- name: Standard Kubernetes
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  become: true
+  tasks:
+    - name: Print Usage
+      failed_when: help | default(h) | default(false)
+      ansible.builtin.debug:
+        msg:
+          - "Usage: @adaptivegears/standard-kubernetes"
