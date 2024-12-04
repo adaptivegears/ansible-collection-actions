@@ -21,3 +21,7 @@
 - name: Kubernetes > Prerequisites > Kubeadm
   ansible.builtin.include_tasks:
     file: 020-kubeadm.yml
+
+- name: Kubernetes > Prerequisites > Kernel
+  ansible.builtin.include_tasks:
+    file: 030-kernel.yml
