@@ -10,3 +10,20 @@
     state: present
     filename: kubernetes
     repo: "deb [signed-by=/etc/apt/trusted.gpg.d/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v{{ kubernetes_version }}/deb/ /"
+
+- name: Kubernetes > Prerequisites > Kubeadm > Install
+  ansible.builtin.apt:
+    state: present
+    name:
+      - kubeadm
+      - kubectl
+      - kubelet
+
+- name: Kubernetes > Prerequisites > Kubeadm > Hold
+  ansible.builtin.dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  loop:
+    - kubeadm
+    - kubectl
+    - kubelet
