@@ -35,11 +35,11 @@
         # -t or --token
         tailscale_authkey: "{{ token | default(omit) }}"
         # --advertise-exit-node
-        tailscale_advertise_exit_node: "{{ advertise_exit_node | default('') }}"
+        tailscale_advertise_exit_node: "{{ advertise_exit_node | default(omit) }}"
         # --accept-dns
-        tailscale_accept_dns: "{{ accept_dns | default('') }}"
+        tailscale_accept_dns: "{{ accept_dns | default(omit) }}"
         # --accept-routes
-        tailscale_accept_routes: "{{ accept_routes | default('') }}"
+        tailscale_accept_routes: "{{ accept_routes | default(omit) }}"
 
     - name: Include Role
       ansible.builtin.include_role:
