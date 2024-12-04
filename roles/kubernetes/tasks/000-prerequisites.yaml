@@ -2,4 +2,3 @@
 - name: Kubernetes > Prerequisites > Debug
   ansible.builtin.debug:
     msg: "Kubernetes > Prerequisites > Debug"
-  verbosity: 1
