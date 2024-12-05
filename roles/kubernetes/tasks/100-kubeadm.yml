@@ -17,7 +17,7 @@
       kind: InitConfiguration
 
       localAPIEndpoint:
-        advertiseAddress: "{{ lookup('ansible.builtin.file', '/var/lib/instance-metadata/ipv4-public-ingress') }}"
+        advertiseAddress: "{{ lookup('ansible.builtin.file', '/var/lib/instance-metadata/ipv4-public') }}"
         bindPort: 6443
 
       nodeRegistration:
@@ -31,7 +31,7 @@
       clusterName: "{{ kubernetes_name }}"
       kubernetesVersion: "{{ kubernetes_version_full }}"
 
-      controlPlaneEndpoint: "{{ lookup('ansible.builtin.file', '/var/lib/instance-metadata/ipv4-public-ingress') }}:6443"
+      controlPlaneEndpoint: "{{ lookup('ansible.builtin.file', '/var/lib/instance-metadata/ipv4-public') }}:6443"
       networking:
         dnsDomain: cluster.local
         podSubnet: "{{ kubernetes_pod_subnet }}"
