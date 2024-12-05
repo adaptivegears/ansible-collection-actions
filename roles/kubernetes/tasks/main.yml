@@ -27,3 +27,7 @@
 - name: Kubernetes > Kubectl
   ansible.builtin.include_tasks:
     file: 120-kubectl.yml
+
+- name: Kubernetes > Cilium
+  ansible.builtin.include_tasks:
+    file: 200-cilium.yml
