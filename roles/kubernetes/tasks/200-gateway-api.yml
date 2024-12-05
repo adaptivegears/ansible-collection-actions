@@ -1,5 +1,5 @@
 ---
-- name: Kubernetes > Gateway API > Download
+- name: Kubernetes > Gateway API > Download {{ manifest.name }}
   ansible.builtin.get_url:
     dest: "/tmp/{{ manifest.file }}"
     owner: root
@@ -7,7 +7,7 @@
     mode: "0644"
     url: "{{ manifest.url }}"
 
-- name: Kubernetes > Gateway API > Install
+- name: Kubernetes > Gateway API > Install {{ manifest.name }}
   ansible.builtin.shell: >-
     KUBECONFIG=/etc/kubernetes/admin.conf
     kubectl apply -f /tmp/{{ manifest.file }}
