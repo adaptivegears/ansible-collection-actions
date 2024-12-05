@@ -3,11 +3,13 @@
   ansible.builtin.include_tasks:
     file: 000-prerequisites.yml
 
-- name: Kubernetes > Kubelet > Gather Service Facts
-  ansible.builtin.service_facts:
+- name: Kubernetes > Kubelet > Get Status
+  register: kubernetes__kubelet_conf
+  ansible.builtin.stat:
+    path: /etc/kubernetes/kubelet.conf
 
 - name: Kubernetes > Kubeadm
-  when: ansible_facts.services['kubelet.service'].state != 'running'
+  when: not kubernetes__kubelet_conf.stat.exists
   ansible.builtin.include_tasks:
     file: 100-kubeadm.yml
 
