@@ -18,9 +18,9 @@
   ansible.builtin.include_tasks:
     file: 010-containerd.yml
 
-- name: Kubernetes > Prerequisites > Kubeadm
+- name: Kubernetes > Prerequisites > Packages
   ansible.builtin.include_tasks:
-    file: 020-kubeadm.yml
+    file: 020-packages.yml
 
 - name: Kubernetes > Prerequisites > Kernel
   ansible.builtin.include_tasks:

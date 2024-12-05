@@ -1,17 +1,17 @@
 ---
-- name: Kubernetes > Prerequisites > Kubeadm > Add Key
+- name: Kubernetes > Prerequisites > Packages > Add Key
   ansible.builtin.apt_key:
     state: present
     keyring: /etc/apt/trusted.gpg.d/kubernetes-apt-keyring.gpg
     url: "https://pkgs.k8s.io/core:/stable:/v{{ kubernetes_version }}/deb/Release.key"
 
-- name: Kubernetes > Prerequisites > Kubeadm > Add Repository
+- name: Kubernetes > Prerequisites > Packages > Add Repository
   ansible.builtin.apt_repository:
     state: present
     filename: kubernetes
     repo: "deb [signed-by=/etc/apt/trusted.gpg.d/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v{{ kubernetes_version }}/deb/ /"
 
-- name: Kubernetes > Prerequisites > Kubeadm > Install
+- name: Kubernetes > Prerequisites > Packages > Install
   ansible.builtin.apt:
     state: present
     name:
@@ -21,7 +21,7 @@
       - ebtables
       - ethtool
 
-- name: Kubernetes > Prerequisites > Kubeadm > Hold
+- name: Kubernetes > Prerequisites > Packages > Hold
   ansible.builtin.dpkg_selections:
     name: "{{ item }}"
     selection: hold
