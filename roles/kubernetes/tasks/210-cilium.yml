@@ -9,7 +9,7 @@
     kubeconfig: /etc/kubernetes/admin.conf
     name: cilium
     chart_ref: cilium/cilium
-    chart_version: "1.16.4"
+    chart_version: "{{ kubernetes_cilium_version }}"
     release_namespace: kube-system
     wait: true
     values:
@@ -22,7 +22,7 @@
         rollOutPods: true
       rollOutCiliumPods: true
 
-      k8sServiceHost: "{{ lookup('file', '/var/lib/instance-metadata/ipv4-public') | trim }}"
+      k8sServiceHost: "{{ kubernetes_ipv4_public }}"
       k8sServicePort: 6443
 
       kubeProxyReplacement: true

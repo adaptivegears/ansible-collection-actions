@@ -1,3 +1,5 @@
 ---
 kubernetes_version: "1.31"
 kubernetes_version_full: "{{ kubernetes_version }}.3"
+
+kubernetes_cilium_version: "1.16.4"

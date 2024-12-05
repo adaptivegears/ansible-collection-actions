@@ -17,15 +17,15 @@
       kind: InitConfiguration
 
       localAPIEndpoint:
-        advertiseAddress: "{{ lookup('file', '/var/lib/instance-metadata/ipv4-public') | trim }}"
+        advertiseAddress: "{{ kubernetes_ipv4_public }}"
         bindPort: 6443
 
       nodeRegistration:
-        name: "{{ lookup('file', '/var/lib/instance-metadata/hostname') | trim }}"
+        name: "{{ kubernetes_hostname }}"
         criSocket: unix:///var/run/containerd/containerd.sock
         kubeletExtraArgs:
           - name: "node-ip"
-            value: "{{ lookup('file', '/var/lib/instance-metadata/ipv4-private') | trim }}"
+            value: "{{ kubernetes_ipv4_private }}"
           - name: "node-labels"
             value: "topology.kubernetes.io/region={{ kubernetes_topology_region }},topology.kubernetes.io/zone={{ kubernetes_topology_zone }}"
 
@@ -38,7 +38,7 @@
       clusterName: "{{ kubernetes_name }}"
       kubernetesVersion: "{{ kubernetes_version_full }}"
 
-      controlPlaneEndpoint: "{{ lookup('file', '/var/lib/instance-metadata/ipv4-public') | trim }}:6443"
+      controlPlaneEndpoint: "{{ kubernetes_ipv4_public }}:6443"
       networking:
         dnsDomain: cluster.local
         podSubnet: "{{ kubernetes_subnet_pod }}"
