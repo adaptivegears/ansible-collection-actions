@@ -11,3 +11,11 @@ debian_topology_region: >-
       lookup('file', '/var/lib/instance-metadata/topology-region', errors='ignore')
     )
   }}
+
+debian_topology_zone: >-
+  {{
+    (
+      lookup('env', 'DEBIAN_TOPOLOGY_ZONE') or
+      lookup('file', '/var/lib/instance-metadata/topology-zone', errors='ignore')
+    )
+  }}
