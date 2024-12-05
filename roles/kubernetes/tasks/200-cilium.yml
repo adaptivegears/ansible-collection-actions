@@ -16,3 +16,12 @@
       k8sServiceHost: "{{ ansible_default_ipv4.address }}"
       k8sServicePort: 6443
       kubeProxyReplacement: true
+
+      image:
+        useDigest: false
+      operator:
+        image:
+          useDigest: false
+        replicas: 1
+        rollOutPods: true
+      rollOutCiliumPods: true
