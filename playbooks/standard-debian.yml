@@ -4,13 +4,6 @@
   connection: local
   gather_facts: true
   become: true
-  vars:
-    help: "{{ help | default(h) | default(false) }}"
-    debian_install: "{{ install | default(i) | default(omit) }}"
-    debian_minimal: "{{ minimal | default(m) | default(omit) }}"
-    debian_prune: "{{ prune | default(p) | default(omit) }}"
-    debian_hostname: "{{ hostname | default(omit) }}"
-    debian_topology_region: "{{ topology_region | default(omit) }}"
   tasks:
     - name: Print Usage
       when: help | default(h) | default(false)
@@ -28,6 +21,15 @@
           - "Examples:"
           - "  $ bootstrap -- @adaptivegears/standard-debian"
           - "  $ bootstrap -- @adaptivegears/standard-debian --prune"
+
+    - name: Set Facts
+      ignore_errors: true
+      ansible.builtin.set_fact:
+        debian_install: "{{ install | default(i) | default(omit) }}"
+        debian_minimal: "{{ minimal | default(m) | default(omit) }}"
+        debian_prune: "{{ prune | default(p) | default(omit) }}"
+        debian_hostname: "{{ hostname | default(omit) }}"
+        debian_topology_region: "{{ topology_region | default(omit) }}"
 
     - name: Include Role
       ansible.builtin.include_role:
