@@ -21,7 +21,3 @@
 - name: Kubernetes > Prerequisites > Packages
   ansible.builtin.include_tasks:
     file: 020-packages.yml
-
-- name: Kubernetes > Prerequisites > Kernel
-  ansible.builtin.include_tasks:
-    file: 030-kernel.yml

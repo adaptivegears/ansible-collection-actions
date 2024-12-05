@@ -5,20 +5,6 @@
     state: present
     reload: true
 
-- name: Debian > Kernel | Enable IPv4 forwarding
-  ansible.posix.sysctl:
-    name: net.ipv4.ip_forward
-    value: "1"
-    state: present
-    reload: true
-
-- name: Debian > Kernel | Enable IPv6 forwarding
-  ansible.posix.sysctl:
-    name: net.ipv6.conf.all.forwarding
-    value: "1"
-    state: present
-    reload: true
-
 - name: Debian > Kernel | Enable IPv6 router advertisements
   ansible.posix.sysctl:
     name: net.ipv6.conf.all.accept_ra
@@ -41,3 +27,38 @@
       value: "10"
     - name: kernel.panic_on_oops
       value: "1"
+
+- name: Debian > Kernel > Modules for Bridge Networking
+  community.general.modprobe:
+    state: present
+    persistent: present
+    name: "{{ item }}"
+  with_items:
+    - overlay
+    - br_netfilter
+
+- name: Debian > Kernel > Sysctl for Bridge Networking
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    reload: true
+  with_items:
+    - name: "net.bridge.bridge-nf-call-iptables"
+      value: "1"
+    - name: "net.bridge.bridge-nf-call-ip6tables"
+      value: "1"
+
+- name: Debian > Kernel > Enable IPv4 forwarding
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: "1"
+    state: present
+    reload: true
+
+- name: Debian > Kernel > Enable IPv6 forwarding
+  ansible.posix.sysctl:
+    name: net.ipv6.conf.all.forwarding
+    value: "1"
+    state: present
+    reload: true
