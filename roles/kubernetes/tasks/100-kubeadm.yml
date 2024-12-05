@@ -12,6 +12,7 @@
     group: root
     mode: "0644"
     content: |
+      ---
       apiVersion: kubeadm.k8s.io/v1beta4
       kind: InitConfiguration
 
@@ -20,6 +21,7 @@
         bindPort: 6443
       nodeRegistration:
         criSocket: unix:///var/run/containerd/containerd.sock
+
       ---
       apiVersion: kubeadm.k8s.io/v1beta4
       kind: ClusterConfiguration
@@ -31,6 +33,7 @@
         dnsDomain: cluster.local
         serviceSubnet: "10.96.0.0/12"
         podSubnet: "10.100.0.1/24"
+
       ---
       apiVersion: kubelet.config.k8s.io/v1beta1
       kind: KubeletConfiguration
