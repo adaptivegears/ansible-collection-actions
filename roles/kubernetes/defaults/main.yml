@@ -1,3 +1,19 @@
 kubernetes_name: "kubernetes"
 kubernetes_pod_subnet: "10.100.0.0/16"
 kubernetes_service_subnet: "10.110.0.0/16"
+
+kubernetes_topology_region: >-
+  {{
+    (
+      lookup('env', 'KUBERNETES_TOPOLOGY_REGION') or
+      lookup('file', '/var/lib/instance-metadata/topology-region', errors='ignore')
+    )
+  }}
+
+kubernetes_topology_zone: >-
+  {{
+    (
+      lookup('env', 'KUBERNETES_TOPOLOGY_ZONE') or
+      lookup('file', '/var/lib/instance-metadata/topology-zone', errors='ignore')
+    )
+  }}

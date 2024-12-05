@@ -6,7 +6,16 @@ debian_hostname: "{{ (lookup('env', 'DEBIAN_HOSTNAME') or lookup('ansible.builti
 
 debian_topology_region: >-
   {{
-    lookup('env', 'DEBIAN_TOPOLOGY_REGION') | default(
-      lookup('file', '/var/lib/instance-metadata/topology-region', errors='ignore') | default(omit)
-    ) | mandatory
+    (
+      lookup('env', 'DEBIAN_TOPOLOGY_REGION') or
+      lookup('file', '/var/lib/instance-metadata/topology-region', errors='ignore')
+    )
+  }}
+
+debian_topology_zone: >-
+  {{
+    (
+      lookup('env', 'DEBIAN_TOPOLOGY_ZONE') or
+      lookup('file', '/var/lib/instance-metadata/topology-zone', errors='ignore')
+    )
   }}

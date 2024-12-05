@@ -83,3 +83,12 @@
     group: root
     content: |
       {{ debian_topology_region }}
+
+- name: Debian > Metadata > Topology > Zone
+  ansible.builtin.copy:
+    dest: /var/lib/instance-metadata/topology-zone
+    mode: "0444"
+    owner: root
+    group: root
+    content: |
+      {{ debian_topology_zone }}
