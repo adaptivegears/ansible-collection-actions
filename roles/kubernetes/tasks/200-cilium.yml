@@ -1,10 +1,10 @@
 ---
-- name: Kubernete > Cilium > Add Helm Repository
+- name: Kubernetes > Cilium > Add Helm Repository
   kubernetes.core.helm_repository:
     name: cilium
     repo_url: https://helm.cilium.io/
 
-- name: Kubernete > Cilium > Install
+- name: Kubernetes > Cilium > Install
   kubernetes.core.helm:
     kubeconfig: /etc/kubernetes/admin.conf
     name: cilium
