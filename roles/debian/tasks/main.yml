@@ -1,6 +1,7 @@
 ---
-- name: Debian | Prerequisite
-  ansible.builtin.import_tasks: 100-prerequisite.yml
+- name: Debian > Prerequisites
+  ansible.builtin.include_tasks:
+    file: 000-prerequisites.yml
 
 - name: Debian | Auto Install
   when: debian_install
