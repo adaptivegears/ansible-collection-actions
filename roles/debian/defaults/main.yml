@@ -8,6 +8,6 @@ debian_topology_region: >-
   {{
     (
       lookup('env', 'DEBIAN_TOPOLOGY_REGION') or
-      lookup('ansible.builtin.file', '/var/lib/instance-metadata/topology-region', errors='ignore')
+      lookup('file', '/var/lib/instance-metadata/topology-region', errors='ignore')
     ) | mandatory
   }}
