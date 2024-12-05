@@ -13,6 +13,13 @@
   ansible.builtin.include_tasks:
     file: 100-kubeadm.yml
 
+- name: Kubernetes > Kubelet > Wait for Kubernetes API
+  ansible.builtin.wait_for:
+    host: "{{ ansible_default_ipv4.address }}"
+    port: 6443
+    delay: 5
+    timeout: 300
+
 - name: Kubernetes > Kubelet
   ansible.builtin.include_tasks:
     file: 110-kubelet.yml

@@ -42,10 +42,3 @@
     cmd: |
       kubeadm init --config /etc/kubernetes/kubeadm-config.yaml
   changed_when: false
-
-- name: Kubernetes > Kubeadm > Wait for Kubernetes API
-  ansible.builtin.wait_for:
-    host: "{{ ansible_default_ipv4.address }}"
-    port: 6443
-    delay: 5
-    timeout: 300
