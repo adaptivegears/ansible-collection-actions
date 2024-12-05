@@ -1,63 +1,37 @@
 ---
-- name: Download Binaries
-  when: kubernetes_install
-  ansible.builtin.import_tasks: 010-download.yml
+- name: Kubernetes > Prerequisites
+  ansible.builtin.include_tasks:
+    file: 000-prerequisites.yml
 
-- name: Install Binaries
-  when: kubernetes_install
-  ansible.builtin.import_tasks: 020-install.yml
-
-- name: Kubernetes | get state
+- name: Kubernetes > Kubelet > Get Status
+  register: kubernetes__kubelet_conf
   ansible.builtin.stat:
-    path: "{{ kubernetes_path_statedir }}/server/node-token"
-  register: kubernetes__present
+    path: /etc/kubernetes/kubelet.conf
 
-- name: Kubernetes | set state
-  ansible.builtin.set_fact:
-    kubernetes__present: "{{ kubernetes__present.stat.exists }}"
+- name: Kubernetes > Kubeadm
+  when: not kubernetes__kubelet_conf.stat.exists
+  ansible.builtin.include_tasks:
+    file: 100-kubeadm.yml
 
-- name: Download Docker Images
-  when: kubernetes_install and kubernetes_role == 'server' and not kubernetes__present
-  ansible.builtin.import_tasks: 030-download-images.yml
+- name: Kubernetes > Kubelet > Wait for Readiness
+  ansible.builtin.wait_for:
+    host: "{{ ansible_default_ipv4.address }}"
+    port: 6443
+    delay: 5
+    timeout: 300
 
-- name: Kubernetes | install
-  when: kubernetes_install
-  block:
-    - name: Kubernetes > System | Update
-      ansible.builtin.import_tasks: 040-system.yml
+- name: Kubernetes > Kubelet
+  ansible.builtin.include_tasks:
+    file: 110-kubelet.yml
 
-    - name: Kubernetes | setup
-      when: not kubernetes__present
-      block:
-        - name: Kubernetes | assert role configuration
-          when: kubernetes_role == 'agent'
-          ansible.builtin.assert:
-            that:
-              - kubernetes_apiserver != '127.0.0.1'
-            msg: "Agent role requires an API server to join"
+- name: Kubernetes > Kubectl
+  ansible.builtin.include_tasks:
+    file: 120-kubectl.yml
 
-        - name: Kubernetes | setup
-          ansible.builtin.import_tasks: 050-setup.yml
+- name: Kubernetes > Gateway API
+  ansible.builtin.include_tasks:
+    file: 200-gateway-api.yml
 
-        - name: Kubernetes | wait for readiness
-          ansible.builtin.wait_for:
-            host: "{{ kubernetes_apiserver }}"
-            port: 6443
-            timeout: 90
-            state: started
-
-        - name: Kubernetes | set state to present
-          ansible.builtin.set_fact:
-            kubernetes__present: true
-
-    - name: Kubernetes | configure
-      when: kubernetes__present
-      block:
-        - name: Kubernetes | configuration
-          ansible.builtin.import_tasks: 052-setup-config.yml
-
-        - name: Systemd | service state
-          ansible.builtin.import_tasks: 053-setup-systemd.yml
-
-- name: Kubernetes | Metadata
-  ansible.builtin.import_tasks: 700-metadata.yml
+- name: Kubernetes > Cilium
+  ansible.builtin.include_tasks:
+    file: 210-cilium.yml

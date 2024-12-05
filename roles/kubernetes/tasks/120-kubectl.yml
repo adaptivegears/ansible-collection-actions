@@ -1,0 +1,17 @@
+---
+- name: Kubernetes > Kubectl > Kube Config
+  ansible.builtin.file:
+    state: directory
+    owner: admin
+    group: admin
+    mode: "0755"
+    path: /home/admin/.kube
+
+- name: Kubernetes > Kubectl > Copy Config
+  ansible.builtin.copy:
+    dest: /home/admin/.kube/config
+    owner: admin
+    group: admin
+    mode: "0600"
+    src: /etc/kubernetes/admin.conf
+    remote_src: true

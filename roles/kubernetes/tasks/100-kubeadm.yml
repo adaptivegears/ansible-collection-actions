@@ -1,0 +1,50 @@
+---
+- name: Kubernetes > Kubeadm > Pull Kubernetes Images
+  ansible.builtin.shell:
+    cmd: |
+      kubeadm config images pull
+  changed_when: false
+
+- name: Kubernetes > Kubeadm > Configure
+  ansible.builtin.copy:
+    dest: /etc/kubernetes/kubeadm-config.yaml
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      ---
+      apiVersion: kubeadm.k8s.io/v1beta4
+      kind: InitConfiguration
+
+      localAPIEndpoint:
+        advertiseAddress: "{{ ansible_default_ipv4.address }}"
+        bindPort: 6443
+      nodeRegistration:
+        criSocket: unix:///var/run/containerd/containerd.sock
+
+      ---
+      apiVersion: kubeadm.k8s.io/v1beta4
+      kind: ClusterConfiguration
+      clusterName: "{{ kubernetes_name }}"
+      kubernetesVersion: "{{ kubernetes_version_full }}"
+
+      controlPlaneEndpoint: "{{ ansible_default_ipv4.address }}:6443"
+      networking:
+        dnsDomain: cluster.local
+        podSubnet: "{{ kubernetes_pod_subnet }}"
+        serviceSubnet: "{{ kubernetes_service_subnet }}"
+
+      ---
+      apiVersion: kubelet.config.k8s.io/v1beta1
+      kind: KubeletConfiguration
+
+      cgroupDriver: systemd
+      nodeIP: "{{ ansible_default_ipv4.address }},{{ ansible_default_ipv4.address }}"
+
+- name: Kubernetes > Kubeadm > Initialize
+  ansible.builtin.shell:
+    cmd: >-
+      kubeadm init
+      --config /etc/kubernetes/kubeadm-config.yaml
+      --skip-phases=addon/kube-proxy
+  changed_when: false
