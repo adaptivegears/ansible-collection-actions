@@ -29,6 +29,9 @@
         rollOutPods: true
       rollOutCiliumPods: true
 
+      # https://docs.cilium.io/en/stable/network/servicemesh/gateway-api/gateway-api/
+      nodePort:
+        enabled: true
       gatewayAPI:
         enabled: true
         hostNetwork:
