@@ -7,7 +7,7 @@
   ansible.builtin.service_facts:
 
 - name: Kubernetes > Kubeadm
-  when: ansible_facts.services['kubelet'].state != 'running'
+  when: ansible_facts.services['kubelet.service'].state != 'running'
   ansible.builtin.include_tasks:
     file: 100-kubeadm.yml
 
