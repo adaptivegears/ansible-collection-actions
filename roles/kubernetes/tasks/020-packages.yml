@@ -1,15 +1,27 @@
 ---
-- name: Kubernetes > Prerequisites > Packages > Add Key
+- name: Kubernetes > Prerequisites > Packages > Add Kubernetes Key
   ansible.builtin.apt_key:
     state: present
     keyring: /etc/apt/trusted.gpg.d/kubernetes-apt-keyring.gpg
     url: "https://pkgs.k8s.io/core:/stable:/v{{ kubernetes_version }}/deb/Release.key"
 
-- name: Kubernetes > Prerequisites > Packages > Add Repository
+- name: Kubernetes > Prerequisites > Packages > Add Kubernetes Repository
   ansible.builtin.apt_repository:
     state: present
     filename: kubernetes
     repo: "deb [signed-by=/etc/apt/trusted.gpg.d/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v{{ kubernetes_version }}/deb/ /"
+
+- name: Kubernetes > Prerequisites > Packages > Add Helm Key
+  ansible.builtin.apt_key:
+    state: present
+    keyring: /etc/apt/trusted.gpg.d/helm-apt-keyring.gpg
+    url: "https://baltocdn.com/helm/signing.asc"
+
+- name: Kubernetes > Prerequisites > Packages > Add Helm Repository
+  ansible.builtin.apt_repository:
+    state: present
+    filename: helm
+    repo: "deb [signed-by=/etc/apt/trusted.gpg.d/helm-apt-keyring.gpg] https://baltocdn.com/helm/stable/debian/ all main"
 
 - name: Kubernetes > Prerequisites > Packages > Install
   ansible.builtin.apt:
@@ -21,6 +33,7 @@
       - kubelet
       - ebtables
       - ethtool
+      - helm
 
 - name: Kubernetes > Prerequisites > Packages > Hold
   ansible.builtin.dpkg_selections:
