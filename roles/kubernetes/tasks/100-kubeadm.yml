@@ -17,13 +17,17 @@
       kind: InitConfiguration
 
       localAPIEndpoint:
-        advertiseAddress: "{{ lookup('ansible.builtin.file', '/var/lib/instance-metadata/ipv4-public') }}"
+        advertiseAddress: "{{ lookup('ansible.builtin.file', '/var/lib/instance-metadata/ipv4-public') | trim }}"
         bindPort: 6443
 
       nodeRegistration:
+        name: "{{ lookup('ansible.builtin.file', '/var/lib/instance-metadata/hostname') | trim }}"
         criSocket: unix:///var/run/containerd/containerd.sock
         kubeletExtraArgs:
-          node-ip: "{{ lookup('ansible.builtin.file', '/var/lib/instance-metadata/ipv4-private') }}"
+          node-ip: "{{ lookup('ansible.builtin.file', '/var/lib/instance-metadata/ipv4-private') | trim }}"
+
+      skipPhases:
+        - addon/kube-proxy
 
       ---
       apiVersion: kubeadm.k8s.io/v1beta4
@@ -31,7 +35,7 @@
       clusterName: "{{ kubernetes_name }}"
       kubernetesVersion: "{{ kubernetes_version_full }}"
 
-      controlPlaneEndpoint: "{{ lookup('ansible.builtin.file', '/var/lib/instance-metadata/ipv4-public') }}:6443"
+      controlPlaneEndpoint: "{{ lookup('ansible.builtin.file', '/var/lib/instance-metadata/ipv4-public') | trim }}:6443"
       networking:
         dnsDomain: cluster.local
         podSubnet: "{{ kubernetes_pod_subnet }}"
@@ -48,5 +52,4 @@
     cmd: >-
       kubeadm init
       --config /etc/kubernetes/kubeadm-config.yaml
-      --skip-phases=addon/kube-proxy
   changed_when: false
