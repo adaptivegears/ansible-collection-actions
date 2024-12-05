@@ -74,3 +74,12 @@
       {% if (lookup('ansible.builtin.file', '/var/lib/instance-metadata/ipv4-public-ingress') | trim) == (debian__ipv4_public_egress.stdout | trim) %}
       {{ debian__ipv4_public_egress.stdout | trim }}
       {% endif %}
+
+- name: Debian > Metadata > Topology > Region
+  ansible.builtin.copy:
+    dest: /var/lib/instance-metadata/topology-region
+    mode: "0444"
+    owner: root
+    group: root
+    content: |
+      {{ debian_topology_region }}

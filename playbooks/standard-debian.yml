@@ -4,6 +4,13 @@
   connection: local
   gather_facts: true
   become: true
+  vars:
+    help: "{{ help | default(h) | default(false) }}"
+    debian_install: "{{ install | default(i) | default(omit) }}"
+    debian_minimal: "{{ minimal | default(m) | default(omit) }}"
+    debian_prune: "{{ prune | default(p) | default(omit) }}"
+    debian_hostname: "{{ hostname | default(omit) }}"
+    debian_topology_region: "{{ topology_region | default(omit) }}"
   tasks:
     - name: Print Usage
       when: help | default(h) | default(false)
@@ -17,25 +24,10 @@
           - "  -m, --minimal       Minimal installation (DEBIAN_MINIMAL, default: false)"
           - "  -p, --prune         Prune unused packages (DEBIAN_PRUNE, default: false)"
           - "  --hostname          Set hostname (env: HOSTNAME)"
+          - "  --topology-region   Set topology region (env: DEBIAN_TOPOLOGY_REGION)"
           - "Examples:"
           - "  $ bootstrap -- @adaptivegears/standard-debian"
           - "  $ bootstrap -- @adaptivegears/standard-debian --prune"
-
-    - name: Parse Arguments
-      ignore_errors: true
-      ansible.builtin.set_fact:
-        install: "{{ install | default(i) | default(omit) }}"
-        minimal: "{{ minimal | default(m) | default(omit) }}"
-        prune: "{{ prune | default(p) | default(omit) }}"
-        hostname: "{{ hostname | default(omit) }}"
-
-    - name: Prepare Variables
-      ignore_errors: true
-      ansible.builtin.set_fact:
-        debian_install: "{{ install | default(omit) }}"
-        debian_minimal: "{{ minimal | default(omit) }}"
-        debian_prune: "{{ prune | default(omit) }}"
-        debian_hostname: "{{ hostname | default(omit) }}"
 
     - name: Include Role
       ansible.builtin.include_role:
