@@ -3,10 +3,10 @@
   ansible.builtin.include_tasks:
     file: 000-prerequisites.yml
 
-- name: Kubernetes > Kubelet
-  ansible.builtin.include_tasks:
-    file: 100-kubelet.yml
-
 - name: Kubernetes > Kubeadm
   ansible.builtin.include_tasks:
-    file: 110-kubeadm.yml
+    file: 100-kubeadm.yml
+
+- name: Kubernetes > Kubelet
+  ansible.builtin.include_tasks:
+    file: 110-kubelet.yml
