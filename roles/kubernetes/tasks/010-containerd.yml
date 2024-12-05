@@ -1,11 +1,10 @@
 ---
 - name: Kubernetes > Prerequisites > Containerd
   ansible.builtin.apt:
-    name:
-      - containerd
-      - containernetworking-plugins
     state: present
     install_recommends: true
+    name:
+      - containerd
 
 - name: Kubernetes > Prerequisites > Containerd > Configure
   register: kubernetes__containerd_config
