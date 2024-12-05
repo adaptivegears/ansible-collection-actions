@@ -3,10 +3,18 @@
   ansible.builtin.include_tasks:
     file: 000-prerequisites.yml
 
+- name: Kubernetes > Kubelet > Gather Service Facts
+  ansible.builtin.service_facts:
+
 - name: Kubernetes > Kubeadm
+  when: ansible_facts.services['kubelet'].state != 'running'
   ansible.builtin.include_tasks:
     file: 100-kubeadm.yml
 
 - name: Kubernetes > Kubelet
   ansible.builtin.include_tasks:
     file: 110-kubelet.yml
+
+- name: Kubernetes > Kubectl
+  ansible.builtin.include_tasks:
+    file: 120-kubectl.yml
