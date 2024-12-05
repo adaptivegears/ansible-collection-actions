@@ -25,3 +25,10 @@
         replicas: 1
         rollOutPods: true
       rollOutCiliumPods: true
+
+- name: Kubernetes > Cilium > Wait for Readiness
+  ansible.builtin.shell: >-
+    KUBECONFIG=/etc/kubernetes/admin.conf
+    kubectl -n kube-system
+    wait --for=condition=ready pod -l app.kubernetes.io/part-of=cilium --timeout=300s
+  changed_when: false
