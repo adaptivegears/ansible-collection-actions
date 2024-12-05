@@ -1,14 +1,30 @@
 ---
-- name: Kubernetes > Gateway API > Download
-  ansible.builtin.get_url:
-    dest: "/etc/kubernetes/gatewayapi.yaml"
-    owner: root
-    group: root
-    mode: "0644"
-    url: "https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.2.1/experimental-install.yaml"
+- name: Kubernetes > Gateway API
+  block:
+    - name: Kubernetes > Gateway API > Download
+      ansible.builtin.get_url:
+        dest: "/etc/kubernetes/{{ item.file }}"
+        owner: root
+        group: root
+        mode: "0644"
+        url: "{{ item.url }}"
 
-- name: Kubernetes > Gateway API > Install
-  ansible.builtin.shell: >-
-    KUBECONFIG=/etc/kubernetes/admin.conf
-    kubectl apply -f /etc/kubernetes/gatewayapi.yaml
-  changed_when: false
+    - name: Kubernetes > Gateway API > Install
+      ansible.builtin.shell: >-
+        KUBECONFIG=/etc/kubernetes/admin.conf
+        kubectl apply -f /etc/kubernetes/{{ item.file }}
+      changed_when: false
+
+  with_items:
+    - url: https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_gatewayclasses.yaml
+      file: gatewayclasses.yaml
+    - url: https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_gateways.yaml
+      file: gateways.yaml
+    - url: https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_httproutes.yaml
+      file: httproutes.yaml
+    - url: https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_referencegrants.yaml
+      file: referencegrants.yaml
+    - url: https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_grpcroutes.yaml
+      file: grpcroutes.yaml
+    - url: https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/experimental/gateway.networking.k8s.io_tlsroutes.yaml
+      file: tlsroutes.yaml
