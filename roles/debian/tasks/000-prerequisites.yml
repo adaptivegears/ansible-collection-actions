@@ -17,7 +17,8 @@
     - name: Debian > Prerequisites > Assert > Topology > Region
       ansible.builtin.assert:
         that:
-          - ((debian_topology_region | mandatory) | trim) | length > 0
+          - debian_topology_region is defined
+          - (debian_topology_region | trim) | length > 0
         fail_msg: "Topology region is not defined"
 
 - name: Debian > APT | Reset configuration
