@@ -31,8 +31,8 @@
       controlPlaneEndpoint: "{{ ansible_default_ipv4.address }}:6443"
       networking:
         dnsDomain: cluster.local
-        serviceSubnet: "10.96.0.0/12"
-        podSubnet: "10.100.0.1/24"
+        podSubnet: "{{ kubernetes_pod_subnet }}"
+        serviceSubnet: "{{ kubernetes_service_subnet }}"
 
       ---
       apiVersion: kubelet.config.k8s.io/v1beta1
