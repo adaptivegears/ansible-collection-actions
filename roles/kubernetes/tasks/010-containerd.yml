@@ -5,7 +5,7 @@
       - containerd
       - containernetworking-plugins
     state: present
-    install_recommends: false
+    install_recommends: true
 
 - name: Kubernetes > Prerequisites > Containerd > Configure
   register: kubernetes__containerd_config
