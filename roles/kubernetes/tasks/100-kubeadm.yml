@@ -42,6 +42,8 @@
 
 - name: Kubernetes > Kubeadm > Initialize
   ansible.builtin.shell:
-    cmd: |
-      kubeadm init --config /etc/kubernetes/kubeadm-config.yaml
+    cmd: >-
+      kubeadm init
+      --config /etc/kubernetes/kubeadm-config.yaml
+      --skip-phases=addon/kube-proxy
   changed_when: false
