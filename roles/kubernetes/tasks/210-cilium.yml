@@ -32,6 +32,8 @@
         mode: kubernetes
       socketLB:
         hostNamespaceOnly: true
+      loadBalancer:
+        serviceTopology: true
 
       # https://docs.cilium.io/en/stable/network/servicemesh/gateway-api/gateway-api/
       nodePort:
