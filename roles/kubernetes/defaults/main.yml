@@ -1,2 +1,3 @@
+kubernetes_name: "kubernetes"
 kubernetes_pod_subnet: "10.100.0.1/24"
 kubernetes_service_subnet: "10.96.0.0/12"
