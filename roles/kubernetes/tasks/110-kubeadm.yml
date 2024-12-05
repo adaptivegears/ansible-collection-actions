@@ -4,7 +4,7 @@
     cmd: |
       kubeadm config images pull
   register: kubernetes__kubeadm_pull_images
-  changed_when: kubernetes__kubeadm_pull_images.stdout.find("Image pull complete") == -1
+  changed_when: false
 
 - name: Kubernetes > Kubeadm > Configure
   ansible.builtin.copy:
