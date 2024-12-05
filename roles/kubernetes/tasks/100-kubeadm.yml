@@ -39,6 +39,7 @@
       kind: KubeletConfiguration
 
       cgroupDriver: systemd
+      nodeIP: "{{ ansible_default_ipv4.address }},{{ ansible_default_ipv4.address }}"
 
 - name: Kubernetes > Kubeadm > Initialize
   ansible.builtin.shell:
