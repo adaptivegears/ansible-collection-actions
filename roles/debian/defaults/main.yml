@@ -4,10 +4,10 @@ debian_minimal: "{{ lookup('env', 'DEBIAN_MINIMAL', default='false') | bool }}"
 debian_prune: "{{ lookup('env', 'DEBIAN_PRUNE', default='false') | bool }}"
 debian_hostname: "{{ (lookup('env', 'DEBIAN_HOSTNAME') or lookup('ansible.builtin.file', '/var/lib/instance-metadata/hostname', errors='ignore')) }}"
 
-debian_topology_region: |
+debian_topology_region: >-
   {{
     (
-      (lookup('env', 'DEBIAN_TOPOLOGY_REGION') | default(omit)) or
-      (lookup('ansible.builtin.file', '/var/lib/instance-metadata/topology-region', errors='ignore') | default(omit))
+      lookup('env', 'DEBIAN_TOPOLOGY_REGION') or
+      lookup('ansible.builtin.file', '/var/lib/instance-metadata/topology-region', errors='ignore')
     ) | mandatory | trim
   }}
