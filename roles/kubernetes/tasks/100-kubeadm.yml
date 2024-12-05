@@ -26,6 +26,8 @@
         kubeletExtraArgs:
           - name: "node-ip"
             value: "{{ lookup('ansible.builtin.file', '/var/lib/instance-metadata/ipv4-private') | trim }}"
+          - name: "node-labels"
+            value: "topology.kubernetes.io/region={{ kubernetes_topology_region }},topology.kubernetes.io/zone={{ kubernetes_topology_zone }}"
 
       skipPhases:
         - addon/kube-proxy
