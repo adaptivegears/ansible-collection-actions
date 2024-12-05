@@ -3,19 +3,20 @@
   block:
     - name: Kubernetes > Gateway API > Download
       ansible.builtin.get_url:
-        dest: "/etc/kubernetes/{{ item.file }}"
+        dest: "/etc/kubernetes/{{ manifest.file }}"
         owner: root
         group: root
         mode: "0644"
-        url: "{{ item.url }}"
+        url: "{{ manifest.url }}"
 
     - name: Kubernetes > Gateway API > Install
       ansible.builtin.shell: >-
         KUBECONFIG=/etc/kubernetes/admin.conf
-        kubectl apply -f /etc/kubernetes/{{ item.file }}
+        kubectl apply -f /etc/kubernetes/{{ manifest.file }}
       changed_when: false
-
-  with_items:
+  loop_control:
+    loop_var: manifest
+  loop:
     - url: https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_gatewayclasses.yaml
       file: gatewayclasses.yaml
     - url: https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_gateways.yaml
