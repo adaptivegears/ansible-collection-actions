@@ -13,7 +13,7 @@
     release_namespace: kube-system
     wait: true
     values:
-      k8sServiceHost: "{{ ansible_default_ipv4.address }}"
+      k8sServiceHost: "{{ lookup('ansible.builtin.file', '/var/lib/instance-metadata/ipv4-public') | trim }}"
       k8sServicePort: 6443
 
       kubeProxyReplacement: true
