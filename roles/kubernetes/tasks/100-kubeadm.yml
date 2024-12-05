@@ -17,10 +17,13 @@
       kind: InitConfiguration
 
       localAPIEndpoint:
-        advertiseAddress: "{{ ansible_default_ipv4.address }}"
+        advertiseAddress: "{{ lookup('ansible.builtin.file', '/var/lib/instance-metadata/ipv4-public-ingress') }}"
         bindPort: 6443
+
       nodeRegistration:
         criSocket: unix:///var/run/containerd/containerd.sock
+        kubeletExtraArgs:
+          node-ip: "{{ lookup('ansible.builtin.file', '/var/lib/instance-metadata/ipv4-private') }}"
 
       ---
       apiVersion: kubeadm.k8s.io/v1beta4
@@ -28,7 +31,7 @@
       clusterName: "{{ kubernetes_name }}"
       kubernetesVersion: "{{ kubernetes_version_full }}"
 
-      controlPlaneEndpoint: "{{ ansible_default_ipv4.address }}:6443"
+      controlPlaneEndpoint: "{{ lookup('ansible.builtin.file', '/var/lib/instance-metadata/ipv4-public-ingress') }}:6443"
       networking:
         dnsDomain: cluster.local
         podSubnet: "{{ kubernetes_pod_subnet }}"
@@ -39,7 +42,6 @@
       kind: KubeletConfiguration
 
       cgroupDriver: systemd
-      nodeIP: "{{ ansible_default_ipv4.address }},{{ ansible_default_ipv4.address }}"
 
 - name: Kubernetes > Kubeadm > Initialize
   ansible.builtin.shell:
