@@ -1,0 +1,14 @@
+---
+- name: Kubernetes > Gateway API > Download
+  ansible.builtin.get_url:
+    dest: "/etc/kubernetes/gatewayapi.yaml"
+    owner: root
+    group: root
+    mode: "0644"
+    url: "https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.2.1/experimental-install.yaml"
+
+- name: Kubernetes > Gateway API > Install
+  ansible.builtin.shell: >-
+    KUBECONFIG=/etc/kubernetes/admin.conf
+    kubectl apply -f /etc/kubernetes/gatewayapi.yaml
+  changed_when: false

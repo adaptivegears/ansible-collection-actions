@@ -28,6 +28,10 @@
   ansible.builtin.include_tasks:
     file: 120-kubectl.yml
 
+- name: Kubernetes > Gateway API
+  ansible.builtin.include_tasks:
+    file: 200-gateway-api.yml
+
 - name: Kubernetes > Cilium
   ansible.builtin.include_tasks:
-    file: 200-cilium.yml
+    file: 210-cilium.yml
