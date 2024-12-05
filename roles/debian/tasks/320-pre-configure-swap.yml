@@ -1,9 +1,9 @@
 ---
-- name: Debian > Swap | Disable
+- name: Debian > Swap > Disable
   ansible.builtin.command: swapoff -a
   changed_when: false
 
-- name: Debian > Swap | Disable in fstab
+- name: Debian > Swap > Disable in fstab
   ansible.builtin.replace:
     path: /etc/fstab
     regexp: "^.*swap.*$"
