@@ -15,7 +15,9 @@
     values:
       k8sServiceHost: "{{ ansible_default_ipv4.address }}"
       k8sServicePort: 6443
+
       kubeProxyReplacement: true
+      routingMode: native
 
       image:
         useDigest: false
