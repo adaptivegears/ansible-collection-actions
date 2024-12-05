@@ -42,12 +42,6 @@
               - SYS_ADMIN
               - NET_BIND_SERVICE
 
-      hubble:
-        relay:
-          enabled: true
-        ui:
-          enabled: true
-
 - name: Kubernetes > Cilium > Wait for Readiness
   ansible.builtin.shell: >-
     KUBECONFIG=/etc/kubernetes/admin.conf
