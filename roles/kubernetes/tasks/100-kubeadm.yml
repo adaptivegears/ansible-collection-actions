@@ -41,8 +41,8 @@
       controlPlaneEndpoint: "{{ lookup('ansible.builtin.file', '/var/lib/instance-metadata/ipv4-public') | trim }}:6443"
       networking:
         dnsDomain: cluster.local
-        podSubnet: "{{ kubernetes_pod_subnet }}"
-        serviceSubnet: "{{ kubernetes_service_subnet }}"
+        podSubnet: "{{ kubernetes_subnet_pod }}"
+        serviceSubnet: "{{ kubernetes_subnet_service }}"
 
       ---
       apiVersion: kubelet.config.k8s.io/v1beta1

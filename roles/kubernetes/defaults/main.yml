@@ -1,6 +1,6 @@
 kubernetes_name: "kubernetes"
-kubernetes_pod_subnet: "10.100.0.0/16"
-kubernetes_service_subnet: "10.110.0.0/16"
+kubernetes_subnet_pod: "10.100.0.0/16"
+kubernetes_subnet_service: "10.110.0.0/16"
 
 kubernetes_topology_region: >-
   {{

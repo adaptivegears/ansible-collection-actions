@@ -27,7 +27,7 @@
 
       kubeProxyReplacement: true
       routingMode: native
-      ipv4NativeRoutingCIDR: "{{ kubernetes_pod_subnet }}"
+      ipv4NativeRoutingCIDR: "{{ kubernetes_subnet_pod }}"
       ipam:
         mode: kubernetes
       socketLB:
