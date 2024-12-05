@@ -24,7 +24,8 @@
         name: "{{ lookup('ansible.builtin.file', '/var/lib/instance-metadata/hostname') | trim }}"
         criSocket: unix:///var/run/containerd/containerd.sock
         kubeletExtraArgs:
-          node-ip: "{{ lookup('ansible.builtin.file', '/var/lib/instance-metadata/ipv4-private') | trim }}"
+          - name: "node-ip"
+            value: "{{ lookup('ansible.builtin.file', '/var/lib/instance-metadata/ipv4-private') | trim }}"
 
       skipPhases:
         - addon/kube-proxy
