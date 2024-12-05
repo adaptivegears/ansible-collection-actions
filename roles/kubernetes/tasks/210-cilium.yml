@@ -30,6 +30,8 @@
       ipv4NativeRoutingCIDR: "{{ kubernetes_pod_subnet }}"
       ipam:
         mode: kubernetes
+      socketLB:
+        hostNamespaceOnly: true
 
       # https://docs.cilium.io/en/stable/network/servicemesh/gateway-api/gateway-api/
       nodePort:
