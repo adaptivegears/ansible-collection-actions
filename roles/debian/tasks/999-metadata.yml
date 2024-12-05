@@ -1,18 +1,18 @@
 ---
-- name: Debian > Metadata > Gather facts
+- name: Debian > Metadata > Facts
   ansible.builtin.setup:
     gather_subset:
       - all
 
-- name: Debian > Metadata > Create Directory
+- name: Debian > Metadata > Directory
   ansible.builtin.file:
-    path: /var/lib/instance-metadata/
     state: directory
-    mode: "0755"
     owner: root
     group: root
+    mode: "0755"
+    path: /var/lib/instance-metadata/
 
-- name: Debian > Metadata > Save hostname
+- name: Debian > Metadata > Hostname
   ansible.builtin.copy:
     content: "{{ ansible_facts.hostname | trim }}"
     dest: /var/lib/instance-metadata/hostname
@@ -21,9 +21,9 @@
     group: root
 
 - name: Debian > Metadata > IPv4 > Get Private IP
+  register: debian__ipv4_private
   ansible.builtin.stat:
     path: /var/lib/instance-metadata/ipv4-private
-  register: debian__ipv4_private
 
 - name: Debian > Metadata > IPv4 > Save Private IP
   when: not debian__ipv4_private.stat.exists
@@ -36,10 +36,11 @@
       {{ ansible_facts.default_ipv4.address | trim }}
 
 - name: Debian > Metadata > IPv4 > Get Public IP (Egress)
-  ansible.builtin.shell: |
-    exip -p 4
-  changed_when: false
   register: debian__ipv4_public_egress
+  ansible.builtin.shell:
+    cmd: >-
+      exip -p 4
+  changed_when: false
 
 - name: Debian > Metadata > IPv4 > Save Public IP (Egress)
   ansible.builtin.copy:
