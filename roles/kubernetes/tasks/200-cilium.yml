@@ -18,6 +18,7 @@
 
       kubeProxyReplacement: true
       routingMode: native
+      ipv4NativeRoutingCIDR: "{{ kubernetes_pod_subnet }}"
 
       image:
         useDigest: false
