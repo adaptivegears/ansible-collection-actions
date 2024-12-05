@@ -31,6 +31,21 @@
 - name: Kubernetes > Gateway API
   ansible.builtin.include_tasks:
     file: 200-gateway-api.yml
+  loop_control:
+    loop_var: manifest
+  loop:
+    - url: https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_gatewayclasses.yaml
+      file: gatewayclasses.yaml
+    - url: https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_gateways.yaml
+      file: gateways.yaml
+    - url: https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_httproutes.yaml
+      file: httproutes.yaml
+    - url: https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_referencegrants.yaml
+      file: referencegrants.yaml
+    - url: https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_grpcroutes.yaml
+      file: grpcroutes.yaml
+    - url: https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/experimental/gateway.networking.k8s.io_tlsroutes.yaml
+      file: tlsroutes.yaml
 
 - name: Kubernetes > Cilium
   ansible.builtin.include_tasks:
