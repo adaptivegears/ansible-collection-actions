@@ -22,7 +22,7 @@
         rollOutPods: true
       rollOutCiliumPods: true
 
-      k8sServiceHost: "{{ lookup('ansible.builtin.file', '/var/lib/instance-metadata/ipv4-public') | trim }}"
+      k8sServiceHost: "{{ lookup('file', '/var/lib/instance-metadata/ipv4-public') | trim }}"
       k8sServicePort: 6443
 
       kubeProxyReplacement: true
