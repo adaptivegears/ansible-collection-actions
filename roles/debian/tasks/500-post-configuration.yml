@@ -1,7 +1,7 @@
 ---
 - name: Debian > Kernel | Enable Performance Mode
   block:
-    - name: Create CPU performance mode service
+    - name: Debian > Kernel > CPU | Set CPU Governor to Performance Mode
       ansible.builtin.copy:
         dest: /etc/systemd/system/system-cpu-governor.service
         content: |
@@ -19,7 +19,7 @@
         mode: "0644"
       register: performance_service
 
-    - name: Enable and start CPU performance mode service
+    - name: Debian > Kernel > CPU | Enable systemd service for CPU Governor
       ansible.builtin.systemd_service:
         name: system-cpu-governor
         state: started
