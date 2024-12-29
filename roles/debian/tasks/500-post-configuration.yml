@@ -1,5 +1,11 @@
 ---
-- name: Debian > Kernel | Enable Performance Mode
+- name: Debian > Kernel | Get CPU Governor
+  ansible.builtin.stat:
+    path: /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+  register: debian__cpufreq
+
+- name: Debian > Kernel | Enable Performance Mode CPU Governor
+  when: debian__cpufreq.stat.exists
   block:
     - name: Debian > Kernel > CPU | Set CPU Governor to Performance Mode
       ansible.builtin.copy:
@@ -17,14 +23,14 @@
           [Install]
           WantedBy=multi-user.target
         mode: "0644"
-      register: performance_service
+      register: debian__cpufreq_service
 
     - name: Debian > Kernel > CPU | Enable systemd service for CPU Governor
       ansible.builtin.systemd_service:
         name: system-cpu-governor
         state: started
         enabled: true
-        daemon_reload: "{{ performance_service.changed }}"
+        daemon_reload: "{{ debian__cpufreq_service.changed }}"
 
 - name: Debian > Kernel | Disable Transparent Hugepages
   ansible.builtin.cron:
