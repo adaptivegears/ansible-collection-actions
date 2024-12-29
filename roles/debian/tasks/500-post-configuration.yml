@@ -28,9 +28,13 @@
     - name: Debian > Kernel > CPU | Enable systemd service for CPU Governor
       ansible.builtin.systemd_service:
         name: system-cpu-governor
-        state: started
         enabled: true
         daemon_reload: "{{ debian__cpufreq_service.changed }}"
+
+    - name: Debian > Kernel > CPU | Start systemd service for CPU Governor
+      ansible.builtin.systemd_service:
+        name: system-cpu-governor
+        state: started
 
 - name: Debian > Kernel | Disable Transparent Hugepages
   ansible.builtin.cron:
