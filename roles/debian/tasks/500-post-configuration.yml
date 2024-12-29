@@ -1,10 +1,30 @@
 ---
 - name: Debian > Kernel | Enable Performance Mode
-  ansible.builtin.cron:
-    name: "Enable performance mode"
-    special_time: reboot
-    job: >-
-      echo 'performance' | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+  block:
+    - name: Create CPU performance mode service
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/system-cpu-governor.service
+        content: |
+          [Unit]
+          Description=Set CPU Governor to Performance Mode
+          After=multi-user.target
+
+          [Service]
+          Type=oneshot
+          ExecStart=/bin/sh -c 'echo performance | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor'
+          RemainAfterExit=yes
+
+          [Install]
+          WantedBy=multi-user.target
+        mode: "0644"
+      register: performance_service
+
+    - name: Enable and start CPU performance mode service
+      ansible.builtin.systemd_service:
+        name: system-cpu-governor
+        state: started
+        enabled: true
+        daemon_reload: "{{ performance_service.changed }}"
 
 - name: Debian > Kernel | Disable Transparent Hugepages
   ansible.builtin.cron:
