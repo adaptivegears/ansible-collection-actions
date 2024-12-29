@@ -1,13 +1,13 @@
 ---
-- name: Debian > Kernel | Get CPU Governor
+- name: Debian > Kernel > CPU Governor > Get state
   ansible.builtin.stat:
     path: /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
   register: debian__cpufreq
 
-- name: Debian > Kernel | Enable Performance Mode CPU Governor
+- name: Debian > Kernel > CPU Governor > Enable Performance Mode
   when: debian__cpufreq.stat.exists
   block:
-    - name: Debian > Kernel > CPU | Set CPU Governor to Performance Mode
+    - name: Debian > Kernel > CPU Governor > Create systemd service
       ansible.builtin.copy:
         dest: /etc/systemd/system/system-cpu-governor.service
         content: |
@@ -25,13 +25,13 @@
         mode: "0644"
       register: debian__cpufreq_service
 
-    - name: Debian > Kernel > CPU | Enable systemd service for CPU Governor
+    - name: Debian > Kernel > CPU > Enable systemd service
       ansible.builtin.systemd_service:
         name: system-cpu-governor
         enabled: true
         daemon_reload: "{{ debian__cpufreq_service.changed }}"
 
-    - name: Debian > Kernel > CPU | Start systemd service for CPU Governor
+    - name: Debian > Kernel > CPU > Enable Performance Mode
       ansible.builtin.systemd_service:
         name: system-cpu-governor
         state: started
