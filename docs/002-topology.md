@@ -56,7 +56,7 @@ Establish a standardized approach for topology metadata that includes:
 2. Directory Structure:
    ```sh
    /var/lib/instance-metadata/
-   ├── topology-region            # Geographic region identifier
+   ├── topology-region           # Geographic region identifier
    └── topology-zone             # Availability zone identifier
    ```
 
