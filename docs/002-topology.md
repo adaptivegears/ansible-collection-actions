@@ -10,6 +10,7 @@ Infrastructure systems require awareness of their location and relationships wit
 - Latency optimization
 - Cost-effective resource distribution
 - Disaster recovery capabilities
+- Data locality
 
 The lack of topology awareness leads to:
 - Increased operational costs
