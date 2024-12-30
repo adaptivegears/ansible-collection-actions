@@ -6,14 +6,32 @@ A standardized system for storing and managing instance-specific metadata on Deb
 ## Motivation
 Instance metadata is crucial for system operations, but it's often scattered across different locations or stored inconsistently. A centralized, standardized metadata storage system would improve system management, service discovery, and operational consistency.
 
+Ansible's stateless design, while promoting idempotency and simplicity, presents several operational challenges:
+
+1. State Persistence:
+   - Ansible doesn't maintain state between playbook runs
+   - Variable values are lost after playbook completion
+   - Default values may not always be suitable or available
+   - Need to persist decisions made during previous runs
+
+2. Inter-role Communication:
+   - No built-in mechanism for roles to share data
+   - Different roles might need access to the same information
+   - Role dependencies become harder to manage without shared state
+
+3. System Integration:
+   - Need for simple integration with both Ansible and external tools
+   - Complex solutions like Consul or etcd add unnecessary overhead
+   - File-based approach provides universal accessibility
+   - Standard Unix file permissions provide security model
+
 ### Goals
 - Define a standardized directory structure for instance metadata
-- Establish consistent naming conventions and file permissions
-- Support multiple metadata categories (network, topology, authentication, system)
-- Provide atomic operations for metadata updates
-- Ensure secure storage of sensitive metadata
-- Enable easy metadata retrieval for other services
-- Support both persistent and dynamic metadata
+- Provide persistent storage for Ansible-managed data
+- Enable data sharing between different Ansible roles
+- Create predictable fallback mechanisms for missing playbook arguments
+- Establish consistent locations for instance-specific data
+- Support both Ansible and non-Ansible tools access
 
 ### Non-Goals
 - Implementing metadata synchronization between instances
@@ -27,7 +45,7 @@ Instance metadata is crucial for system operations, but it's often scattered acr
 1. Directory Structure:
    ```
    /var/lib/instance-metadata/
-   ├── hostname                    # System hostname (0444)
+   ├── hostname                   # System hostname (0644)
    ├── ipv4-private               # Private IPv4 address (0644)
    ├── ipv4-public                # Public IPv4 address if available (0644)
    ├── ipv4-public-egress         # Outbound public IPv4 (0644)
@@ -38,50 +56,56 @@ Instance metadata is crucial for system operations, but it's often scattered acr
        └── tailscale-authkey      # Tailscale auth key (0400)
    ```
 
-2. File Categories and Permissions:
-   - System Identifiers (0444):
-     - hostname
-   - Network Information (0644):
-     - ipv4-private
-     - ipv4-public*
-   - Topology Data (0644):
-     - topology-region
-     - topology-zone
-   - Authentication (0400):
-     - auth/tailscale-authkey
+2. Usage Patterns:
 
-3. Metadata Types:
-   - Static: Rarely changes (hostname, topology)
-   - Dynamic: May change during runtime (IP addresses)
-   - Sensitive: Authentication tokens and keys
-   - Derived: Computed from other metadata (public IP status)
+   a. Fallback Chain:
+   ```yaml
+   variable: >-
+     {{
+       (
+         lookup('env', 'VARIABLE_NAME') or
+         lookup('file', '/var/lib/instance-metadata/variable-name', errors='ignore') or
+         default_value
+       ) | trim
+     }}
+   ```
 
-4. File Format Standards:
-   - Single line values
-   - UTF-8 encoding
-   - Trimmed content
-   - No comments or additional formatting
-   - Empty files for undefined values
+   b. Inter-role Data Sharing:
+   ```yaml
+   # Role A: Write data
+   - name: Store data for other roles
+     ansible.builtin.copy:
+       content: "{{ some_variable }}"
+       dest: /var/lib/instance-metadata/shared-data
+       mode: "0644"
 
-5. Update Mechanisms:
-   - Atomic writes using temporary files
-   - Proper ownership (root:root)
-   - Appropriate permissions based on sensitivity
-   - Validation before storage
+   # Role B: Read data
+   - name: Read data from other role
+     ansible.builtin.set_fact:
+       shared_variable: "{{ lookup('file', '/var/lib/instance-metadata/shared-data') }}"
+   ```
+
+3. Implementation Principles:
+   - Use atomic file operations
+   - Implement consistent permission model
+   - Provide clear file naming convention
+   - Maintain simple, flat file structure
+   - Use predictable file formats
 
 ## Drawbacks
 
-1. Security Considerations:
-   - Centralized location for sensitive data
-   - Requires careful permission management
-   - Potential target for unauthorized access
-
-2. Operational Complexity:
-   - Manual updates may be required
+1. Filesystem Limitations:
    - No built-in versioning
-   - No automatic cleanup mechanism
+   - Limited to local storage
 
-3. Integration Challenges:
-   - May conflict with existing metadata systems
-   - Requires adaptation of existing tools
-   - No standard API for access
+2. Management Overhead:
+   - Manual cleanup required
+   - No automatic expiration
+   - Potential for stale data
+   - Directory permissions management
+
+3. Scalability Constraints:
+   - Limited to single instance
+   - No built-in replication
+   - Manual synchronization needed
+   - Local access only
