@@ -1,19 +1,4 @@
 ---
-- name: Debian > Prerequisites
-  block:
-    - name: Debian > Prerequisites > OS
-      ansible.builtin.assert:
-        that:
-          - ansible_distribution == "Debian"
-          - ansible_distribution_major_version == "12"
-        fail_msg: "This role is only supported on Debian 12"
-
-    - name: Debian > Prerequisites > Architecture
-      ansible.builtin.assert:
-        that:
-          - ansible_architecture == "x86_64"
-        fail_msg: "This role is only supported on amd64 (x86_64) architecture"
-
 - name: Debian > APT | Reset configuration
   ansible.builtin.file:
     path: "{{ item }}"

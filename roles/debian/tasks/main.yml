@@ -1,11 +1,11 @@
 ---
-- name: Debian > Prerequisites
-  ansible.builtin.include_tasks:
-    file: 000-prerequisites.yml
-
 - name: Debian > Metadata
   ansible.builtin.include_role:
     name: metadata
+
+- name: Debian > Prerequisites
+  ansible.builtin.include_tasks:
+    file: 000-prerequisites.yml
 
 - name: Debian | Auto Install
   when: debian_install
