@@ -3,19 +3,3 @@ debian_install: "{{ lookup('env', 'DEBIAN_INSTALL', default='true') | bool }}"
 debian_minimal: "{{ lookup('env', 'DEBIAN_MINIMAL', default='false') | bool }}"
 debian_prune: "{{ lookup('env', 'DEBIAN_PRUNE', default='false') | bool }}"
 debian_hostname: "{{ (lookup('env', 'DEBIAN_HOSTNAME') or lookup('file', '/var/lib/instance-metadata/hostname', errors='ignore')) }}"
-
-debian_topology_region: >-
-  {{
-    (
-      lookup('env', 'DEBIAN_TOPOLOGY_REGION') or
-      lookup('file', '/var/lib/instance-metadata/topology-region', errors='ignore')
-    ) | lower
-  }}
-
-debian_topology_zone: >-
-  {{
-    (
-      lookup('env', 'DEBIAN_TOPOLOGY_ZONE') or
-      lookup('file', '/var/lib/instance-metadata/topology-zone', errors='ignore')
-    ) | lower
-  }}
