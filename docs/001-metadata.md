@@ -109,3 +109,9 @@ Ansible's stateless design, while promoting idempotency and simplicity, presents
    - No built-in replication
    - Manual synchronization needed
    - Local access only
+
+## References
+
+1. [Ansible Lookup Plugins](https://docs.ansible.com/ansible/latest/plugins/lookup.html)
+2. [ansible.builtin.env lookup](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/env_lookup.html)
+3. [ansible.builtin.file lookup](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/file_lookup.html)
