@@ -54,7 +54,7 @@ Establish a standardized approach for topology metadata that includes:
      * Optional lowercase letter suffix (e.g., `us-1a`, `de-2b`)
 
 2. Directory Structure:
-   ```
+   ```sh
    /var/lib/instance-metadata/
    ├── topology-region            # Geographic region identifier
    └── topology-zone             # Availability zone identifier
@@ -71,6 +71,12 @@ Establish a standardized approach for topology metadata that includes:
        ) | lower
      }}
     ```
+
+4. Kubernetes Alignment:
+   - Naming convention aligns with Kubernetes topology labels:
+     * Region maps to `topology.kubernetes.io/region`
+     * Zone maps to `topology.kubernetes.io/zone`
+   - Consistent topology awareness across different platforms
 
 ## Drawbacks
 1. Increased complexity in infrastructure planning
