@@ -1,0 +1,31 @@
+---
+- name: Metadata > Topology > Validate Region
+  ansible.builtin.assert:
+    that:
+      - (debian_topology_region | trim) | length > 0
+      - (debian_topology_region | trim) | regex_match("^[a-z]{2}-[0-9]+$")
+    fail_msg: "Topology region is not set"
+
+- name: Metadata > Topology > Set Region
+  ansible.builtin.copy:
+    dest: /var/lib/instance-metadata/topology-region
+    mode: "0444"
+    owner: root
+    group: root
+    content: |
+      {{ debian_topology_region }}
+
+- name: Metadata > Topology > Zone
+  ansible.builtin.assert:
+    that:
+      - (debian_topology_zone | trim) | length > 0
+    fail_msg: "Topology zone is not set"
+
+- name: Metadata > Topology > Set Zone
+  ansible.builtin.copy:
+    dest: /var/lib/instance-metadata/topology-zone
+    mode: "0444"
+    owner: root
+    group: root
+    content: |
+      {{ debian_topology_zone }}
