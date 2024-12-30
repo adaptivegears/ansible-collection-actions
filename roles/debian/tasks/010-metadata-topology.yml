@@ -15,7 +15,7 @@
     content: |
       {{ debian_topology_region }}
 
-- name: Metadata > Topology > Zone
+- name: Metadata > Topology > Validate Zone
   ansible.builtin.assert:
     that:
       - (debian_topology_zone | trim) | length > 0
