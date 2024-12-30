@@ -1,30 +1,37 @@
-# EP-001: Infrastructure Topology Metadata Standardization
+# EP-002: Topology Metadata
 
 ## Summary
-This enhancement proposal addresses the need for a standardized approach to managing and storing infrastructure topology metadata. It aims to establish consistent practices for identifying and organizing infrastructure resources across different regions and zones.
+This enhancement proposal explores the fundamental need for topology awareness in modern infrastructure, addressing why systems need to understand their physical and logical location within the broader infrastructure landscape.
 
 ## Motivation
-Organizations operating distributed infrastructure face challenges in maintaining consistent information about where resources are located and how they are organized. Without standardized topology metadata:
-- Resource management becomes inconsistent across teams
-- Automation tools lack reliable location context
-- Disaster recovery planning is complicated
-- Compliance reporting becomes more difficult
-- Infrastructure scaling decisions lack proper context
+Infrastructure systems require awareness of their location and relationships within the broader ecosystem to enable:
+- Intelligent resource allocation and failover
+- Geographic data compliance and sovereignty
+- Latency optimization for end users
+- Cost-effective resource distribution
+- Disaster recovery capabilities
+- Load balancing across regions
+
+The lack of topology awareness leads to:
+- Suboptimal resource utilization
+- Increased operational costs
+- Compliance violations
+- Poor user experience
+- Reduced system resilience
 
 ### Goals
-- Define a standard format for expressing infrastructure topology
-- Enable automated validation of topology information
-- Provide a consistent way to store and retrieve topology metadata
-- Support infrastructure automation and orchestration needs
-- Facilitate clear communication about resource locations
-- Enable topology-aware decision making
+- Define why systems need topology awareness
+- Identify key topology information requirements
+- Establish topology relationship principles
+- Support infrastructure decision-making processes
+- Enable location-aware operations
 
 ### Non-Goals
-- Defining specific geographic locations for regions/zones
-- Implementing cloud provider-specific topology requirements
-- Creating a topology discovery system
-- Managing network topology
-- Handling application-level topology concerns
+- Defining specific topology implementations
+- Prescribing particular geographic structures
+- Detailing technical storage solutions
+- Specifying naming conventions
+- Creating topology management tools
 
 ## Proposal
 Establish a standardized approach for topology metadata that includes:
@@ -32,31 +39,23 @@ Establish a standardized approach for topology metadata that includes:
 1. Topology Hierarchy:
    - Two-level hierarchy (region/zone) for resource organization
    - Clear naming conventions for identifiers
-   - Validation rules for topology information
 
 2. Metadata Requirements:
    - Machine-readable format
    - Human-readable identifiers
-   - Consistent accessibility
-   - Version control compatibility
-   - Automation-friendly structure
 
-3. Usage Patterns:
-   - Resource placement decisions
-   - Capacity planning
-   - Disaster recovery planning
-   - Compliance documentation
-   - Cost allocation
+3. Business Context:
+   - Regulatory requirements
+   - Service level objectives
+   - Cost optimization zones
+   - Market presence areas
+   - Customer proximity needs
 
 ## Drawbacks
-1. May require changes to existing infrastructure documentation
-2. Additional overhead in maintaining topology information
-3. Potential conflicts with cloud provider-specific conventions
-4. May not accommodate all organizational structures
-5. Added complexity in infrastructure management processes
+1. Increased complexity in infrastructure planning
+2. Additional factors to consider in system design
+3. Potential conflicts between different topology needs
+4. Cost implications of topology-aware decisions
+5. Added operational overhead
 
 ## References
-- [Infrastructure as Code principles](https://infrastructure-as-code.com/)
-- [Multi-region architecture patterns](https://aws.amazon.com/architecture/well-architected/)
-- [Geographic redundancy best practices](https://docs.microsoft.com/en-us/azure/architecture/framework/resiliency/overview)
-- [Data center topology standards](https://www.cisecurity.org/insights/white-papers)
