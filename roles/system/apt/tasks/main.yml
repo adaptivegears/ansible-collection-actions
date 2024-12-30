@@ -1,5 +1,5 @@
 ---
-- name: Debian > APT | Reset configuration
+- name: APT > Reset configuration
   ansible.builtin.file:
     path: "{{ item }}"
     state: absent
@@ -8,7 +8,7 @@
     - /etc/apt/apt.conf.d/00trustcdrom
     - /etc/apt/mirrors
 
-- name: Debian > APT | Reset preferences
+- name: APT > Reset preferences
   ansible.builtin.file:
     path: "{{ item }}"
     state: absent
@@ -16,3 +16,29 @@
     - /etc/apt/listchanges.conf.d/*
     - /etc/apt/preferences.d/*
     - /etc/apt/sources.list.d/*
+
+- name: APT > Cache
+  block:
+    - name: APT > Cache > Use default repositories
+      ansible.builtin.copy:
+        content: "{{ lookup('file', 'sources.list') }}"
+        dest: /etc/apt/sources.list
+      register: debian__repos
+
+    - name: APT > Cache > Update
+      when: debian__repos is changed
+      ansible.builtin.apt:
+        update_cache: true
+      changed_when: false
+
+- name: APT > Cache > Update
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+  changed_when: false
+
+- name: APT > Upgrade
+  ansible.builtin.apt:
+    upgrade: safe
+    autoremove: true
+    autoclean: true

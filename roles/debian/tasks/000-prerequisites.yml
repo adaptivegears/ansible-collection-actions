@@ -1,35 +1,5 @@
 ---
-- name: Debian > APT > Reset
-  ansible.builtin.include_role:
-    name: system/apt
-
-- name: Debian > APT | Set minimal packages
+- name: Debian > APT > Set minimal packages
   when: debian_minimal
   ansible.builtin.set_fact:
     debian_packages: "{{ debian_packages | difference(debian_packages_minimal) }}"
-
-- name: Debian > APT | Update cache
-  block:
-    - name: Debian > APT | Use default repositories
-      ansible.builtin.copy:
-        content: "{{ lookup('file', 'sources.list') }}"
-        dest: /etc/apt/sources.list
-      register: debian__repos
-
-    - name: Debian > APT | Update
-      when: debian__repos is changed
-      ansible.builtin.apt:
-        update_cache: true
-      changed_when: false
-
-- name: Debian > APT | Update
-  ansible.builtin.apt:
-    update_cache: true
-    cache_valid_time: 3600
-  changed_when: false
-
-- name: Debian > APT | Upgrade
-  ansible.builtin.apt:
-    upgrade: dist
-    autoremove: true
-    autoclean: true

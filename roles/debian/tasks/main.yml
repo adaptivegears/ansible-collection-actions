@@ -3,6 +3,10 @@
   ansible.builtin.include_role:
     name: metadata
 
+- name: Debian > APT
+  ansible.builtin.include_role:
+    name: system/apt
+
 - name: Debian > Prerequisites
   ansible.builtin.include_tasks:
     file: 000-prerequisites.yml
