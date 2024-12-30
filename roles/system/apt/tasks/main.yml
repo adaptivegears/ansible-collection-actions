@@ -1,8 +1,8 @@
 ---
 - name: APT > Reset configuration
   ansible.builtin.file:
-    path: "{{ item }}"
     state: absent
+    path: "{{ item }}"
   with_items:
     - /etc/apt/apt.conf.d/00CDMountPoint
     - /etc/apt/apt.conf.d/00trustcdrom
@@ -10,8 +10,8 @@
 
 - name: APT > Reset preferences
   ansible.builtin.file:
-    path: "{{ item }}"
     state: absent
+    path: "{{ item }}"
   with_fileglob:
     - /etc/apt/listchanges.conf.d/*
     - /etc/apt/preferences.d/*
@@ -21,8 +21,8 @@
   block:
     - name: APT > Cache > Use default repositories
       ansible.builtin.copy:
-        content: "{{ lookup('file', 'sources.list') }}"
         dest: /etc/apt/sources.list
+        content: "{{ lookup('file', 'sources.list') }}"
       register: debian__repos
 
     - name: APT > Cache > Update
