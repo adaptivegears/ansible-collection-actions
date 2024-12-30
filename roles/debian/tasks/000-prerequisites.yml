@@ -14,10 +14,6 @@
           - ansible_architecture == "x86_64"
         fail_msg: "This role is only supported on amd64 (x86_64) architecture"
 
-- name: Metadata > Topology
-  ansible.builtin.include_tasks:
-    file: 010-metadata-topology.yml
-
 - name: Debian > APT | Reset configuration
   ansible.builtin.file:
     path: "{{ item }}"

@@ -9,8 +9,8 @@
 
 - name: Metadata > Topology > Set Region
   ansible.builtin.copy:
-    dest: /var/lib/instance-metadata/topology-region
-    mode: "0444"
+    dest: "{{ metadata_directory }}/topology-region"
+    mode: "0644"
     owner: root
     group: root
     content: |
@@ -26,8 +26,8 @@
 
 - name: Metadata > Topology > Set Zone
   ansible.builtin.copy:
-    dest: /var/lib/instance-metadata/topology-zone
-    mode: "0444"
+    dest: "{{ metadata_directory }}/topology-zone"
+    mode: "0644"
     owner: root
     group: root
     content: |

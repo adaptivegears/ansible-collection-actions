@@ -16,7 +16,7 @@
           - "  -i, --install       Install packages (DEBIAN_INSTALL, default: true)"
           - "  -m, --minimal       Minimal installation (DEBIAN_MINIMAL, default: false)"
           - "  -p, --prune         Prune unused packages (DEBIAN_PRUNE, default: false)"
-          - "  --hostname          Set hostname (env: HOSTNAME)"
+          - "  --hostname          Set hostname (env: DEBIAN_HOSTNAME)"
           - "  --topology-region   Set topology region (env: DEBIAN_TOPOLOGY_REGION)"
           - "  --topology-zone     Set topology zone (env: DEBIAN_TOPOLOGY_ZONE)"
           - "Examples:"
@@ -30,8 +30,8 @@
         debian_minimal: "{{ minimal | default(m) | default(omit) }}"
         debian_prune: "{{ prune | default(p) | default(omit) }}"
         debian_hostname: "{{ hostname | default(omit) }}"
-        debian_topology_region: "{{ topology_region | default(omit) }}"
-        debian_topology_zone: "{{ topology_zone | default(omit) }}"
+        metadata_topology_region: "{{ topology_region | default(omit) }}"
+        metadata_topology_zone: "{{ topology_zone | default(omit) }}"
 
     - name: Include Role
       ansible.builtin.include_role:

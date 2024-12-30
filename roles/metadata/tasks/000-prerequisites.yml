@@ -1,0 +1,13 @@
+---
+- name: Metadata > Facts
+  ansible.builtin.setup:
+    gather_subset:
+      - all
+
+- name: Metadata > Directory
+  ansible.builtin.file:
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+    path: "{{ metadata_directory }}"
