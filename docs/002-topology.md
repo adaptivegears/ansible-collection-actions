@@ -43,8 +43,39 @@ Establish a standardized approach for topology metadata that includes:
    - Disaster recovery planning
    - Cost allocation
 
+### Implementation
+
+1. Naming Conventions:
+   - Region identifier format: `^[a-z]{2}-[0-9]+$`
+     * Two lowercase letters representing ISO 3166-1 alpha-2 country code (e.g., `us`, `de`, `sg`)
+     * Numeric identifier (e.g., `us-1`, `de-2`)
+   - Zone identifier format: `^[a-z]{2}-[0-9]+[a-z]?$`
+     * Inherits region format
+     * Optional lowercase letter suffix (e.g., `us-1a`, `de-2b`)
+
+2. Directory Structure:
+   ```
+   /var/lib/instance-metadata/
+   ├── topology-region            # Geographic region identifier
+   └── topology-zone             # Availability zone identifier
+   ```
+
+3. Usage Example:
+   ```yaml
+   # Reading topology data
+   metadata_topology_region: >-
+     {{
+       (
+         lookup('env', 'METADATA_TOPOLOGY_REGION') or
+         lookup('file', '/var/lib/instance-metadata/topology-region', errors='ignore')
+       ) | lower
+     }}
+    ```
+
 ## Drawbacks
 1. Increased complexity in infrastructure planning
 2. Additional factors to consider in system design
 
 ## References
+
+1. [ISO 3166-1 alpha-2 country codes](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
