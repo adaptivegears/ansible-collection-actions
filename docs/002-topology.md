@@ -79,6 +79,43 @@ Establish a standardized approach for topology metadata that includes:
      * Zone maps to `topology.kubernetes.io/zone`
    - Consistent topology awareness across different platforms
 
+## Cloud Provider Compatibility
+
+Each major cloud provider has established their own topology naming conventions. Our proposal needs to accommodate mapping between these formats:
+
+### AWS Regions and Availability Zones
+- Region format: `^[a-z]{2}-[a-z]+-[0-9]+$` (e.g., `us-east-1`, `eu-west-2`)
+- AZ format: `^[a-z]{2}-[a-z]+-[0-9][a-z]$` (e.g., `us-east-1a`, `eu-west-2b`)
+
+Example mapping:
+- `us-east-1` → `us-1`
+- `eu-west-2` → `eu-2`
+- `ap-southeast-1` → `sg-1`
+
+### Azure Regions
+- Region format: `^[a-z]+$` or `^[a-z]+[0-9]+$` (e.g., `eastus`, `westeurope`, `eastus2`)
+- Zone format: Numeric (1,2,3) within a region
+
+Example mapping:
+- `eastus` → `us-1`
+- `westeurope` → `eu-1`
+- `eastus2` → `us-2`
+
+### Google Cloud Platform (GCP)
+- Region format: `^[a-z]+-[a-z]+[0-9]+$` (e.g., `us-central1`, `europe-west4`)
+- Zone format: `^[a-z]+-[a-z]+[0-9]+-[a-z]$` (e.g., `us-central1-a`, `europe-west4-b`)
+
+Example mapping:
+- `us-central1` → `us-1`
+- `europe-west4` → `eu-4`
+- `asia-east1` → `hk-1`
+
+### Implementation Considerations
+1. Implementations should maintain mapping tables between cloud provider-specific formats and our standardized format
+2. Region mapping should consider geographical accuracy (e.g., `ap-southeast-1` maps to `sg-1` as it's located in Singapore)
+3. Tools should support both native cloud provider formats and our standardized format
+4. Documentation should clearly specify mapping rules for each supported cloud provider
+
 ## Drawbacks
 1. Increased complexity in infrastructure planning
 2. Additional factors to consider in system design
