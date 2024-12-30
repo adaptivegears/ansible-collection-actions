@@ -1,21 +1,7 @@
 ---
-- name: Debian > APT | Reset configuration
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: absent
-  with_items:
-    - /etc/apt/apt.conf.d/00CDMountPoint
-    - /etc/apt/apt.conf.d/00trustcdrom
-    - /etc/apt/mirrors
-
-- name: Debian > APT | Reset preferences
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: absent
-  with_fileglob:
-    - /etc/apt/listchanges.conf.d/*
-    - /etc/apt/preferences.d/*
-    - /etc/apt/sources.list.d/*
+- name: Debian > APT > Reset
+  ansible.builtin.include_role:
+    name: system/apt
 
 - name: Debian > APT | Set minimal packages
   when: debian_minimal
