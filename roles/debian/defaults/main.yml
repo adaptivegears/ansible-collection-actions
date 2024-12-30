@@ -9,7 +9,7 @@ debian_topology_region: >-
     (
       lookup('env', 'DEBIAN_TOPOLOGY_REGION') or
       lookup('file', '/var/lib/instance-metadata/topology-region', errors='ignore')
-    )
+    ) | lower
   }}
 
 debian_topology_zone: >-
@@ -17,5 +17,5 @@ debian_topology_zone: >-
     (
       lookup('env', 'DEBIAN_TOPOLOGY_ZONE') or
       lookup('file', '/var/lib/instance-metadata/topology-zone', errors='ignore')
-    )
+    ) | lower
   }}
