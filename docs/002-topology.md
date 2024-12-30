@@ -45,6 +45,26 @@ Establish a standardized approach for topology metadata that includes:
    - Disaster recovery planning
    - Cost allocation
 
+Understanding topology information (`provider`/`region`/`zone`) immediately informs experienced engineers about:
+
+Connectivity:
+- Expected latency ranges between components
+- Network bandwidth characteristics
+- Network isolation boundaries
+- Network costs (free vs paid traffic)
+
+Storage:
+- Data accessibility boundaries
+- Storage attachment restrictions
+- Replication possibilities
+- Data sovereignty compliance
+
+Cost Model:
+- Data transfer pricing tiers
+- Resource pricing differences
+- Replication costs
+- Backup storage costs
+
 ### Implementation
 
 1. Directory Structure:
