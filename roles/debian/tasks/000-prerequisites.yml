@@ -14,19 +14,37 @@
           - ansible_architecture == "x86_64"
         fail_msg: "This role is only supported on amd64 (x86_64) architecture"
 
-- name: Debian > Topology
+- name: Metadata > Topology
   block:
-    - name: Debian > Topology > Region
+    - name: Metadata > Topology > Region
       ansible.builtin.assert:
         that:
           - (debian_topology_region | trim) | length > 0
         fail_msg: "Topology region is not set"
 
-    - name: Debian > Topology > Zone
+    - name: Metadata > Topology > Set Region
+      ansible.builtin.copy:
+        dest: /var/lib/instance-metadata/topology-region
+        mode: "0444"
+        owner: root
+        group: root
+        content: |
+          {{ debian_topology_region }}
+
+    - name: Metadata > Topology > Zone
       ansible.builtin.assert:
         that:
           - (debian_topology_zone | trim) | length > 0
         fail_msg: "Topology zone is not set"
+
+    - name: Metadata > Topology > Set Zone
+      ansible.builtin.copy:
+        dest: /var/lib/instance-metadata/topology-zone
+        mode: "0444"
+        owner: root
+        group: root
+        content: |
+          {{ debian_topology_zone }}
 
 - name: Debian > APT | Reset configuration
   ansible.builtin.file:
