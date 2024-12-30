@@ -1,0 +1,3 @@
+- name: Metadata > Topology
+  ansible.builtin.include_tasks:
+    file: 000-topology.yml

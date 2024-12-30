@@ -2,8 +2,8 @@
 - name: Metadata > Topology > Validate Region
   ansible.builtin.assert:
     that:
-      - (debian_topology_region | trim) | length > 0
-      - (debian_topology_region | trim) | regex_search("^[a-z]{2}-[0-9]+$") | length > 0
+      - (metadata_topology_region | trim) | length > 0
+      - (metadata_topology_region | trim) | regex_search("^[a-z]{2}-[0-9]+$") | length > 0
     success_msg: "Topology region is set"
     fail_msg: "Topology region is not set"
 
@@ -14,12 +14,13 @@
     owner: root
     group: root
     content: |
-      {{ debian_topology_region }}
+      {{ metadata_topology_region }}
 
 - name: Metadata > Topology > Validate Zone
   ansible.builtin.assert:
     that:
-      - (debian_topology_zone | trim) | length > 0
+      - (metadata_topology_zone | trim) | length > 0
+      - (metadata_topology_zone | trim) | regex_search("^[a-z]{2}-[0-9]+[a-z]?$") | length > 0
     success_msg: "Topology zone is set"
     fail_msg: "Topology zone is not set"
 
@@ -30,4 +31,4 @@
     owner: root
     group: root
     content: |
-      {{ debian_topology_zone }}
+      {{ metadata_topology_zone }}
