@@ -79,3 +79,4 @@ Establish a standardized approach for topology metadata that includes:
 ## References
 
 1. [ISO 3166-1 alpha-2 country codes](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
+2. [Kubernetes Topology Labels](https://kubernetes.io/docs/reference/labels-annotations-taints/#topologykubernetesioregion)
