@@ -1,12 +1,12 @@
 ---
-revision: 2
+revision: 3
 status: draft
 ---
 
 # EP-002: Topology Metadata
 
 ## Summary
-This enhancement proposal explores the fundamental need for topology awareness in modern infrastructure, addressing why systems need to understand their physical location within the broader infrastructure landscape.
+This enhancement proposal introduces topology metadata to provide location-awareness for infrastructure systems. Topology metadata includes provider, region, and zone identifiers.
 
 ## Motivation
 Infrastructure systems require awareness of their location and relationships within the broader ecosystem to enable:
