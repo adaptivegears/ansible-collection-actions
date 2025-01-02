@@ -46,27 +46,6 @@ Some providers don't use combination of regions and zones, like DigitalOcean, wh
 
 For on-premises deployments, the `provider` identifier can be the organization's name, while `region` and `zone` can be the data center and rack identifiers.
 
-### Topology Use Cases
-
-Topology information (`provider`/`region`/`zone`) informs about following aspects:
-
-Connectivity:
-- Expected latency ranges between components
-- Network bandwidth characteristics
-- Network isolation boundaries
-- Network costs (free vs paid traffic)
-
-Storage:
-- Data accessibility boundaries
-- Storage attachment restrictions
-- Replication possibilities
-- Data sovereignty compliance
-
-Cost Model:
-- Data transfer pricing tiers
-- Replication costs
-- Backup storage costs
-
 ### Topology Metadata Requirements
 
 Requirements for topology metadata:
@@ -88,52 +67,30 @@ Identifiers are expected to be lowercase, alphanumeric strings with hyphens allo
 
 This information won't be sufficient for all use cases, as it doesn't provide detailed network topology or logical grouping information (VPCs, subnets, etc.). However, it's enough for basic location-aware operations. For more detailed information, additional metadata sources like cloud APIs or configuration management tools can be used.
 
-### Implementation
+### Topology Use Cases
 
-1. Directory Structure:
-   ```sh
-   /var/lib/instance-metadata/
-   ├── topology-provider         # Cloud provider identifier (e.g., aws, azure, gcp)
-   ├── topology-region           # Provider-native region identifier
-   └── topology-zone             # Provider-native zone identifier
-   ```
+Topology information (`provider`/`region`/`zone`) informs about following aspects:
 
-2. Usage Example:
-   ```yaml
-   # Topology Provider
-   metadata_topology_provider: >-
-     {{
-       (
-         lookup('env', 'METADATA_TOPOLOGY_PROVIDER') or
-         lookup('file', '/var/lib/instance-metadata/topology-provider', errors='ignore')
-       ) | lower
-     }}
-   # Topology Region
-   metadata_topology_region: >-
-     {{
-       (
-         lookup('env', 'METADATA_TOPOLOGY_REGION') or
-         lookup('file', '/var/lib/instance-metadata/topology-region', errors='ignore')
-       ) | lower
-     }}
-    # Topology Zone
-    metadata_topology_zone: >-
-      {{
-        (
-          lookup('env', 'METADATA_TOPOLOGY_ZONE') or
-          lookup('file', '/var/lib/instance-metadata/topology-zone', errors='ignore')
-        ) | lower
-      }}
-    ```
+Connectivity:
+- Expected latency ranges between components
+- Network bandwidth characteristics
+- Network isolation boundaries
+- Network costs (free vs paid traffic)
 
-3. Cloud Provider Alignment, use native provider naming directly:
-   - AWS: regions like `us-east-1`, zones like `us-east-1a`
-   - Azure: regions like `eastus`, zones like `1`, `2`, `3`
-   - GCP: regions like `us-central1`, zones like `us-central1-a`
+Storage:
+- Data accessibility boundaries
+- Storage attachment restrictions
+- Replication possibilities
+- Data sovereignty compliance
 
-4. Kubernetes Alignment, naming convention aligns with Kubernetes topology labels:
-   - Region maps to `topology.kubernetes.io/region`
-   - Zone maps to `topology.kubernetes.io/zone`
+Cost Model:
+- Data transfer pricing tiers
+- Replication costs
+- Backup storage costs
+
+Topology metadata can be used to provide locality-based services, such as Kubernetes pod scheduling, load balancing, or data replication using following labels:
+- Region maps to `topology.kubernetes.io/region`
+- Zone maps to `topology.kubernetes.io/zone`
 
 ## References
 1. [ISO 3166-1 alpha-2 country codes](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
