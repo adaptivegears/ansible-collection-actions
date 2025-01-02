@@ -67,6 +67,26 @@ Identifiers are expected to be lowercase, alphanumeric strings with hyphens allo
 
 This information won't be sufficient for all use cases, as it doesn't provide detailed network topology or logical grouping information (VPCs, subnets, etc.). However, it's enough for basic location-aware operations. For more detailed information, additional metadata sources like cloud APIs or configuration management tools can be used.
 
+### Topology Metadata Discovery
+
+Topology information can be obtained through multiple methods:
+
+1. **Metadata Services** (Recommended):
+- AWS: EC2 Instance Metadata Service (IMDS) at `http://169.254.169.254`
+- Azure: Instance Metadata Service (IMDS) at `http://169.254.169.254`
+- GCP: Compute Engine Metadata Server at `http://metadata.google.internal`
+- DigitalOcean: Metadata Service at `http://169.254.169.254`
+
+2. **Manual Configuration**:
+- Environment variables
+- Configuration files
+- Command-line arguments
+
+3. **Infrastructure as Code**:
+- Terraform outputs
+- CloudFormation exports
+- Ansible inventory variables
+
 ### Topology Use Cases
 
 Topology information (`provider`/`region`/`zone`) informs about following aspects:
