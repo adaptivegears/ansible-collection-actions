@@ -1,3 +1,8 @@
+---
+revision: 2
+status: draft
+---
+
 # EP-002: Topology Metadata
 
 ## Summary

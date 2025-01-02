@@ -1,3 +1,8 @@
+---
+revision: 1
+status: draft
+---
+
 # EP-001: Metadata
 
 ## Summary
