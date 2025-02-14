@@ -38,12 +38,6 @@
       clusterName: "{{ kubernetes_name }}"
       kubernetesVersion: "{{ kubernetes_version_full }}"
 
-      apiServer:
-        certSANs:
-          - "{{ kubernetes_ipv4_public }}"
-          - "{{ kubernetes_ipv4_private }}"
-          - "{{ kubernetes_hostname }}"
-
       controlPlaneEndpoint: "{{ kubernetes_ipv4_public }}:6443"
       networking:
         dnsDomain: cluster.local
