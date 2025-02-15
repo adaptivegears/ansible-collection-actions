@@ -62,3 +62,10 @@
     value: "1"
     state: present
     reload: true
+
+- name: Debian > Kernel > Enable non-root user to bind to priveleged ports
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_unprivileged_port_start
+    value: "0"
+    state: present
+    reload: true
