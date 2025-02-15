@@ -17,7 +17,7 @@
       kind: InitConfiguration
 
       localAPIEndpoint:
-        advertiseAddress: "{{ kubernetes_ipv4_public }}"
+        advertiseAddress: "{{ kubernetes_ipv4_private }}"
         bindPort: 6443
 
       nodeRegistration:
@@ -38,7 +38,7 @@
       clusterName: "{{ kubernetes_name }}"
       kubernetesVersion: "{{ kubernetes_version_full }}"
 
-      controlPlaneEndpoint: "{{ kubernetes_ipv4_public }}:6443"
+      controlPlaneEndpoint: "{{ kubernetes_ipv4_private }}:6443"
       networking:
         dnsDomain: cluster.local
         podSubnet: "{{ kubernetes_subnet_pod }}"
