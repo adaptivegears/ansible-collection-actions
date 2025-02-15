@@ -29,9 +29,6 @@
           - name: "node-labels"
             value: "topology.kubernetes.io/region={{ kubernetes_topology_region }},topology.kubernetes.io/zone={{ kubernetes_topology_zone }}"
 
-      skipPhases:
-        - addon/kube-proxy
-
       ---
       apiVersion: kubeadm.k8s.io/v1beta4
       kind: ClusterConfiguration
