@@ -5,6 +5,7 @@
     install_recommends: true
     name:
       - containerd
+      - containernetworking-plugins
 
 - name: Kubernetes > Prerequisites > Containerd > Configure
   register: kubernetes__containerd_config
