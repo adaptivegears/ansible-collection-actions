@@ -95,7 +95,7 @@
     reload: true
 
 - name: Debian > Limits > Increase file descriptors for all users
-  ansible.posix.pam_limits:
+  community.general.pam_limits:
     domain: "*"
     limit_type: "{{ item.type }}"
     limit_item: nofile
@@ -105,7 +105,7 @@
     - type: hard
 
 - name: Debian > Limits > Increase maximum number of processes for all users
-  ansible.posix.pam_limits:
+  community.general.pam_limits:
     domain: "*"
     limit_type: "{{ item.type }}"
     limit_item: nproc
