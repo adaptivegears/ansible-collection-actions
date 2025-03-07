@@ -49,8 +49,6 @@
       value: "524288"
     - name: fs.inotify.max_user_instances
       value: "512"
-    - name: net.netfilter.nf_conntrack_max
-      value: "1048576"
 
 - name: Debian > Kernel > Modules for Bridge Networking
   community.general.modprobe:
