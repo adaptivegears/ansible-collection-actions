@@ -1,0 +1,7 @@
+- name: Metadata > Pre-requisites
+  ansible.builtin.include_tasks:
+    file: 000-prerequisites.yml
+
+- name: Metadata > Topology
+  ansible.builtin.include_tasks:
+    file: 100-topology.yml

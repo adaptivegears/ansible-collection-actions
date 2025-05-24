@@ -1,0 +1,202 @@
+---
+- name: Debian > Kernel > CPU Governor > Get state
+  ansible.builtin.stat:
+    path: /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+  register: debian__cpufreq
+
+- name: Debian > Kernel > CPU Governor > Enable Performance Mode
+  when: debian__cpufreq.stat.exists
+  block:
+    - name: Debian > Kernel > CPU Governor > Create systemd service
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/system-cpu-governor.service
+        content: |
+          [Unit]
+          Description=Set CPU Governor to Performance Mode
+          After=multi-user.target
+
+          [Service]
+          Type=oneshot
+          ExecStart=/bin/sh -c 'echo performance | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor'
+          RemainAfterExit=yes
+
+          [Install]
+          WantedBy=multi-user.target
+        mode: "0644"
+      register: debian__cpufreq_service
+
+    - name: Debian > Kernel > CPU > Enable systemd service
+      ansible.builtin.systemd_service:
+        name: system-cpu-governor
+        enabled: true
+        daemon_reload: "{{ debian__cpufreq_service.changed }}"
+
+    - name: Debian > Kernel > CPU > Enable Performance Mode
+      ansible.builtin.systemd_service:
+        name: system-cpu-governor
+        state: started
+
+- name: Debian > Kernel | Disable Transparent Hugepages
+  ansible.builtin.cron:
+    name: "Disable Transparent Hugepages"
+    special_time: reboot
+    job: >-
+      echo 'madvise' | sudo tee /sys/kernel/mm/transparent_hugepage/enabled
+
+- name: Debian > Network | Enable systemd-networkd.service
+  ansible.builtin.systemd_service:
+    name: systemd-networkd
+    state: started
+    enabled: true
+
+- name: Debian > Network | Disable networking.service
+  ansible.builtin.systemd_service:
+    name: networking
+    state: stopped
+    enabled: false
+
+- name: Debian > MOTD | Set
+  ansible.builtin.template:
+    src: motd.txt.j2
+    dest: /etc/motd
+  vars:
+    debian_provisioned_date: "{{ ansible_date_time.date }}"
+
+- name: Debian > Locale | Configure
+  block:
+    - name: Debian > Locale | Generate {{ debian_locale }}
+      community.general.locale_gen:
+        name: "{{ debian_locale }}"
+        state: present
+
+    - name: Debian > Locale | Set default
+      ansible.builtin.copy:
+        content: |
+          LANG={{ debian_locale }}
+        dest: /etc/default/locale
+
+- name: Debian > Time | Configure
+  block:
+    - name: Debian > Time | Set TZ
+      community.general.timezone:
+        name: "{{ debian_timezone }}"
+
+    - name: Debian > Time | Enable systemd-timesyncd
+      ansible.builtin.systemd_service:
+        name: systemd-timesyncd
+        state: started
+        enabled: true
+
+    - name: Debian > Time | Set NTP
+      ansible.builtin.copy:
+        content: |
+          [Time]
+          NTP=0.debian.pool.ntp.org 1.debian.pool.ntp.org 2.debian.pool.ntp.org 3.debian.pool.ntp.org
+        dest: /etc/systemd/timesyncd.conf
+      notify: Restart systemd-timesyncd
+
+- name: Debian > DNS | Configure
+  block:
+    - name: Debian > DNS | Reset DNS
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      with_fileglob:
+        - /etc/systemd/resolved.conf.d/*
+
+    - name: Debian > DNS | Get state of /etc/resolv.conf
+      ansible.builtin.stat:
+        path: /etc/resolv.conf
+      register: debian__resolvconf
+
+    - name: Debian > DNS | Remove /etc/resolv.conf
+      when: debian__resolvconf.stat.exists and debian__resolvconf.stat.isreg
+      ansible.builtin.file:
+        path: /etc/resolv.conf
+        state: absent
+
+    - name: Debian > DNS | Symlink stub-resolv.conf
+      ansible.builtin.file:
+        src: /run/systemd/resolve/stub-resolv.conf
+        dest: /etc/resolv.conf
+        state: link
+      register: debian__resolver
+
+    - name: Debian > DNS | Enable systemd-resolved
+      ansible.builtin.systemd_service:
+        name: systemd-resolved
+        state: started
+        enabled: true
+      notify: Debian | Restart systemd-resolved
+
+    - name: Debian > DNS | Set DNS servers
+      ansible.builtin.copy:
+        content: |
+          [Resolve]
+          DNS=1.1.1.1 1.0.0.1
+          FallbackDNS=8.8.8.8 8.8.4.4
+          Cache=yes
+          CacheFromLocalhost=no
+          Domains=~.
+          DNSStubListener=yes
+        dest: /etc/systemd/resolved.conf
+      register: debian__resolvconf
+      notify: Debian | Restart systemd-resolved
+
+    - name: Debian | Restart systemd-resolved
+      when: debian__resolver.changed or debian__resolvconf.changed
+      ansible.builtin.systemd:
+        name: systemd-resolved
+        state: restarted
+
+    - name: (STD-003) Debian > DNS | Disable DHCP DNS
+      ansible.builtin.copy:
+        content: |
+          [Match]
+          Name={{ ansible_default_ipv4.interface }}
+          Type=ether
+          [Network]
+          DHCP=yes
+          UseDomains=false
+          [DHCPv4]
+          UseHostname=false
+          UseDNS=false
+          UseDomains=false
+          UseNTP=false
+          UseTimezone=false
+          [DHCPv6]
+          UseHostname=false
+          UseDNS=false
+          UseDomains=false
+          UseNTP=false
+        dest: /etc/systemd/network/99-default.network
+        mode: "0644"
+      register: debian__networkd
+      notify:
+        - Debian | Restart systemd-resolved
+        - Debian | Restart systemd-networkd
+
+    - name: Debian | Restart systemd-networkd
+      when: debian__networkd.changed
+      ansible.builtin.systemd:
+        name: systemd-networkd
+        state: restarted
+
+- name: Debian > User | Configure
+  block:
+    - name: Debian > User | Create user
+      ansible.builtin.user:
+        name: "{{ debian_user }}"
+        state: present
+        groups: "{{ debian_user_groups }}"
+        shell: "{{ debian_user_shell }}"
+        create_home: true
+        home: "{{ debian_user_home }}"
+
+    - name: Debian > User | Grant sudo
+      ansible.builtin.copy:
+        dest: /etc/sudoers.d/{{ debian_user }}
+        content: "{{ debian_user }} ALL=(ALL) NOPASSWD:ALL"
+        owner: root
+        group: root
+        mode: "0440"

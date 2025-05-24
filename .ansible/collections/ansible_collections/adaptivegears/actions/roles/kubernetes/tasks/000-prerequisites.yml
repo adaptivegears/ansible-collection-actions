@@ -1,0 +1,23 @@
+---
+- name: Kubernetes > Prerequisites > Apt > Update Cache
+  ansible.builtin.apt:
+    cache_valid_time: 3600
+    update_cache: true
+
+- name: Kubernetes > Prerequisites > Apt > Repository Dependencies
+  ansible.builtin.apt:
+    state: present
+    install_recommends: false
+    name:
+      - apt-transport-https
+      - curl
+      - gnupg
+      - lsb-release
+
+- name: Kubernetes > Prerequisites > Containerd
+  ansible.builtin.include_tasks:
+    file: 010-containerd.yml
+
+- name: Kubernetes > Prerequisites > Packages
+  ansible.builtin.include_tasks:
+    file: 020-packages.yml

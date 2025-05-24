@@ -1,0 +1,113 @@
+- name: Debian > Kernel > Enable task_delay
+  ansible.builtin.sysctl:
+    name: kernel.task_delayacct
+    value: "1"
+    state: present
+    reload: true
+
+- name: Debian > Kernel > Enable IPv6 router advertisements
+  ansible.posix.sysctl:
+    name: net.ipv6.conf.all.accept_ra
+    value: "2"
+    state: present
+    reload: true
+
+- name: Debian > Kernel > Hardening kernel parameters
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    reload: true
+  with_items:
+    - name: vm.panic_on_oom
+      value: "0"
+    - name: vm.overcommit_memory
+      value: "1"
+    - name: kernel.panic
+      value: "10"
+    - name: kernel.panic_on_oops
+      value: "1"
+
+- name: Debian > Kernel > Advanced system limits and networking parameters
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    reload: true
+  with_items:
+    - name: fs.file-max
+      value: "2097152"
+    - name: fs.nr_open
+      value: "2097152"
+    - name: net.core.somaxconn
+      value: "65536"
+    - name: net.ipv4.tcp_max_syn_backlog
+      value: "65536"
+    - name: net.core.netdev_max_backlog
+      value: "65536"
+    - name: fs.inotify.max_user_watches
+      value: "524288"
+    - name: fs.inotify.max_user_instances
+      value: "512"
+
+- name: Debian > Kernel > Modules for Bridge Networking
+  community.general.modprobe:
+    state: present
+    persistent: present
+    name: "{{ item }}"
+  with_items:
+    - overlay
+    - br_netfilter
+
+- name: Debian > Kernel > Sysctl for Bridge Networking
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    reload: true
+  with_items:
+    - name: "net.bridge.bridge-nf-call-iptables"
+      value: "1"
+    - name: "net.bridge.bridge-nf-call-ip6tables"
+      value: "1"
+
+- name: Debian > Kernel > Enable IPv4 forwarding
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: "1"
+    state: present
+    reload: true
+
+- name: Debian > Kernel > Enable IPv6 forwarding
+  ansible.posix.sysctl:
+    name: net.ipv6.conf.all.forwarding
+    value: "1"
+    state: present
+    reload: true
+
+- name: Debian > Kernel > Enable non-root user to bind to priveleged ports
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_unprivileged_port_start
+    value: "0"
+    state: present
+    reload: true
+
+- name: Debian > Limits > Increase file descriptors for all users
+  community.general.pam_limits:
+    domain: "*"
+    limit_type: "{{ item.type }}"
+    limit_item: nofile
+    value: 65536
+  with_items:
+    - type: soft
+    - type: hard
+
+- name: Debian > Limits > Increase maximum number of processes for all users
+  community.general.pam_limits:
+    domain: "*"
+    limit_type: "{{ item.type }}"
+    limit_item: nproc
+    value: 65536
+  with_items:
+    - type: soft
+    - type: hard

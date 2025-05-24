@@ -1,0 +1,71 @@
+---
+# Dependencies
+
+- name: Debian > Packages | Get dependencies
+  ansible.builtin.command: apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances {{ debian_packages | join(' ') }}
+  register: debian__pkg_deps
+  changed_when: false
+
+- name: Debian > Packages | Set dependencies
+  ansible.builtin.set_fact:
+    debian__pkg_deps: "{{ debian__pkg_deps.stdout | split('\n') | reject('match', '^(\\s+|<)') | unique | sort }}"
+
+# Mark manual
+
+- name: Debian > Packages | Get packages
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: Debian > Packages | Get manually installed packages
+  ansible.builtin.shell: apt-mark showmanual
+  register: debian__pkgs_present
+  changed_when: false
+
+- name: Debian > Packages | Set manually installed packages
+  ansible.builtin.shell: |
+    {% for package in (debian__pkg_deps | difference(debian__pkgs_present.stdout_lines)) %}
+    {% if package in ansible_facts.packages %}
+    apt-mark manual "{{ package }}"
+    {% endif %}
+    {% endfor %}
+    :
+  changed_when: false
+
+# Autoremove
+
+- name: Debian > Packages | Get packages to remove
+  ansible.builtin.set_fact:
+    debian__pkgs_absent: "{{ ansible_facts.packages.keys() | list | difference(debian__pkg_deps) | unique | sort }}"
+
+- name: Debian > Packages | Get installed packages
+  ansible.builtin.shell: dpkg --get-selections | grep -w "install" | cut -f1 | sed 's/:amd64$//'
+  register: debian__pkgs_present
+  changed_when: false
+
+- name: Debian > Packages | Get packages to autoremove
+  ansible.builtin.set_fact:
+    debian__pkgs_absent: >-
+      {{
+        (
+          debian__pkgs_absent
+          | intersect(debian__pkgs_present.stdout_lines)
+          | reject('match', '^linux-image-.*')
+          | reject('match', '^linux-headers-.*')
+          | unique
+          | sort
+        )
+      }}
+
+- name: Debian > Packages | Display packages to remove
+  ansible.builtin.debug:
+    var: debian__pkgs_absent
+
+- name: Debian > Packages | Remove
+  when: debian__pkgs_absent | length > 0
+  ansible.builtin.apt:
+    name: "{{ debian__pkgs_absent }}"
+    state: absent
+    autoremove: true
+    purge: true
+  notify:
+    - Debian > System | Restart journald

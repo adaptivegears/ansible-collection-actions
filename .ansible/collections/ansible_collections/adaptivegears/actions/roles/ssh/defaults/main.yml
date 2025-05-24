@@ -1,0 +1,22 @@
+---
+ssh_openssh: "{{ lookup('env', 'SSH_INSTALL', default='true') | bool }}"
+
+ssh_hardening: "{{ lookup('env', 'SSH_HARDENING', default='true') | bool }}"
+ssh_hardening_allow_tcp_forwarding: "{{ lookup('env', 'SSH_HARDENING_ALLOW_TCP_FORWARDING', default='true') | bool }}"
+ssh_hardening_allow_root_login: "{{ lookup('env', 'SSH_HARDENING_ALLOW_ROOT_LOGIN', default='false') | bool }}"
+
+ssh_users: "{{ lookup('env', 'SSH_USERS', default='[]') | from_json }}"
+# ssh_users:
+#   - name: user1
+#     state: allow
+#     key: https://github.com/user1.keys
+#   - name: user2
+#     state: deny
+#     key: https://github.com/user2.keys
+
+ssh_groups: "{{ lookup('env', 'SSH_GROUPS', default='[]') | from_json }}"
+# ssh_groups:
+#   - name: group1
+#     state: allow
+#   - name: group2
+#     state: deny

@@ -1,0 +1,19 @@
+galaxy_info:
+  author: Andrey Gubarev <andrey@andreygubarev.com> (andreygubarev.com)
+  description: Ansible role for setting up Tailscale client
+  company: adaptivegears
+
+  license: MIT
+
+  min_ansible_version: '7.0.0'
+
+  platforms:
+    - name: Debian
+      versions:
+        - bookworm
+
+
+  galaxy_tags:
+    - networking
+
+dependencies: []

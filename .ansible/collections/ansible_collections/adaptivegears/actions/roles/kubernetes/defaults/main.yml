@@ -1,0 +1,43 @@
+kubernetes_name: "kubernetes"
+kubernetes_subnet_pod: "10.100.0.0/16"
+kubernetes_subnet_service: "10.110.0.0/16"
+
+kubernetes_topology_region: >-
+  {{
+    (
+      lookup('env', 'KUBERNETES_TOPOLOGY_REGION') or
+      lookup('file', '/var/lib/instance-metadata/topology-region', errors='ignore')
+    ) | trim
+  }}
+
+kubernetes_topology_zone: >-
+  {{
+    (
+      lookup('env', 'KUBERNETES_TOPOLOGY_ZONE') or
+      lookup('file', '/var/lib/instance-metadata/topology-zone', errors='ignore')
+    ) | trim
+  }}
+
+kubernetes_hostname: >-
+  {{
+    (
+      lookup('env', 'KUBERNETES_HOSTNAME') or
+      lookup('file', '/var/lib/instance-metadata/hostname', errors='ignore')
+    ) | trim
+  }}
+
+kubernetes_ipv4_public: >-
+  {{
+    (
+      lookup('env', 'KUBERNETES_IPV4_PUBLIC') or
+      lookup('file', '/var/lib/instance-metadata/ipv4-public', errors='ignore')
+    ) | trim
+  }}
+
+kubernetes_ipv4_private: >-
+  {{
+    (
+      lookup('env', 'KUBERNETES_IPV4_PRIVATE') or
+      lookup('file', '/var/lib/instance-metadata/ipv4-private', errors='ignore')
+    ) | trim
+  }}

@@ -1,0 +1,76 @@
+---
+- name: Debian > Metadata > Facts
+  ansible.builtin.setup:
+    gather_subset:
+      - all
+
+- name: Debian > Metadata > Directory
+  ansible.builtin.file:
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+    path: /var/lib/instance-metadata/
+
+- name: Debian > Metadata > Hostname
+  ansible.builtin.copy:
+    content: "{{ ansible_facts.hostname | trim }}"
+    dest: /var/lib/instance-metadata/hostname
+    mode: "0444"
+    owner: root
+    group: root
+
+- name: Debian > Metadata > IPv4 > Get Private IP
+  register: debian__ipv4_private
+  ansible.builtin.stat:
+    path: /var/lib/instance-metadata/ipv4-private
+
+- name: Debian > Metadata > IPv4 > Save Private IP
+  when: not debian__ipv4_private.stat.exists
+  ansible.builtin.copy:
+    dest: /var/lib/instance-metadata/ipv4-private
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      {{ ansible_facts.default_ipv4.address | trim }}
+
+- name: Debian > Metadata > IPv4 > Get Public IP (Egress)
+  register: debian__ipv4_public_egress
+  ansible.builtin.shell:
+    cmd: >-
+      exip -p 4
+  changed_when: false
+
+- name: Debian > Metadata > IPv4 > Save Public IP (Egress)
+  ansible.builtin.copy:
+    dest: /var/lib/instance-metadata/ipv4-public-egress
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      {{ debian__ipv4_public_egress.stdout | trim }}
+
+- name: Debian > Metadata > IPv4 > Save Public IP (Ingress)
+  ansible.builtin.shell: |
+    flags=$(stun -v stun.l.google.com:19302 2>&1 | grep -E 'mapped IP same = 1|hairpin = 1|preserver port = 1' | wc -l)
+    if [ "$flags" -eq 3 ]; then
+      cp /var/lib/instance-metadata/ipv4-public-egress /var/lib/instance-metadata/ipv4-public-ingress
+    else
+      rm -f /var/lib/instance-metadata/ipv4-public-ingress
+      touch /var/lib/instance-metadata/ipv4-public-ingress
+    fi
+    chmod 0644 /var/lib/instance-metadata/ipv4-public-ingress
+  args:
+    creates: /var/lib/instance-metadata/ipv4-public-ingress
+
+- name: Debian > Metadata > IPv4 > Save Public IP
+  ansible.builtin.copy:
+    dest: /var/lib/instance-metadata/ipv4-public
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      {% if (lookup('file', '/var/lib/instance-metadata/ipv4-public-ingress') | trim) == (debian__ipv4_public_egress.stdout | trim) %}
+      {{ debian__ipv4_public_egress.stdout | trim }}
+      {% endif %}

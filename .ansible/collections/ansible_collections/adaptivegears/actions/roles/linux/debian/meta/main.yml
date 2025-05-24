@@ -1,0 +1,16 @@
+galaxy_info:
+  author: Andrey Gubarev <andrey@andreygubarev.com> (https://andreygubarev.com/)
+  description: Standard Debian 12
+  company: adaptivegears
+  license: MIT
+
+  min_ansible_version: "7.0.0"
+
+  platforms:
+    - name: Debian
+      versions:
+        - bookworm
+
+  galaxy_tags: []
+
+dependencies: []

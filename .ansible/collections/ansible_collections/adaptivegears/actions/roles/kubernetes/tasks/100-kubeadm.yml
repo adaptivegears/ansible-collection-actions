@@ -1,0 +1,70 @@
+---
+- name: Kubernetes > Kubeadm > Pull Kubernetes Images
+  ansible.builtin.shell:
+    cmd: |
+      kubeadm config images pull
+  changed_when: false
+
+# https://kubernetes.io/docs/reference/config-api/kubeadm-config.v1beta4/
+# https://kubernetes.io/docs/reference/config-api/kubelet-config.v1beta1/
+- name: Kubernetes > Kubeadm > Configure
+  ansible.builtin.copy:
+    dest: /etc/kubernetes/kubeadm-config.yaml
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      ---
+      apiVersion: kubeadm.k8s.io/v1beta4
+      kind: InitConfiguration
+
+      localAPIEndpoint:
+        advertiseAddress: "{{ kubernetes_ipv4_private }}"
+        bindPort: 6443
+
+      nodeRegistration:
+        name: "{{ kubernetes_hostname }}"
+        criSocket: unix:///var/run/containerd/containerd.sock
+        kubeletExtraArgs:
+          - name: "node-ip"
+            value: "{{ kubernetes_ipv4_private }}"
+          - name: "node-labels"
+            value: "topology.kubernetes.io/region={{ kubernetes_topology_region }},topology.kubernetes.io/zone={{ kubernetes_topology_zone }}"
+
+      ---
+      apiVersion: kubeadm.k8s.io/v1beta4
+      kind: ClusterConfiguration
+      clusterName: "{{ kubernetes_name }}"
+      kubernetesVersion: "{{ kubernetes_version_full }}"
+
+      controlPlaneEndpoint: "{{ kubernetes_ipv4_private }}:6443"
+      networking:
+        dnsDomain: "cluster.local"
+        podSubnet: "{{ kubernetes_subnet_pod }}"
+        serviceSubnet: "{{ kubernetes_subnet_service }}"
+
+      apiServer:
+        certSANs:
+          - "{{ kubernetes_ipv4_private }}"
+          - "{{ kubernetes_hostname }}"
+
+      etcd:
+        local:
+          dataDir: "/var/lib/etcd"
+
+      ---
+      apiVersion: kubelet.config.k8s.io/v1beta1
+      kind: KubeletConfiguration
+      cgroupDriver: systemd
+      authentication:
+        anonymous:
+          enabled: false
+        webhook:
+          enabled: true
+
+- name: Kubernetes > Kubeadm > Initialize
+  ansible.builtin.shell:
+    cmd: >-
+      kubeadm init
+      --config /etc/kubernetes/kubeadm-config.yaml
+  changed_when: false

@@ -1,0 +1,16 @@
+---
+metadata_topology_region: >-
+  {{
+    (
+      lookup('env', 'METADATA_TOPOLOGY_REGION') or
+      lookup('file', metadata_directory + '/topology-region', errors='ignore')
+    ) | lower
+  }}
+
+metadata_topology_zone: >-
+  {{
+    (
+      lookup('env', 'METADATA_TOPOLOGY_ZONE') or
+      lookup('file', metadata_directory + '/topology-zone', errors='ignore')
+    ) | lower
+  }}

@@ -1,0 +1,5 @@
+---
+- name: Debian > APT > Set minimal packages
+  when: debian_minimal
+  ansible.builtin.set_fact:
+    debian_packages: "{{ debian_packages | difference(debian_packages_minimal) }}"
