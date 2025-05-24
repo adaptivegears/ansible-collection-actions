@@ -1,5 +1,5 @@
 ---
-- name: SSH | Authorize SSH keys
+- name: SSH > Access Control > Authorize User SSH Keys
   ansible.posix.authorized_key:
     user: "{{ item.name }}"
     state: present
@@ -13,12 +13,12 @@
   when: item.key is defined
   notify: Restart OpenSSH
 
-- name: SSH | Configure SSH access control for users
+- name: SSH > Access Control > Prepare User Allow/Deny Lists
   ansible.builtin.set_fact:
     ssh_users_allow: "{{ ssh_users | selectattr('state', 'equalto', 'allow') | map(attribute='name') | list }}"
     ssh_users_deny: "{{ ssh_users | selectattr('state', 'equalto', 'deny') | map(attribute='name') | list }}"
 
-- name: SSH | Set allow SSH access for users (CIS 5.2.18)
+- name: SSH > Access Control > Configure AllowUsers in sshd_config (CIS 5.2.18)
   when: ssh_users_allow | length > 0
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
@@ -26,7 +26,7 @@
     line: "AllowUsers {{ ssh_users_allow | join(' ') }}"
   notify: Restart OpenSSH
 
-- name: SSH | Unset allow SSH access for users (CIS 5.2.18)
+- name: SSH > Access Control > Ensure AllowUsers is Removed if Empty (CIS 5.2.18)
   when: ssh_users_allow | length == 0
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
@@ -34,7 +34,7 @@
     state: absent
   notify: Restart OpenSSH
 
-- name: SSH | Set deny SSH access for users (CIS 5.2.18)
+- name: SSH > Access Control > Configure DenyUsers in sshd_config (CIS 5.2.18)
   when: ssh_users_deny | length > 0
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
@@ -42,7 +42,7 @@
     line: "DenyUsers {{ ssh_users_deny | join(' ') }}"
   notify: Restart OpenSSH
 
-- name: SSH | Unset deny SSH access for users (CIS 5.2.18)
+- name: SSH > Access Control > Ensure DenyUsers is Removed if Empty (CIS 5.2.18)
   when: ssh_users_deny | length == 0
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
@@ -50,12 +50,12 @@
     state: absent
   notify: Restart OpenSSH
 
-- name: SSH | Configure SSH access control for groups
+- name: SSH > Access Control > Prepare Group Allow/Deny Lists
   ansible.builtin.set_fact:
     ssh_groups_allow: "{{ ssh_groups | selectattr('state', 'equalto', 'allow') | map(attribute='name') | list }}"
     ssh_groups_deny: "{{ ssh_groups | selectattr('state', 'equalto', 'deny') | map(attribute='name') | list }}"
 
-- name: SSH | Set allow SSH access for groups (CIS 5.2.18)
+- name: SSH > Access Control > Configure AllowGroups in sshd_config (CIS 5.2.18)
   when: ssh_groups_allow | length > 0
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
@@ -63,7 +63,7 @@
     line: "AllowGroups {{ ssh_groups_allow | join(' ') }}"
   notify: Restart OpenSSH
 
-- name: SSH | Unset allow SSH access for groups (CIS 5.2.18)
+- name: SSH > Access Control > Ensure AllowGroups is Removed if Empty (CIS 5.2.18)
   when: ssh_groups_allow | length == 0
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
@@ -71,7 +71,7 @@
     state: absent
   notify: Restart OpenSSH
 
-- name: SSH | Set deny SSH access for groups (CIS 5.2.18)
+- name: SSH > Access Control > Configure DenyGroups in sshd_config (CIS 5.2.18)
   when: ssh_groups_deny | length > 0
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
@@ -79,7 +79,7 @@
     line: "DenyGroups {{ ssh_groups_deny | join(' ') }}"
   notify: Restart OpenSSH
 
-- name: SSH | Unset deny SSH access for groups (CIS 5.2.18)
+- name: SSH > Access Control > Ensure DenyGroups is Removed if Empty (CIS 5.2.18)
   when: ssh_groups_deny | length == 0
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config

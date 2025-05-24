@@ -1,5 +1,5 @@
 ---
-- name: SSH | Install server
+- name: SSH > Server > Install openssh-server Package
   ansible.builtin.apt:
     name:
       - openssh-server
@@ -7,7 +7,7 @@
     update_cache: true
     install_recommends: false
 
-- name: SSH | Start service
+- name: SSH > Server > Ensure ssh Service is Started and Enabled
   ansible.builtin.systemd_service:
     name: ssh
     state: started
