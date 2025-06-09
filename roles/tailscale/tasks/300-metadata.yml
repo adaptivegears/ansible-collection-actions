@@ -1,5 +1,5 @@
 ---
-- name: Tailscale > Metadata | Save Tailscale Auth Key
+- name: Tailscale > Metadata > Save Tailscale Auth Key
   when: (tailscale_authkey | trim) | length > 0
   ansible.builtin.copy:
     content: "{{ tailscale_authkey | trim }}"
@@ -8,13 +8,13 @@
     owner: root
     group: root
 
-- name: Tailscale > Metadata | Get IPv4
+- name: Tailscale > Metadata > Get IPv4
   ansible.builtin.shell: |
     tailscale ip -4
   changed_when: false
   register: tailscale__ipv4
 
-- name: Tailscale > Metadata | Save IPv4 for local traffic
+- name: Tailscale > Metadata > Save IPv4 for local traffic
   when: (tailscale__ipv4.stdout | trim) | length > 0
   ansible.builtin.copy:
     content: "{{ tailscale__ipv4.stdout | trim }}"

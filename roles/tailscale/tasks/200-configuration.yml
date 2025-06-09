@@ -1,11 +1,11 @@
 ---
-- name: Tailscale > Config | Wait for readiness
+- name: Tailscale > Config > Wait for readiness
   ansible.builtin.wait_for:
     path: "{{ tailscale_socket }}"
     state: present
     timeout: 60
 
-- name: Tailscale > Config | Get status
+- name: Tailscale > Config > Get status
   ansible.builtin.command: >-
     tailscale
     --socket {{ tailscale_socket }}
@@ -13,7 +13,7 @@
   register: tailscale_status
   changed_when: false
 
-- name: Tailscale > Config | Login
+- name: Tailscale > Config > Login
   when: (tailscale_status.stdout | from_json)['BackendState'] == 'NeedsLogin'
   block:
     - name: Tailscale > Login | Assert auth key
@@ -24,7 +24,7 @@
         success_msg: "Tailscale auth key is defined"
         fail_msg: "Tailscale auth key is not defined"
 
-    - name: Tailscale > Login | Login
+    - name: Tailscale > Login > Login
       ansible.builtin.command: >-
         tailscale
         --socket="{{ tailscale_socket }}"
@@ -36,7 +36,7 @@
         {% endif %}
       changed_when: true
 
-- name: Tailscale > Config | Advertise exit node
+- name: Tailscale > Config > Advertise exit node
   when: (tailscale_advertise_exit_node | trim) | length > 0
   ansible.builtin.command: >-
     tailscale
@@ -44,7 +44,7 @@
     set
     --advertise-exit-node={{ (tailscale_advertise_exit_node | trim) | bool | ternary('true', 'false') }}
 
-- name: Tailscale > Config | Accept DNS
+- name: Tailscale > Config > Accept DNS
   when: (tailscale_accept_dns | trim) | length > 0
   ansible.builtin.command: >-
     tailscale
@@ -52,7 +52,7 @@
     set
     --accept-dns={{ (tailscale_accept_dns | trim) | bool | ternary('true', 'false') }}
 
-- name: Tailscale > Config | Accept routes
+- name: Tailscale > Config > Accept routes
   when: (tailscale_accept_routes | trim) | length > 0
   ansible.builtin.command: >-
     tailscale

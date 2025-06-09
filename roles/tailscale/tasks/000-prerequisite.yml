@@ -1,17 +1,17 @@
 ---
-- name: Debian > Prerequisites | Assert distribution and architecture
+- name: Debian > Prerequisites > Assert distribution and architecture
   ansible.builtin.assert:
     that:
       - ansible_distribution == "Debian"
       - ansible_distribution_major_version == "12"
     fail_msg: "This role is only supported on Debian 12"
 
-- name: Debian > Prerequisites | Assert architecture
+- name: Debian > Prerequisites > Assert architecture
   ansible.builtin.assert:
     that:
       - ansible_architecture == "x86_64"
     fail_msg: "This role is only supported on amd64 (x86_64) architecture"
 
-- name: Tailscale > Prerequisites | Get hostname
+- name: Tailscale > Prerequisites > Get hostname
   ansible.builtin.set_fact:
     tailscale__hostname: "{{ lookup('file', '/var/lib/instance-metadata/hostname') }}"
