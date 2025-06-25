@@ -20,11 +20,12 @@ This is the `adaptivegears.actions` Ansible Collection - a structured package of
 - `ansible-lint roles/<role-name>` - Lint a specific role
 - Available roles: `linux/debian`, `ssh`, `tailscale`, `kubernetes`, `metadata`
 
-### Python Environment
-- Uses pipenv for dependency management
-- `pipenv install` - Install dependencies
-- `pipenv shell` - Activate virtual environment
-- Requires Python 3.11, Ansible ~=10.0
+### Development Environment
+- Uses direnv + pipenv for environment management
+- `direnv allow` - Allow .envrc to load automatically (first time only)
+- Environment activates automatically when entering directory
+- `pipenv install` - Install dependencies (if needed)
+- Requires Python 3.11, Ansible ~=10.0, direnv installed
 
 ## Architecture Overview
 
