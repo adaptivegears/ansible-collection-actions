@@ -10,14 +10,14 @@ This is the `adaptivegears.actions` Ansible Collection - a structured package of
 
 ### Essential Commands
 - `make help` - Show all available make targets
-- `make test` - Run molecule tests on all roles (uses QEMU virtualization)
+- `make test` - Run lint checks on all roles
 - `make format` - Format code using ansible-lint
 - `make build` - Build collection archive (runs format first)
 - `make install` - Install collection locally (builds first)
 - `make clean` - Remove build artifacts
 
 ### Testing Individual Roles
-- `cd roles/<role-name> && molecule test` - Test a specific role
+- `ansible-lint roles/<role-name>` - Lint a specific role
 - Available roles: `linux/debian`, `ssh`, `tailscale`, `kubernetes`, `metadata`
 
 ### Python Environment
@@ -98,13 +98,12 @@ variable: >-
 - Build artifacts: `*.tar.gz` files
 - Repository: https://github.com/adaptivegears/ansible-ansible-collections-actions
 
-## Testing Framework
+## Code Quality
 
-Uses Molecule with QEMU virtualization for role testing:
-- Test configurations in each role's `molecule/` directory
-- QEMU-based virtual machines for testing
-- pytest-testinfra for validation
-- Molecule version constraint: `<7.0.0,>=6.0.0`
+Uses ansible-lint for code quality checks:
+- Consistent code style and best practices
+- Role validation and syntax checking
+- Integrated with build process via `make format`
 
 ## Development Guidelines
 
@@ -122,4 +121,4 @@ Uses Molecule with QEMU virtualization for role testing:
 ### Dependencies
 - Collection has no external Ansible dependencies
 - Python requirements managed via Pipfile
-- Build dependencies: ansible-lint, molecule, pytest-testinfra
+- Build dependencies: ansible-lint

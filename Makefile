@@ -8,19 +8,18 @@ help: ## Brief overview of available targets and their descriptions
 ### Ansible ###################################################################
 ANSIBLE_GALAXY := ansible-galaxy
 ANSIBLE_LINT := ansible-lint
-ANSIBLE_MOLECULE := molecule
 ANSIBLE_ROLES := $(shell find roles -mindepth 1 -maxdepth 1 -type d)
 
 .PHONY: $(ANSIBLE_ROLES)
 $(ANSIBLE_ROLES):
-	cd $@ && $(ANSIBLE_MOLECULE) test
+	$(ANSIBLE_LINT) $@
 
 .PHONY: format
 format: ## Automatically format the source code
 	@$(ANSIBLE_LINT) -v
 
 .PHONY: test
-test: $(ANSIBLE_ROLES)  ## Run tests
+test: $(ANSIBLE_ROLES)  ## Run lint checks on all roles
 
 .PHONY: build
 build: format ## Build collection archive
