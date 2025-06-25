@@ -6,33 +6,31 @@ help: ## Brief overview of available targets and their descriptions
 	@egrep -h '\s##\s' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 ### Ansible ###################################################################
-ANSIBLE_GALAXY := ansible-galaxy
-ANSIBLE_LINT := ansible-lint
 ANSIBLE_ROLES := $(shell find roles -mindepth 1 -maxdepth 1 -type d)
 
 .PHONY: $(ANSIBLE_ROLES)
 $(ANSIBLE_ROLES):
-	$(ANSIBLE_LINT) $@
+	ansible-lint $@
 
 .PHONY: format
 format: ## Automatically format the source code
-	@$(ANSIBLE_LINT) -v
+	@ansible-lint -v
 
 .PHONY: test
 test: $(ANSIBLE_ROLES)  ## Run lint checks on all roles
 
 .PHONY: build
 build: format ## Build collection archive
-	$(ANSIBLE_GALAXY) collection build --force
+	ansible-galaxy collection build --force
 
 .PHONY: install
 install: build ## Install collection
-	$(ANSIBLE_GALAXY) collection install -r requirements.yml
-	$(ANSIBLE_GALAXY) collection install *.tar.gz
+	ansible-galaxy collection install -r requirements.yml
+	ansible-galaxy collection install *.tar.gz
 
 .PHONY: release
 release: clean build ## Publish collection
-	$(ANSIBLE_GALAXY) collection publish *.tar.gz --api-key $(GALAXY_API_KEY)
+	ansible-galaxy collection publish *.tar.gz --api-key $(GALAXY_API_KEY)
 
 .PHONY: clean
 clean: ## Clean up the build artifacts, object files, executables, and any other generated files
