@@ -8,10 +8,40 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
 - NEVER break the established directory structure
 
-## INSTRUCTIONS
+## QUICK REFERENCE
 
-### GitHub Flow Workflow
-When implementing GitHub Flow workflow, ALWAYS follow these steps:
+### Essential Daily Commands
+```bash
+# Development workflow
+make help                    # Show all available commands
+make lint                    # Run lint checks on all roles
+make format                  # Format code using ansible-lint
+make build                   # Build collection archive
+make install                 # Install collection locally
+
+# VM testing workflow
+make vm-reset               # Complete test reset: destroy, create, test connectivity
+make test                   # Run apt role test against VM
+make test-debian           # Run debian role test with purge functionality
+make vm-up                 # Start test VM
+make vm-down               # Stop test VM
+
+# Manual testing
+ansible debian12 -m ping   # Test VM connectivity
+ansible-lint roles/<role>  # Lint specific role
+```
+
+### Available Roles
+- `linux/debian` - Base Debian 12 system (400+ packages)
+- `ssh` - SSH server hardening and access control
+- `tailscale` - VPN mesh networking setup
+- `kubernetes` - Container orchestration components
+- `metadata` - Cross-role state management and topology
+
+## DEVELOPMENT WORKFLOW
+
+### GitHub Flow Process
+ALWAYS follow these steps when implementing changes:
 
 1. **Start from main branch**:
    ```bash
@@ -22,7 +52,7 @@ When implementing GitHub Flow workflow, ALWAYS follow these steps:
 2. **Create feature branch**:
    ```bash
    git checkout -b feature/descriptive-name
-   # or: bugfix/issue-description, refactor/component-name
+   # Branch types: feature/, bugfix/, refactor/, docs/
    ```
 
 3. **Make changes and commit**:
@@ -34,23 +64,13 @@ When implementing GitHub Flow workflow, ALWAYS follow these steps:
    ```bash
    git push origin feature/descriptive-name
    gh pr create --title "Clear PR title" --body "Description" --assignee andreygubarev
+   gh pr edit --add-reviewer copilot
    ```
 
-5. **Wait for review**:
-   - User will review the pull request
-   - Address any review comments by making additional commits
-   - Re-request review after changes
-
-6. **Merge when approved**:
+5. **Wait for review and merge when approved**:
    ```bash
    gh pr merge --squash  # or --merge as appropriate
    ```
-
-### Branch Naming Conventions
-- `feature/description` - New functionality
-- `bugfix/issue-description` - Bug fixes
-- `refactor/component-name` - Code refactoring
-- `docs/topic` - Documentation updates
 
 ### Pull Request Requirements
 - Assign to @andreygubarev
@@ -59,112 +79,78 @@ When implementing GitHub Flow workflow, ALWAYS follow these steps:
 - Reference related issues if applicable
 - Keep commits focused and atomic
 
-## Project Overview
+### Development Environment Setup
+- **Environment Manager**: direnv + pipenv
+- **First-time setup**: `direnv allow` (enables automatic environment activation)
+- **Dependencies**: Python 3.11, Ansible ~=10.0, direnv
+- **Install dependencies**: `pipenv install` (if needed)
 
-This is the `adaptivegears.actions` Ansible Collection - a structured package of automation content for infrastructure provisioning and server management, specifically focused on Debian-based systems. The collection provides standardized roles, playbooks, and a metadata management system for consistent server deployments across cloud providers.
+## TESTING & VALIDATION
 
-## Development Commands
+### VM Testing with Vagrant
+The project uses Vagrant with VMware Fusion for local testing:
 
-### Essential Commands
-- `make help` - Show all available make targets
-- `make lint` - Run lint checks on all roles
-- `make format` - Format code using ansible-lint
-- `make build` - Build collection archive (runs format first)
-- `make install` - Install collection locally (builds first)
-- `make clean` - Remove build artifacts
+**VM Specifications:**
+- OS: Debian 12 (bento/debian-12)
+- Resources: 2GB RAM, 2 CPUs
+- Network: IP 192.168.56.10
+- Requirements: VMware Fusion, Vagrant with vagrant-vmware-desktop plugin
 
-### VM Testing Workflow
-- `make vm-reset` - **Complete test reset**: Destroy VM, create fresh VM, test connectivity
-- `make test` - Run apt role test playbook against VM
-- `make vm-up` - Start test VM
-- `make vm-down` - Stop test VM
-
-### Testing Individual Roles
-- `ansible-lint roles/<role-name>` - Lint a specific role
-- Available roles: `linux/debian`, `ssh`, `tailscale`, `kubernetes`, `metadata`
-
-### Development Environment
-- Uses direnv + pipenv for environment management
-- `direnv allow` - Allow .envrc to load automatically (first time only)
-- Environment activates automatically when entering directory
-- `pipenv install` - Install dependencies (if needed)
-- Requires Python 3.11, Ansible ~=10.0, direnv installed
-
-### Local Testing with Vagrant
-- **VM Setup**: `cd tests/vm && vagrant up` - Start Debian 12 VM for testing
-- **VM Access**: `vagrant ssh` - Connect to test VM
-- **VM Management**: `vagrant halt` / `vagrant destroy -f` - Stop/remove VM
-- **Requirements**: VMware Fusion, Vagrant with vagrant-vmware-desktop plugin
-- **VM Specs**: Debian 12 (bento/debian-12), 2GB RAM, 2 CPUs, IP 192.168.56.10
-
-### Testing Configuration
-The project includes a centralized testing configuration:
-- **Ansible Config**: `tests/ansible.cfg` - Optimized settings for VM testing
-- **Environment**: `.envrc` sets `ANSIBLE_CONFIG` to use test configuration automatically
-- **Inventory**: `tests/inventory` - VM connection details with Python3 interpreter
-- **Makefile**: `tests/Makefile` - Testing automation commands
-
-### Manual Testing Commands
-- `ansible debian12 -m ping` - Test connectivity directly from project root
-
-### Test Playbooks
-Located in `tests/playbooks/` directory with naming pattern `debian12-{role}.yml`:
-- `tests/playbooks/debian12-apt.yml` - Test APT role configuration and package management
-
-#### Running Test Playbooks
+**VM Management Commands:**
 ```bash
-# Run specific test playbook
-ansible-playbook tests/playbooks/debian12-apt.yml
+# Complete workflow
+make vm-reset              # Destroy → create → test connectivity
 
-# Run with verbose output
-ansible-playbook tests/playbooks/debian12-apt.yml -v
-
-# Run with extra variables
-ansible-playbook tests/playbooks/debian12-apt.yml -e "variable=value"
+# Individual operations
+make vm-up                 # Start VM
+make vm-down              # Stop VM
+cd tests/vm && vagrant ssh # Connect to VM
 ```
 
-### VM Testing Use Cases
-1. **Role Development**: Test individual roles against clean Debian 12 environment
-2. **Playbook Validation**: Verify playbooks work on actual system before deployment  
+**Testing Configuration:**
+- **Ansible Config**: `tests/ansible.cfg` (optimized for VM testing)
+- **Inventory**: `tests/inventory` (VM connection details)
+- **Environment**: `.envrc` sets `ANSIBLE_CONFIG` automatically
+
+### Test Playbooks
+Located in `tests/playbooks/` with pattern `debian12-{role}.yml`:
+
+```bash
+# Run specific test playbooks
+ansible-playbook tests/playbooks/debian12-apt.yml
+ansible-playbook tests/playbooks/debian12-debian.yml
+
+# Run with options
+ansible-playbook tests/playbooks/debian12-apt.yml -v               # Verbose
+ansible-playbook tests/playbooks/debian12-apt.yml -e "var=value"   # Extra vars
+```
+
+### Testing Use Cases
+1. **Role Development**: Test roles against clean Debian 12 environment
+2. **Playbook Validation**: Verify playbooks work before deployment
 3. **Metadata System Testing**: Validate `/var/lib/instance-metadata/` functionality
 4. **Integration Testing**: Test role interactions and dependencies
 5. **Package Installation**: Verify 400+ package installations in linux/debian role
 
-## Architecture Overview
+### Code Quality
+- **Linting**: ansible-lint for code quality and best practices
+- **Formatting**: Integrated with build process via `make format`
+- **Individual role testing**: `ansible-lint roles/<role-name>`
+
+## PROJECT ARCHITECTURE
+
+### Overview
+The `adaptivegears.actions` Ansible Collection provides structured automation content for infrastructure provisioning and server management, focused on Debian-based systems. It includes standardized roles, playbooks, and a filesystem-based metadata management system for consistent deployments across cloud providers.
 
 ### Core Innovation: Metadata System
-The collection implements a filesystem-based metadata storage system at `/var/lib/instance-metadata/` that addresses Ansible's stateless nature:
+Filesystem-based metadata storage at `/var/lib/instance-metadata/` addresses Ansible's stateless nature:
 
-- **State Persistence**: Variables and decisions persist between playbook runs
-- **Inter-role Communication**: Roles can share data through standardized file locations
-- **Fallback Chains**: Supports environment variables → metadata files → defaults pattern
-- **Topology Awareness**: Stores provider/region/zone information for location-aware operations
+- **State Persistence**: Variables persist between playbook runs
+- **Inter-role Communication**: Roles share data through standardized locations
+- **Fallback Chains**: Environment variables → metadata files → defaults
+- **Topology Awareness**: Cloud provider/region/zone information
 
-### Role Structure
-Each role follows a numbered task organization pattern:
-- `000-prerequisites.yml` - Setup and validation
-- `1XX-` prefix - Main functionality tasks
-- `2XX-` prefix - Configuration tasks  
-- `3XX-` prefix - Advanced/optional tasks
-- `999-metadata.yml` - Metadata storage (where applicable)
-
-### Key Roles
-- **linux/debian**: Base Debian 12 system with 400+ packages (kernel, hardware, networking, security)
-- **ssh**: SSH server hardening and access control
-- **tailscale**: VPN mesh networking setup
-- **kubernetes**: Container orchestration platform components
-- **metadata**: Cross-role state management and topology metadata
-
-### Playbook Patterns
-Standard playbooks in `/playbooks/` directory:
-- `standard-debian.yml` - Base server setup
-- `standard-ssh.yml` - SSH configuration
-- `standard-tailscale.yml` - VPN setup
-- `standard-kubernetes.yml` - K8s cluster setup
-
-## Metadata System Implementation
-
-### Directory Structure
+**Directory Structure:**
 ```
 /var/lib/instance-metadata/
 ├── hostname                   # System hostname
@@ -177,7 +163,7 @@ Standard playbooks in `/playbooks/` directory:
     └── tailscale-authkey     # Tailscale auth key (0400 permissions)
 ```
 
-### Usage Pattern in Tasks
+**Usage Pattern:**
 ```yaml
 variable: >-
   {{
@@ -189,40 +175,51 @@ variable: >-
   }}
 ```
 
-## Collection Management
+### Role Structure
+Each role follows numbered task organization:
+- `000-prerequisites.yml` - Setup and validation
+- `1XX-` prefix - Main functionality tasks
+- `2XX-` prefix - Configuration tasks
+- `3XX-` prefix - Advanced/optional tasks
+- `999-metadata.yml` - Metadata storage (where applicable)
+
+### Standard Playbooks
+Located in `/playbooks/` directory:
+- `standard-debian.yml` - Base server setup
+- `standard-ssh.yml` - SSH configuration
+- `standard-tailscale.yml` - VPN setup
+- `standard-kubernetes.yml` - K8s cluster setup
+
+## COLLECTION MANAGEMENT
 
 ### Galaxy Configuration
-- Namespace: `adaptivegears`
-- Collection name: `actions`
-- Version: 1.0.0 (defined in galaxy.yml)
-- Requires Ansible >=2.16
+- **Namespace**: `adaptivegears`
+- **Collection**: `actions`
+- **Version**: 1.0.0 (defined in galaxy.yml)
+- **Ansible Version**: >=2.16 required
+- **Repository**: https://github.com/adaptivegears/ansible-collection-actions
 
 ### Build and Release
-- `GALAXY_API_KEY` environment variable required for publishing
+```bash
+make build                     # Build collection archive
+make install                   # Install locally
+make release                   # Publish (requires GALAXY_API_KEY)
+```
+
 - Build artifacts: `*.tar.gz` files
-- Repository: https://github.com/adaptivegears/ansible-ansible-collections-actions
+- No external Ansible dependencies
+- Python dependencies managed via Pipfile
 
-## Code Quality
-
-Uses ansible-lint for code quality checks:
-- Consistent code style and best practices
-- Role validation and syntax checking
-- Integrated with build process via `make format`
-
-## Development Guidelines
+## DEVELOPMENT GUIDELINES
 
 ### File Organization
-- Tasks use numerical prefixes (000-, 100-, 200-, etc.) for execution order
-- Each role has standardized directories: defaults/, tasks/, vars/, templates/, handlers/
-- Documentation in role-specific README.md files
-- Enhancement proposals in docs/ directory (EP-001, EP-002, etc.)
+- **Task naming**: Numerical prefixes (000-, 100-, 200-) for execution order
+- **Role structure**: Standardized directories (defaults/, tasks/, vars/, templates/, handlers/)
+- **Documentation**: Role-specific README.md files
+- **Enhancement proposals**: docs/ directory (EP-001, EP-002, etc.)
 
 ### Naming Conventions
-- Task names use ">" separator (e.g., "Metadata > Topology")
-- Topology identifiers: lowercase, alphanumeric with hyphens
-- File permissions: 0644 for readable metadata, 0400/0500 for sensitive data
-
-### Dependencies
-- Collection has no external Ansible dependencies
-- Python requirements managed via Pipfile
-- Build dependencies: ansible-lint
+- **Task names**: Use ">" separator (e.g., "Metadata > Topology")
+- **Topology identifiers**: Lowercase, alphanumeric with hyphens
+- **File permissions**: 0644 for readable metadata, 0400/0500 for sensitive data
+- **Branch names**: `feature/description`, `bugfix/issue-description`, `refactor/component-name`, `docs/topic`
