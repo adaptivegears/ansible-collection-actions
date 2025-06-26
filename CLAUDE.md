@@ -34,8 +34,25 @@ This is the `adaptivegears.actions` Ansible Collection - a structured package of
 - **Requirements**: VMware Fusion, Vagrant with vagrant-vmware-desktop plugin
 - **VM Specs**: Debian 12 (bento/debian-12), 2GB RAM, 2 CPUs, IP 192.168.56.10
 
+### Testing Configuration
+The project includes a centralized testing configuration:
+- **Ansible Config**: `tests/ansible.cfg` - Optimized settings for VM testing
+- **Environment**: `.envrc` sets `ANSIBLE_CONFIG` to use test configuration automatically
+- **Inventory**: `tests/inventory` - VM connection details with Python3 interpreter
+- **Makefile**: `tests/Makefile` - Testing automation commands
+
 ### Testing Commands
-- `ansible -i tests/inventory debian12 -m ping` - Test Ansible connectivity to VM
+- `ansible debian12 -m ping` - Test connectivity (works from project root)
+- `ansible-playbook playbooks/standard-*.yml --limit debian12` - Run playbooks against VM
+- `cd tests && make vm-up` - Start VM using Makefile
+- `cd tests && make test-connectivity` - Test Ansible connection
+
+### VM Testing Use Cases
+1. **Role Development**: Test individual roles against clean Debian 12 environment
+2. **Playbook Validation**: Verify playbooks work on actual system before deployment  
+3. **Metadata System Testing**: Validate `/var/lib/instance-metadata/` functionality
+4. **Integration Testing**: Test role interactions and dependencies
+5. **Package Installation**: Verify 400+ package installations in linux/debian role
 
 ## Architecture Overview
 
