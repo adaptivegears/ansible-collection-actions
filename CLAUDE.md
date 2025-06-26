@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### NEVER DO THIS
 - NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
 - NEVER break the established directory structure
+- NEVER force push to the main branch
 
 ## QUICK REFERENCE
 
