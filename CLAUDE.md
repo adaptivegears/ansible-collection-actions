@@ -43,9 +43,24 @@ The project includes a centralized testing configuration:
 
 ### Testing Commands
 - `ansible debian12 -m ping` - Test connectivity (works from project root)
-- `ansible-playbook playbooks/standard-*.yml --limit debian12` - Run playbooks against VM
 - `cd tests && make vm-up` - Start VM using Makefile
 - `cd tests && make test-connectivity` - Test Ansible connection
+
+### Test Playbooks
+Located in `tests/playbooks/` directory with naming pattern `debian12-{role}.yml`:
+- `tests/playbooks/debian12-apt.yml` - Test APT role configuration and package management
+
+#### Running Test Playbooks
+```bash
+# Run specific test playbook
+ansible-playbook tests/playbooks/debian12-apt.yml
+
+# Run with verbose output
+ansible-playbook tests/playbooks/debian12-apt.yml -v
+
+# Run with extra variables
+ansible-playbook tests/playbooks/debian12-apt.yml -e "variable=value"
+```
 
 ### VM Testing Use Cases
 1. **Role Development**: Test individual roles against clean Debian 12 environment
