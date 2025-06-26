@@ -24,7 +24,12 @@
         dest: /etc/apt/sources.list
         content: "{{ lookup('file', 'sources.list') }}"
         mode: "0644"
-      notify: APT > Cache > Update
+      register: apt__repos
+
+    - name: APT > Cache > Update  # noqa: no-handler
+      when: apt__repos is changed
+      ansible.builtin.apt:
+        update_cache: true
 
 - name: APT > Cache > Update
   ansible.builtin.apt:
