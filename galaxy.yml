@@ -12,7 +12,8 @@ license_file: LICENSE
 
 tags: []
 
-dependencies: {}
+dependencies:
+  - 'community.general:>=8.0.0'
 
 # Minimum required ansible version
 requires_ansible: '>=2.16'

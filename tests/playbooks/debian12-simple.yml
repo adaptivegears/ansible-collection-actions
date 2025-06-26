@@ -1,0 +1,36 @@
+---
+# Simplified Test Playbook: Debian Role Basic Test
+# Tests minimal functionality without complex network changes
+
+- name: Simple Debian Role Test
+  hosts: debian12
+  connection: ssh
+  gather_facts: true
+  become: true
+  vars:
+    debian_install: true
+    debian_prune: false
+    debian_minimal: true
+
+  tasks:
+    - name: Test | Apply Debian Role (Minimal Mode)
+      ansible.builtin.include_role:
+        name: linux/debian
+      vars:
+        # Supply required metadata variables
+        metadata_topology_provider: "test"
+        metadata_topology_region: "us-1"
+        metadata_topology_zone: "us-1a"
+
+    - name: Test | Verify core packages are installed
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Test | Check basic functionality
+      ansible.builtin.assert:
+        that:
+          - "'apt' in ansible_facts.packages"
+          - "'systemd' in ansible_facts.packages"
+          - "'bash' in ansible_facts.packages"
+        fail_msg: "Critical core packages are missing"
+        success_msg: "Basic package installation successful"

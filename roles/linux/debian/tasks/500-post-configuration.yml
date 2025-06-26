@@ -43,17 +43,25 @@
     job: >-
       echo 'madvise' | sudo tee /sys/kernel/mm/transparent_hugepage/enabled
 
+- name: Debian > Network | Skip network reconfiguration in test environments
+  when: ansible_virtualization_type is defined and ansible_virtualization_type == 'VMware'
+  ansible.builtin.debug:
+    msg: "Skipping network reconfiguration in VMware test environment"
+
 - name: Debian > Network | Enable systemd-networkd.service
+  when: ansible_virtualization_type is not defined or ansible_virtualization_type != 'VMware'
   ansible.builtin.systemd_service:
     name: systemd-networkd
     state: started
     enabled: true
 
 - name: Debian > Network | Disable networking.service
+  when: ansible_virtualization_type is not defined or ansible_virtualization_type != 'VMware'
   ansible.builtin.systemd_service:
     name: networking
     state: stopped
     enabled: false
+  failed_when: false
 
 - name: Debian > MOTD | Set
   ansible.builtin.template:
