@@ -50,9 +50,8 @@
     content: |
       {{ debian__ipv4_public_egress.stdout | trim }}
 
-- name: Debian > Metadata > IPv4 > Save Public IP (Ingress)
+- name: Debian > Metadata > IPv4 > Save Public IP (Ingress)  # noqa: risky-shell-pipe
   ansible.builtin.shell: |
-    set -o pipefail
     flags=$(stun -v stun.l.google.com:19302 2>&1 | grep -E 'mapped IP same = 1|hairpin = 1|preserver port = 1' | wc -l)
     if [ "$flags" -eq 3 ]; then
       cp /var/lib/instance-metadata/ipv4-public-egress /var/lib/instance-metadata/ipv4-public-ingress

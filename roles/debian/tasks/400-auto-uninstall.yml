@@ -40,10 +40,8 @@
   ansible.builtin.set_fact:
     debian__pkgs_absent: "{{ ansible_facts.packages.keys() | list | difference(debian__pkg_deps) | unique | sort }}"
 
-- name: Debian > Packages | Get installed packages
-  ansible.builtin.shell: |
-    set -o pipefail
-    dpkg --get-selections | grep -w "install" | cut -f1 | sed 's/:amd64$//'
+- name: Debian > Packages | Get installed packages  # noqa: risky-shell-pipe
+  ansible.builtin.shell: dpkg --get-selections | grep -w "install" | cut -f1 | sed 's/:amd64$//'
   register: debian__pkgs_present
   changed_when: false
 
