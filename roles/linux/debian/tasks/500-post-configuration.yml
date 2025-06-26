@@ -36,28 +36,28 @@
         name: system-cpu-governor
         state: started
 
-- name: Debian > Kernel | Disable Transparent Hugepages
+- name: Debian > Kernel > Disable Transparent Hugepages
   ansible.builtin.cron:
     name: "Disable Transparent Hugepages"
     special_time: reboot
     job: >-
       echo 'madvise' | sudo tee /sys/kernel/mm/transparent_hugepage/enabled
 
-- name: Debian > Network | Enable systemd-networkd.service
+- name: Debian > Network > Enable systemd-networkd.service
   when: not (ansible_virtualization_type is defined and ansible_virtualization_type == "VMware")
   ansible.builtin.systemd_service:
     name: systemd-networkd
     state: started
     enabled: true
 
-- name: Debian > Network | Disable networking.service
+- name: Debian > Network > Disable networking.service
   when: not (ansible_virtualization_type is defined and ansible_virtualization_type == "VMware")
   ansible.builtin.systemd_service:
     name: networking
     state: stopped
     enabled: false
 
-- name: Debian > MOTD | Set
+- name: Debian > MOTD > Set
   ansible.builtin.template:
     src: motd.txt.j2
     dest: /etc/motd
@@ -127,7 +127,7 @@
         name: systemd-resolved
         state: started
         enabled: true
-      notify: Debian | Restart systemd-resolved
+      notify: Debian > Restart systemd-resolved
 
     - name: Debian > DNS | Set DNS servers
       ansible.builtin.copy:
@@ -141,9 +141,9 @@
           DNSStubListener=yes
         dest: /etc/systemd/resolved.conf
       register: debian__resolvconf
-      notify: Debian | Restart systemd-resolved
+      notify: Debian > Restart systemd-resolved
 
-    - name: Debian | Restart systemd-resolved
+    - name: Debian > Restart systemd-resolved
       when: debian__resolver.changed or debian__resolvconf.changed
       ansible.builtin.systemd:
         name: systemd-resolved
@@ -174,10 +174,10 @@
         mode: "0644"
       register: debian__networkd
       notify:
-        - Debian | Restart systemd-resolved
-        - Debian | Restart systemd-networkd
+        - Debian > Restart systemd-resolved
+        - Debian > Restart systemd-networkd
 
-    - name: Debian | Restart systemd-networkd
+    - name: Debian > Restart systemd-networkd
       when: debian__networkd.changed
       ansible.builtin.systemd:
         name: systemd-networkd
