@@ -44,12 +44,14 @@
       echo 'madvise' | sudo tee /sys/kernel/mm/transparent_hugepage/enabled
 
 - name: Debian > Network | Enable systemd-networkd.service
+  when: not (ansible_virtualization_type is defined and ansible_virtualization_type == "VMware")
   ansible.builtin.systemd_service:
     name: systemd-networkd
     state: started
     enabled: true
 
 - name: Debian > Network | Disable networking.service
+  when: not (ansible_virtualization_type is defined and ansible_virtualization_type == "VMware")
   ansible.builtin.systemd_service:
     name: networking
     state: stopped
@@ -150,6 +152,7 @@
         state: restarted
 
     - name: (STD-003) Debian > DNS | Disable DHCP DNS
+      when: not (ansible_virtualization_type is defined and ansible_virtualization_type == "VMware")
       ansible.builtin.copy:
         content: |
           [Match]

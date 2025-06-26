@@ -149,7 +149,7 @@
           - "'openssh-server' in ansible_facts.packages"
           - "'bash' in ansible_facts.packages"
           - "'coreutils' in ansible_facts.packages"
-          - "'linux-image-amd64' in ansible_facts.packages"
+          - "('linux-image-amd64' in ansible_facts.packages) or ('linux-image-arm64' in ansible_facts.packages)"
         fail_msg: "Critical core packages were incorrectly purged"
         success_msg: "Core packages preserved during purge operation"
 
