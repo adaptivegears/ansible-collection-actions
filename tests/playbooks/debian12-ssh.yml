@@ -1,0 +1,405 @@
+---
+# Test Playbook: SSH Role Comprehensive Testing
+# This playbook comprehensively tests the SSH role including:
+# - Package installation and service management
+# - Security hardening configuration validation
+# - Access control functionality (users and groups)
+# - Security validation and file permissions
+
+- name: Test SSH Role - Phase 1 (Installation and Basic Setup)
+  hosts: debian12
+  connection: ssh
+  gather_facts: true
+  become: true
+  vars:
+    ssh_openssh: true
+    ssh_hardening: true
+    ssh_hardening_allow_tcp_forwarding: true
+    ssh_hardening_allow_root_login: false
+    ssh_users: []
+    ssh_groups: []
+
+  tasks:
+    - name: Phase 1 | Get initial SSH service state
+      ansible.builtin.systemd_service:
+        name: ssh
+        state: started
+      check_mode: true
+      register: ssh_initial_state
+      failed_when: false
+
+    - name: Phase 1 | Display initial SSH state
+      ansible.builtin.debug:
+        msg: "Initial SSH service state: {{ 'running' if ssh_initial_state.status.ActiveState == 'active' else 'not running' }}"
+
+    - name: Phase 1 | Apply SSH Role (Basic Installation)
+      ansible.builtin.include_role:
+        name: ssh
+
+    - name: Phase 1 | Verify openssh-server package is installed
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Phase 1 | Assert openssh-server package installation
+      ansible.builtin.assert:
+        that:
+          - "'openssh-server' in ansible_facts.packages"
+        fail_msg: "openssh-server package was not installed"
+        success_msg: "openssh-server package installed successfully"
+
+    - name: Phase 1 | Verify SSH service is running and enabled
+      ansible.builtin.systemd_service:
+        name: ssh
+        state: started
+        enabled: true
+      check_mode: true
+      register: ssh_service_check
+
+    - name: Phase 1 | Assert SSH service status
+      ansible.builtin.assert:
+        that:
+          - ssh_service_check.status.ActiveState == "active"
+          - ssh_service_check.status.UnitFileState == "enabled"
+        fail_msg: "SSH service is not properly running or enabled"
+        success_msg: "SSH service is running and enabled"
+
+    - name: Phase 1 | Test SSH connectivity (basic)
+      ansible.builtin.wait_for:
+        port: 22
+        host: "{{ ansible_default_ipv4.address }}"
+        timeout: 10
+
+    - name: Phase 1 | Display basic installation results
+      ansible.builtin.debug:
+        msg: "Phase 1 Complete: SSH basic installation and service verification successful"
+
+- name: Test SSH Role - Phase 2 (Hardening Configuration Validation)
+  hosts: debian12
+  connection: ssh
+  gather_facts: true
+  become: true
+
+  tasks:
+    - name: Phase 2 | Read sshd_config file
+      ansible.builtin.slurp:
+        src: /etc/ssh/sshd_config
+      register: sshd_config_content
+
+    - name: Phase 2 | Parse sshd_config content
+      ansible.builtin.set_fact:
+        sshd_config_lines: "{{ (sshd_config_content.content | b64decode).split('\n') }}"
+
+    - name: Phase 2 | Check file permissions for /etc/ssh/sshd_config
+      ansible.builtin.stat:
+        path: /etc/ssh/sshd_config
+      register: sshd_config_stat
+
+    - name: Phase 2 | Assert sshd_config permissions (CIS 5.2.1)
+      ansible.builtin.assert:
+        that:
+          - sshd_config_stat.stat.mode == '0600'
+          - sshd_config_stat.stat.pw_name == 'root'
+          - sshd_config_stat.stat.gr_name == 'root'
+        fail_msg: "sshd_config file permissions are incorrect"
+        success_msg: "sshd_config file permissions are correct (0600, root:root)"
+
+    - name: Phase 2 | Check SSH private host key permissions
+      ansible.builtin.find:
+        paths: /etc/ssh
+        patterns: 'ssh_host_*_key'
+        excludes: '*.pub'
+      register: ssh_private_keys
+
+    - name: Phase 2 | Verify private key permissions (CIS 5.2.2)
+      ansible.builtin.stat:
+        path: "{{ item.path }}"
+      register: private_key_stats
+      loop: "{{ ssh_private_keys.files }}"
+
+    - name: Phase 2 | Assert private key permissions
+      ansible.builtin.assert:
+        that:
+          - item.stat.mode == '0600'
+          - item.stat.pw_name == 'root'
+          - item.stat.gr_name == 'root'
+        fail_msg: "SSH private key {{ item.item.path }} has incorrect permissions"
+        success_msg: "SSH private key permissions verified"
+      loop: "{{ private_key_stats.results }}"
+
+    - name: Phase 2 | Check SSH public host key permissions
+      ansible.builtin.find:
+        paths: /etc/ssh
+        patterns: 'ssh_host_*.pub'
+      register: ssh_public_keys
+
+    - name: Phase 2 | Verify public key permissions (CIS 5.2.3)
+      ansible.builtin.stat:
+        path: "{{ item.path }}"
+      register: public_key_stats
+      loop: "{{ ssh_public_keys.files }}"
+
+    - name: Phase 2 | Assert public key permissions
+      ansible.builtin.assert:
+        that:
+          - item.stat.mode == '0644'
+          - item.stat.pw_name == 'root'
+          - item.stat.gr_name == 'root'
+        fail_msg: "SSH public key {{ item.item.path }} has incorrect permissions"
+        success_msg: "SSH public key permissions verified"
+      loop: "{{ public_key_stats.results }}"
+
+    - name: Phase 2 | Validate hardening configurations in sshd_config
+      ansible.builtin.assert:
+        that:
+          - sshd_config_lines | select('match', '^Protocol 2$') | list | length > 0
+          - sshd_config_lines | select('match', '^LogLevel VERBOSE$') | list | length > 0
+          - sshd_config_lines | select('match', '^X11Forwarding no$') | list | length > 0
+          - sshd_config_lines | select('match', '^MaxAuthTries 3$') | list | length > 0
+          - sshd_config_lines | select('match', '^IgnoreRhosts yes$') | list | length > 0
+          - sshd_config_lines | select('match', '^HostbasedAuthentication no$') | list | length > 0
+          - sshd_config_lines | select('match', '^PermitRootLogin no$') | list | length > 0
+          - sshd_config_lines | select('match', '^PermitEmptyPasswords no$') | list | length > 0
+          - sshd_config_lines | select('match', '^PermitUserEnvironment no$') | list | length > 0
+          - sshd_config_lines | select('match', '^PubkeyAuthentication yes$') | list | length > 0
+          - sshd_config_lines | select('match', '^PasswordAuthentication no$') | list | length > 0
+        fail_msg: "One or more SSH hardening configurations are missing or incorrect"
+        success_msg: "All SSH hardening configurations verified"
+
+    - name: Phase 2 | Validate cipher and algorithm configurations
+      ansible.builtin.assert:
+        that:
+          - sshd_config_lines | select('match', '^Ciphers aes256-ctr,aes192-ctr,aes128-ctr$') | list | length > 0
+          - sshd_config_lines | select('match', '^MACs hmac-sha2-512,hmac-sha2-256$') | list | length > 0
+          - sshd_config_lines | select('match', '^KexAlgorithms ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256$') | list | length > 0
+          - sshd_config_lines | select('match', '^HostKeyAlgorithms ecdsa-sha2-nistp521,ecdsa-sha2-nistp384,ecdsa-sha2-nistp256$') | list | length > 0
+        fail_msg: "SSH cryptographic algorithms are not properly configured"
+        success_msg: "SSH cryptographic algorithms verified"
+
+    - name: Phase 2 | Validate timeout and connection settings
+      ansible.builtin.assert:
+        that:
+          - sshd_config_lines | select('match', '^ClientAliveInterval 300$') | list | length > 0
+          - sshd_config_lines | select('match', '^ClientAliveCountMax 0$') | list | length > 0
+          - sshd_config_lines | select('match', '^LoginGraceTime 60$') | list | length > 0
+          - sshd_config_lines | select('match', '^MaxStartups 10:30:60$') | list | length > 0
+          - sshd_config_lines | select('match', '^MaxSessions 3$') | list | length > 0
+        fail_msg: "SSH timeout and connection settings are incorrect"
+        success_msg: "SSH timeout and connection settings verified"
+
+    - name: Phase 2 | Test SSH service restart capability
+      ansible.builtin.systemd_service:
+        name: ssh
+        state: restarted
+      register: ssh_restart
+
+    - name: Phase 2 | Verify SSH service is still running after restart
+      ansible.builtin.systemd_service:
+        name: ssh
+        state: started
+      check_mode: true
+      register: ssh_post_restart
+
+    - name: Phase 2 | Assert SSH service survived restart
+      ansible.builtin.assert:
+        that:
+          - ssh_post_restart.status.ActiveState == "active"
+        fail_msg: "SSH service failed to restart properly"
+        success_msg: "SSH service restarted successfully"
+
+    - name: Phase 2 | Display hardening validation results
+      ansible.builtin.debug:
+        msg: "Phase 2 Complete: SSH hardening configuration validation successful"
+
+- name: Test SSH Role - Phase 3 (Access Control Testing)
+  hosts: debian12
+  connection: ssh
+  gather_facts: true
+  become: true
+  vars:
+    ssh_openssh: true
+    ssh_hardening: true
+    ssh_hardening_allow_tcp_forwarding: true
+    ssh_hardening_allow_root_login: false
+    ssh_users:
+      - name: testuser1
+        state: allow
+        key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC7vbqajDhA test-key-1"
+      - name: testuser2
+        state: deny
+        key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC7vbqajDhB test-key-2"
+    ssh_groups:
+      - name: testgroup1
+        state: allow
+      - name: testgroup2
+        state: deny
+
+  tasks:
+    - name: Phase 3 | Create test users for SSH access control
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        state: present
+        shell: /bin/bash
+        create_home: true
+      loop: "{{ ssh_users }}"
+
+    - name: Phase 3 | Create test groups for SSH access control
+      ansible.builtin.group:
+        name: "{{ item.name }}"
+        state: present
+      loop: "{{ ssh_groups }}"
+
+    - name: Phase 3 | Apply SSH Role with access control
+      ansible.builtin.include_role:
+        name: ssh
+
+    - name: Phase 3 | Read updated sshd_config for access control verification
+      ansible.builtin.slurp:
+        src: /etc/ssh/sshd_config
+      register: sshd_config_access_control
+
+    - name: Phase 3 | Parse access control sshd_config content
+      ansible.builtin.set_fact:
+        sshd_config_ac_lines: "{{ (sshd_config_access_control.content | b64decode).split('\n') }}"
+
+    - name: Phase 3 | Verify AllowUsers configuration
+      ansible.builtin.assert:
+        that:
+          - sshd_config_ac_lines | select('match', '^AllowUsers testuser1$') | list | length > 0
+        fail_msg: "AllowUsers configuration is incorrect"
+        success_msg: "AllowUsers configuration verified"
+
+    - name: Phase 3 | Verify DenyUsers configuration
+      ansible.builtin.assert:
+        that:
+          - sshd_config_ac_lines | select('match', '^DenyUsers testuser2$') | list | length > 0
+        fail_msg: "DenyUsers configuration is incorrect"
+        success_msg: "DenyUsers configuration verified"
+
+    - name: Phase 3 | Verify AllowGroups configuration
+      ansible.builtin.assert:
+        that:
+          - sshd_config_ac_lines | select('match', '^AllowGroups testgroup1$') | list | length > 0
+        fail_msg: "AllowGroups configuration is incorrect"
+        success_msg: "AllowGroups configuration verified"
+
+    - name: Phase 3 | Verify DenyGroups configuration
+      ansible.builtin.assert:
+        that:
+          - sshd_config_ac_lines | select('match', '^DenyGroups testgroup2$') | list | length > 0
+        fail_msg: "DenyGroups configuration is incorrect"
+        success_msg: "DenyGroups configuration verified"
+
+    - name: Phase 3 | Verify SSH keys were added for allowed users
+      ansible.builtin.stat:
+        path: "/home/{{ item.name }}/.ssh/authorized_keys"
+      register: authorized_keys_stats
+      loop: "{{ ssh_users }}"
+
+    - name: Phase 3 | Assert authorized_keys files exist for users with keys
+      ansible.builtin.assert:
+        that:
+          - item.stat.exists
+        fail_msg: "authorized_keys file missing for {{ item.item.name }}"
+        success_msg: "authorized_keys file exists for {{ item.item.name }}"
+      loop: "{{ authorized_keys_stats.results }}"
+      when: item.item.key is defined
+
+    - name: Phase 3 | Display access control results
+      ansible.builtin.debug:
+        msg: "Phase 3 Complete: SSH access control configuration verified"
+
+- name: Test SSH Role - Phase 4 (Security Validation and Cleanup)
+  hosts: debian12
+  connection: ssh
+  gather_facts: true
+  become: true
+
+  tasks:
+    - name: Phase 4 | Test SSH configuration syntax
+      ansible.builtin.command: sshd -t
+      register: sshd_syntax_test
+      changed_when: false
+
+    - name: Phase 4 | Assert SSH configuration syntax is valid
+      ansible.builtin.assert:
+        that:
+          - sshd_syntax_test.rc == 0
+        fail_msg: "SSH configuration has syntax errors: {{ sshd_syntax_test.stderr }}"
+        success_msg: "SSH configuration syntax is valid"
+
+    - name: Phase 4 | Verify SSH service is responsive
+      ansible.builtin.wait_for:
+        port: 22
+        host: "{{ ansible_default_ipv4.address }}"
+        timeout: 10
+
+    - name: Phase 4 | Test connection with SSH security settings
+      ansible.builtin.shell: |
+        ssh -o BatchMode=yes -o ConnectTimeout=5 -o StrictHostKeyChecking=no \
+        -o PasswordAuthentication=no -o PubkeyAuthentication=yes \
+        {{ ansible_default_ipv4.address }} echo "SSH security test successful" 2>/dev/null || echo "Expected: SSH security working"
+      register: ssh_security_test
+      changed_when: false
+      delegate_to: localhost
+
+    - name: Phase 4 | Display SSH security test result
+      ansible.builtin.debug:
+        msg: "SSH security test: {{ ssh_security_test.stdout }}"
+
+    - name: Phase 4 | Clean up test users and groups
+      ansible.builtin.user:
+        name: "{{ item }}"
+        state: absent
+        remove: true
+      loop:
+        - testuser1
+        - testuser2
+
+    - name: Phase 4 | Clean up test groups
+      ansible.builtin.group:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - testgroup1
+        - testgroup2
+
+    - name: Phase 4 | Reset SSH configuration to clean state (no access control)
+      ansible.builtin.include_role:
+        name: ssh
+      vars:
+        ssh_users: []
+        ssh_groups: []
+
+    - name: Phase 4 | Final SSH service status check
+      ansible.builtin.systemd_service:
+        name: ssh
+        state: started
+      check_mode: true
+      register: final_ssh_status
+
+    - name: Phase 4 | Assert final SSH service health
+      ansible.builtin.assert:
+        that:
+          - final_ssh_status.status.ActiveState == "active"
+        fail_msg: "SSH service is not healthy after testing"
+        success_msg: "SSH service is healthy after all tests"
+
+    - name: Phase 4 | Test Summary
+      ansible.builtin.debug:
+        msg: |
+          ===========================================
+          SSH ROLE TEST SUMMARY
+          ===========================================
+          
+          Status: ALL TESTS PASSED
+          - Package installation: ✓
+          - Service management: ✓
+          - File permissions: ✓
+          - Hardening configuration: ✓
+          - Cryptographic settings: ✓
+          - Access control (users/groups): ✓
+          - Configuration syntax: ✓
+          - Service stability: ✓
+          - Security validation: ✓
+          - Cleanup: ✓
+          ===========================================

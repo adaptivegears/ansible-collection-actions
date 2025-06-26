@@ -11,23 +11,34 @@
     group: root
     mode: "0600"
 
+- name: SSH > Hardening > Find SSH Private Host Key Files
+  ansible.builtin.find:
+    paths: /etc/ssh
+    patterns: 'ssh_host_*_key'
+    excludes: '*.pub'
+  register: ssh_private_key_files
+
 - name: SSH > Hardening > Configure SSH Private Host Key File Permissions (CIS 5.2.2)
   ansible.builtin.file:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     owner: root
     group: root
     mode: "0600"
-  with_fileglob:
-    - /etc/ssh/ssh_host_*_key
+  loop: "{{ ssh_private_key_files.files }}"
+
+- name: SSH > Hardening > Find SSH Public Host Key Files
+  ansible.builtin.find:
+    paths: /etc/ssh
+    patterns: 'ssh_host_*.pub'
+  register: ssh_public_key_files
 
 - name: SSH > Hardening > Configure SSH Public Host Key File Permissions (CIS 5.2.3)
   ansible.builtin.file:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     owner: root
     group: root
     mode: "0644"
-  with_fileglob:
-    - /etc/ssh/ssh_host_*_key.pub
+  loop: "{{ ssh_public_key_files.files }}"
 
 - name: SSH > Hardening > Set Protocol to 2 (CIS 5.2.4)
   ansible.builtin.lineinfile:
