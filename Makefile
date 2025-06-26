@@ -15,8 +15,8 @@ $(ANSIBLE_ROLES):
 format: ## Automatically format the source code
 	@ansible-lint -v
 
-.PHONY: test
-test: $(ANSIBLE_ROLES)  ## Run lint checks on all roles
+.PHONY: lint
+lint: $(ANSIBLE_ROLES)  ## Run lint checks on all roles
 
 .PHONY: build
 build: format ## Build collection archive
@@ -30,6 +30,20 @@ install: build ## Install collection
 .PHONY: release
 release: clean build ## Publish collection
 	ansible-galaxy collection publish *.tar.gz --api-key $(GALAXY_API_KEY)
+
+### Testing ###################################################################
+.PHONY: vm-up vm-down vm-reset test-run
+vm-up: ## Start test VM
+	$(MAKE) -C tests up
+
+vm-down: ## Stop test VM
+	$(MAKE) -C tests down
+
+vm-reset: ## Recreate VM and test connectivity
+	$(MAKE) -C tests clean && $(MAKE) -C tests up && $(MAKE) -C tests check
+
+test: ## Run playbook against VM
+	ansible-playbook tests/playbooks/debian12-apt.yml
 
 .PHONY: clean
 clean: ## Clean up the build artifacts, object files, executables, and any other generated files

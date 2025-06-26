@@ -25,14 +25,6 @@ ssh: ## SSH into the test VM
 check: ## Test Ansible connectivity to VM
 	ansible -i inventory debian12 -m ping
 
-.PHONY: run
-run: ## Run playbook against VM (usage: make run-playbook PLAYBOOK=path/to/playbook.yml)
-	@if [ -z "$(PLAYBOOK)" ]; then \
-		echo "Error: PLAYBOOK variable is required"; \
-		echo "Usage: make run-playbook PLAYBOOK=../playbooks/standard-debian.yml"; \
-		exit 1; \
-	fi
-	ansible-playbook -i inventory "$(PLAYBOOK)" --limit debian12 --extra-vars "ansible_host_key_checking=false"
 
 .PHONY: clean
 clean: ## Clean up VM and artifacts
