@@ -1,0 +1,14 @@
+---
+# Test Playbook: APT Role
+# This playbook applies the apt role to the debian12 VM for testing purposes
+
+- name: Test APT Role on Debian12 VM
+  hosts: debian12
+  connection: ssh
+  gather_facts: true
+  become: true
+  
+  tasks:
+    - name: Include APT Role
+      ansible.builtin.include_role:
+        name: linux/apt

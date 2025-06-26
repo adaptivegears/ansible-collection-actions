@@ -1,0 +1,9 @@
+[vagrant]
+debian12 ansible_host=127.0.0.1 ansible_port=2222 ansible_user=vagrant ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key ansible_ssh_common_args='-o StrictHostKeyChecking=no' ansible_python_interpreter=/usr/bin/python3
+
+[debian]
+debian12
+
+[test_targets:children]
+vagrant
+debian

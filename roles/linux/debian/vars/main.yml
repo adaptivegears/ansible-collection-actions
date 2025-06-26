@@ -9,7 +9,7 @@ debian_user_groups:
 debian_user_home: "/home/{{ debian_user }}"
 debian_user_shell: /bin/bash
 
-debian_packages:
+debian_packages_amd64:
   # bootloader
   - efibootmgr
   - grub-cloud-amd64
@@ -26,6 +26,23 @@ debian_packages:
   - firmware-linux-free
   - intel-microcode
   - amd64-microcode
+
+debian_packages_arm64:
+  # bootloader
+  - efibootmgr
+  - grub-efi-arm64
+  - grub-efi-arm64-signed
+  - shim-signed
+
+  # kernel
+  - linux-image-arm64
+  - kmod
+
+  # hardware
+  - firmware-linux-free
+
+debian_packages_common:
+  # hardware
   - discover
   - dmidecode
   - pciutils
@@ -160,7 +177,15 @@ debian_packages:
   - publicsuffix
   - iso-codes
 
-debian_packages_noinstall:
+# Architecture-specific package selection
+debian_packages: >-
+  {{
+    (debian_packages_common +
+     (debian_packages_amd64 if ansible_architecture == 'x86_64' else debian_packages_arm64))
+    | unique
+  }}
+
+debian_packages_noinstall_amd64:
   # hardware
   - intel-microcode
   - amd64-microcode
@@ -173,10 +198,26 @@ debian_packages_noinstall:
   - grub-efi-amd64-signed
   - shim-signed
 
+debian_packages_noinstall_arm64:
+  # bootloader
+  - efibootmgr
+  - grub-efi-arm64
+  - grub-efi-arm64-signed
+  - shim-signed
+
+debian_packages_noinstall_common:
   # cloud
   - cloud-init
   - cloud-utils
   - cloud-initramfs-growroot
+
+# Architecture-specific noinstall package selection
+debian_packages_noinstall: >-
+  {{
+    (debian_packages_noinstall_common +
+     (debian_packages_noinstall_amd64 if ansible_architecture == 'x86_64' else debian_packages_noinstall_arm64))
+    | unique
+  }}
 
 debian_packages_minimal:
   # packages

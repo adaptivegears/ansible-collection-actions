@@ -15,9 +15,9 @@
 - name: Metadata > Prerequisites > Architecture
   ansible.builtin.assert:
     that:
-      - ansible_architecture == "x86_64"
-    success_msg: "This role is supported on amd64 (x86_64) architecture"
-    fail_msg: "This role is only supported on amd64 (x86_64) architecture"
+      - ansible_architecture in ["x86_64", "aarch64"]
+    success_msg: "This role is supported on {{ ansible_architecture }} architecture"
+    fail_msg: "This role is only supported on amd64 (x86_64) and arm64 (aarch64) architectures"
 
 - name: Metadata > Directory
   ansible.builtin.file:
