@@ -78,6 +78,21 @@ ALWAYS follow these steps when implementing changes:
 - Reference related issues if applicable
 - Keep commits focused and atomic
 
+### Pull Request Approval Process
+**IMPORTANT**: When the user says a PR is "approved", automatically proceed with the GitHub flow merge process:
+
+1. **Automatic Merge on Approval**: When user confirms PR approval (using words like "approved", "merge", "process on gh flow"), immediately execute:
+   ```bash
+   gh pr merge <PR_NUMBER> --squash --delete-branch
+   ```
+
+2. **Post-Merge Verification**: After merge, verify:
+   - Merge completed successfully
+   - Branch was deleted
+   - Switch back to main branch and pull latest changes
+
+3. **No Manual Confirmation Required**: Do not ask for additional confirmation when user has already approved - proceed directly with merge.
+
 ### Development Environment Setup
 - **Environment Manager**: direnv + pipenv
 - **First-time setup**: `direnv allow` (enables automatic environment activation)
