@@ -26,10 +26,10 @@
     - name: Set Facts
       ignore_errors: true
       ansible.builtin.set_fact:
-        debian_install: "{{ install | default(i) | default(omit) }}"
-        debian_minimal: "{{ minimal | default(m) | default(omit) }}"
-        debian_prune: "{{ prune | default(p) | default(omit) }}"
-        debian_hostname: "{{ hostname | default(omit) }}"
+        debian_install: "{{ install | default(i) | default(lookup('env', 'DEBIAN_INSTALL') | default('true') | bool) }}"
+        debian_minimal: "{{ minimal | default(m) | default(lookup('env', 'DEBIAN_MINIMAL') | default('false') | bool) }}"
+        debian_prune: "{{ prune | default(p) | default(lookup('env', 'DEBIAN_PRUNE') | default('false') | bool) }}"
+        debian_hostname: "{{ hostname | default(lookup('env', 'DEBIAN_HOSTNAME')) | default(omit) }}"
         metadata_topology_region: "{{ topology_region | default(omit) }}"
         metadata_topology_zone: "{{ topology_zone | default(omit) }}"
 

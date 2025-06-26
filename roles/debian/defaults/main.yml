@@ -1,5 +1,5 @@
 ---
-debian_install: "{{ lookup('env', 'DEBIAN_INSTALL', default='true') | bool }}"
-debian_minimal: "{{ lookup('env', 'DEBIAN_MINIMAL', default='false') | bool }}"
-debian_prune: "{{ lookup('env', 'DEBIAN_PRUNE', default='false') | bool }}"
-debian_hostname: "{{ (lookup('env', 'DEBIAN_HOSTNAME') or lookup('file', '/var/lib/instance-metadata/hostname', errors='ignore')) }}"
+debian_install: true
+debian_minimal: false
+debian_prune: false
+debian_hostname: "{{ lookup('file', '/var/lib/instance-metadata/hostname', errors='ignore') }}"
