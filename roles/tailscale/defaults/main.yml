@@ -1,6 +1,12 @@
 ---
 tailscale_install: "{{ lookup('ansible.builtin.env', 'TAILSCALE_INSTALL', default='true') | bool }}"
-tailscale_authkey: "{{ (lookup('ansible.builtin.env', 'TAILSCALE_AUTHKEY') or lookup('file', '/var/lib/instance-metadata/tailscale-authkey', errors='ignore')) | default(omit) }}"
+tailscale_authkey: >-
+  {{
+    (
+      lookup('ansible.builtin.env', 'TAILSCALE_AUTHKEY') or
+      lookup('file', '/var/lib/instance-metadata/tailscale-authkey', errors='ignore')
+    ) | default(omit)
+  }}
 tailscale_login_server: "{{ lookup('ansible.builtin.env', 'TAILSCALE_LOGINSERVER', default='') }}"
 tailscale_login_timeout: "{{ lookup('ansible.builtin.env', 'TAILSCALE_LOGINTIMEOUT', default=30) | int }}"
 tailscale_advertise_exit_node: "{{ lookup('ansible.builtin.env', 'TAILSCALE_ADVERTISE_EXIT_NODE') | default('') }}"

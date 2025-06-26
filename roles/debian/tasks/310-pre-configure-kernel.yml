@@ -1,5 +1,5 @@
 - name: Debian > Kernel > Enable task_delay
-  ansible.builtin.sysctl:
+  ansible.posix.sysctl:
     name: kernel.task_delayacct
     value: "1"
     state: present

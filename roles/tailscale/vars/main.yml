@@ -3,12 +3,9 @@ tailscale_socket: "/run/tailscale/tailscaled.sock"
 
 tailscale_download_arch: >-
   {%- if ansible_architecture == 'x86_64' -%}
-  amd64
-  {%- elif ansible_architecture == 'aarch64' -%}
-  arm64
-  {%- else -%}
-  amd64
-  {%- endif -%}
+  amd64{%- elif ansible_architecture == 'aarch64' -%}
+  arm64{%- else -%}
+  amd64{%- endif -%}
 tailscale_download_version: "1.84.0"
 tailscale_download_dst: "/var/cache/download"
 tailscale_download_src:

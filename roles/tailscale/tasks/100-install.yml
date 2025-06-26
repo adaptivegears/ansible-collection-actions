@@ -3,14 +3,14 @@
   ansible.builtin.file:
     path: "{{ tailscale_download_dst }}"
     state: directory
-    mode: 0755
+    mode: "0755"
 
 - name: Tailscale > Package > Download
   ansible.builtin.get_url:
     dest: "{{ tailscale_download_dst }}/tailscale_{{ tailscale_download_version }}.deb"
     url: "{{ tailscale_download_src[tailscale_download_arch] }}"
     checksum: "{{ tailscale_download_checksum[tailscale_download_arch] }}"
-    mode: 0644
+    mode: "0644"
 
 - name: Tailscale > Package > Install
   ansible.builtin.apt:

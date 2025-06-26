@@ -2,7 +2,10 @@
 # Dependencies
 
 - name: Debian > Packages | Get dependencies
-  ansible.builtin.command: apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances {{ debian_packages | join(' ') }}
+  ansible.builtin.command: >-
+    apt-cache depends --recurse --no-recommends --no-suggests
+    --no-conflicts --no-breaks --no-replaces --no-enhances
+    {{ debian_packages | join(' ') }}
   register: debian__pkg_deps
   changed_when: false
 
@@ -17,7 +20,7 @@
     manager: auto
 
 - name: Debian > Packages | Get manually installed packages
-  ansible.builtin.shell: apt-mark showmanual
+  ansible.builtin.command: apt-mark showmanual
   register: debian__pkgs_present
   changed_when: false
 
@@ -37,7 +40,7 @@
   ansible.builtin.set_fact:
     debian__pkgs_absent: "{{ ansible_facts.packages.keys() | list | difference(debian__pkg_deps) | unique | sort }}"
 
-- name: Debian > Packages | Get installed packages
+- name: Debian > Packages | Get installed packages  # noqa: risky-shell-pipe
   ansible.builtin.shell: dpkg --get-selections | grep -w "install" | cut -f1 | sed 's/:amd64$//'
   register: debian__pkgs_present
   changed_when: false
