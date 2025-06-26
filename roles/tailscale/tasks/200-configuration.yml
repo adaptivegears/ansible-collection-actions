@@ -43,6 +43,7 @@
     --socket {{ tailscale_socket }}
     set
     --advertise-exit-node={{ (tailscale_advertise_exit_node | trim) | bool | ternary('true', 'false') }}
+  changed_when: false
 
 - name: Tailscale > Config > Accept DNS
   when: (tailscale_accept_dns | trim) | length > 0
@@ -51,6 +52,7 @@
     --socket {{ tailscale_socket }}
     set
     --accept-dns={{ (tailscale_accept_dns | trim) | bool | ternary('true', 'false') }}
+  changed_when: false
 
 - name: Tailscale > Config > Accept routes
   when: (tailscale_accept_routes | trim) | length > 0
@@ -59,3 +61,4 @@
     --socket {{ tailscale_socket }}
     set
     --accept-routes={{ (tailscale_accept_routes | trim) | bool | ternary('true', 'false') }}
+  changed_when: false

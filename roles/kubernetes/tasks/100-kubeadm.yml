@@ -63,7 +63,7 @@
           enabled: true
 
 - name: Kubernetes > Kubeadm > Initialize
-  ansible.builtin.shell:
+  ansible.builtin.command:
     cmd: >-
       kubeadm init
       --config /etc/kubernetes/kubeadm-config.yaml

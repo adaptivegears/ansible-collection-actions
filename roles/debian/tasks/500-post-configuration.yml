@@ -61,6 +61,7 @@
   ansible.builtin.template:
     src: motd.txt.j2
     dest: /etc/motd
+    mode: "0644"
 
 - name: Debian > Locale | Configure
   block:
@@ -74,6 +75,7 @@
         content: |
           LANG={{ debian_locale }}
         dest: /etc/default/locale
+        mode: "0644"
 
 - name: Debian > Time | Configure
   block:
@@ -93,6 +95,7 @@
           [Time]
           NTP=0.debian.pool.ntp.org 1.debian.pool.ntp.org 2.debian.pool.ntp.org 3.debian.pool.ntp.org
         dest: /etc/systemd/timesyncd.conf
+        mode: "0644"
       notify: Restart systemd-timesyncd
 
 - name: Debian > DNS | Configure
@@ -140,6 +143,7 @@
           Domains=~.
           DNSStubListener=yes
         dest: /etc/systemd/resolved.conf
+        mode: "0644"
       register: debian__resolvconf
       notify: Debian > Restart systemd-resolved
 
@@ -177,11 +181,6 @@
         - Debian > Restart systemd-resolved
         - Debian > Restart systemd-networkd
 
-    - name: Debian > Restart systemd-networkd
-      when: debian__networkd.changed
-      ansible.builtin.systemd:
-        name: systemd-networkd
-        state: restarted
 
 - name: Debian > User | Configure
   block:

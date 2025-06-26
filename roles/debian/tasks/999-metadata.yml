@@ -37,9 +37,8 @@
 
 - name: Debian > Metadata > IPv4 > Get Public IP (Egress)
   register: debian__ipv4_public_egress
-  ansible.builtin.shell:
-    cmd: >-
-      exip -p 4
+  ansible.builtin.command:
+    cmd: exip -p 4
   changed_when: false
 
 - name: Debian > Metadata > IPv4 > Save Public IP (Egress)
@@ -53,6 +52,7 @@
 
 - name: Debian > Metadata > IPv4 > Save Public IP (Ingress)
   ansible.builtin.shell: |
+    set -o pipefail
     flags=$(stun -v stun.l.google.com:19302 2>&1 | grep -E 'mapped IP same = 1|hairpin = 1|preserver port = 1' | wc -l)
     if [ "$flags" -eq 3 ]; then
       cp /var/lib/instance-metadata/ipv4-public-egress /var/lib/instance-metadata/ipv4-public-ingress

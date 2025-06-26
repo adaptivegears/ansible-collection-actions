@@ -1,0 +1,18 @@
+---
+# Ansible Lint Configuration for adaptivegears.actions collection
+
+# Profile to use for linting
+profile: production
+
+# File exclusions
+exclude_paths:
+  - .git/
+  - .github/
+  - tests/vm/
+  - docs/
+
+# Use colored output
+use_default_rules: true
+parseable: false
+quiet: false
+verbosity: 1

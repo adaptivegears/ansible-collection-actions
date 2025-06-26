@@ -1,0 +1,5 @@
+---
+- name: Kubernetes > Prerequisites > Containerd > Restart
+  ansible.builtin.systemd:
+    name: containerd
+    state: restarted

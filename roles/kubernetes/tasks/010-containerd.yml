@@ -8,7 +8,6 @@
       - containernetworking-plugins
 
 - name: Kubernetes > Prerequisites > Containerd > Configure
-  register: kubernetes__containerd_config
   ansible.builtin.copy:
     dest: /etc/containerd/config.toml
     owner: root
@@ -25,9 +24,4 @@
               SystemdCgroup = true
         [plugins."io.containerd.internal.v1.opt"]
           path = "/var/lib/containerd/opt"
-
-- name: Kubernetes > Prerequisites > Containerd > Restart
-  when: kubernetes__containerd_config.changed
-  ansible.builtin.systemd:
-    name: containerd
-    state: restarted
+  notify: Kubernetes > Prerequisites > Containerd > Restart
