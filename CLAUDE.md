@@ -64,6 +64,7 @@ ALWAYS follow these steps when implementing changes:
    ```bash
    git push origin feature/descriptive-name
    gh pr create --title "Clear PR title" --body "Description" --assignee andreygubarev
+   gh pr edit --add-reviewer copilot
    ```
 
 5. **Wait for review and merge when approved**:
