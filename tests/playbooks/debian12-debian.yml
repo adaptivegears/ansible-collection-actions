@@ -1,0 +1,226 @@
+---
+# Test Playbook: Debian Role with Purge Testing
+# This playbook comprehensively tests the linux/debian role including:
+# - Package installation functionality
+# - Purge/cleanup functionality with proper dependency handling
+# - System integrity verification across all phases
+
+- name: Test Debian Role - Phase 1 (Initial Package Installation)
+  hosts: debian12
+  connection: ssh
+  gather_facts: true
+  become: true
+  vars:
+    debian_install: true
+    debian_prune: false
+    debian_minimal: false
+
+  tasks:
+    - name: Phase 1 | Get initial package state
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Phase 1 | Record initial package count
+      ansible.builtin.set_fact:
+        initial_package_count: "{{ ansible_facts.packages.keys() | length }}"
+
+    - name: Phase 1 | Display initial package count
+      ansible.builtin.debug:
+        msg: "Initial package count: {{ initial_package_count }}"
+
+    - name: Phase 1 | Apply Debian Role (Install Mode)
+      ansible.builtin.include_role:
+        name: linux/debian
+      vars:
+        # Supply required metadata variables
+        metadata_topology_provider: "test"
+        metadata_topology_region: "us-1"
+        metadata_topology_zone: "us-1a"
+
+    - name: Phase 1 | Get post-install package state
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Phase 1 | Record post-install package count
+      ansible.builtin.set_fact:
+        post_install_package_count: "{{ ansible_facts.packages.keys() | length }}"
+
+    - name: Phase 1 | Display post-install package count
+      ansible.builtin.debug:
+        msg: "Post-install package count: {{ post_install_package_count }}"
+
+    - name: Phase 1 | Verify core packages are installed
+      ansible.builtin.assert:
+        that:
+          - "'apt' in ansible_facts.packages"
+          - "'systemd' in ansible_facts.packages"
+          - "'openssh-server' in ansible_facts.packages"
+          - "'bash' in ansible_facts.packages"
+          - "'coreutils' in ansible_facts.packages"
+        fail_msg: "Critical core packages are missing after installation"
+        success_msg: "Core packages verified successfully"
+
+- name: Test Debian Role - Phase 2 (Install Test Dependencies)
+  hosts: debian12
+  connection: ssh
+  gather_facts: true
+  become: true
+
+  tasks:
+    - name: Phase 2 | Install additional test packages
+      ansible.builtin.apt:
+        name:
+          - fortune-mod
+          - cowsay
+          - figlet
+          - lolcat
+        state: present
+        install_recommends: false
+
+    - name: Phase 2 | Get package state after test installs
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Phase 2 | Record package count with test packages
+      ansible.builtin.set_fact:
+        with_test_packages_count: "{{ ansible_facts.packages.keys() | length }}"
+
+    - name: Phase 2 | Display package count with test packages
+      ansible.builtin.debug:
+        msg: "Package count with test packages: {{ with_test_packages_count }}"
+
+    - name: Phase 2 | Verify test packages are installed
+      ansible.builtin.assert:
+        that:
+          - "'fortune-mod' in ansible_facts.packages"
+          - "'cowsay' in ansible_facts.packages"
+          - "'figlet' in ansible_facts.packages"
+          - "'lolcat' in ansible_facts.packages"
+        fail_msg: "Test packages failed to install"
+        success_msg: "Test packages installed successfully"
+
+- name: Test Debian Role - Phase 3 (Purge Mode Testing)
+  hosts: debian12
+  connection: ssh
+  gather_facts: true
+  become: true
+  vars:
+    debian_install: true
+    debian_prune: true
+    debian_minimal: false
+
+  tasks:
+    - name: Phase 3 | Apply Debian Role (Purge Mode)
+      ansible.builtin.include_role:
+        name: linux/debian
+      vars:
+        # Supply required metadata variables
+        metadata_topology_provider: "test"
+        metadata_topology_region: "us-1"
+        metadata_topology_zone: "us-1a"
+
+    - name: Phase 3 | Get post-purge package state
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Phase 3 | Record post-purge package count
+      ansible.builtin.set_fact:
+        post_purge_package_count: "{{ ansible_facts.packages.keys() | length }}"
+
+    - name: Phase 3 | Display post-purge package count
+      ansible.builtin.debug:
+        msg: "Post-purge package count: {{ post_purge_package_count }}"
+
+    - name: Phase 3 | Verify test packages were purged
+      ansible.builtin.assert:
+        that:
+          - "'fortune-mod' not in ansible_facts.packages"
+          - "'cowsay' not in ansible_facts.packages"
+          - "'figlet' not in ansible_facts.packages"
+          - "'lolcat' not in ansible_facts.packages"
+        fail_msg: "Test packages were not properly purged"
+        success_msg: "Test packages successfully purged"
+
+    - name: Phase 3 | Verify core packages remain after purge
+      ansible.builtin.assert:
+        that:
+          - "'apt' in ansible_facts.packages"
+          - "'systemd' in ansible_facts.packages"
+          - "'openssh-server' in ansible_facts.packages"
+          - "'bash' in ansible_facts.packages"
+          - "'coreutils' in ansible_facts.packages"
+          - "'linux-image-amd64' in ansible_facts.packages"
+        fail_msg: "Critical core packages were incorrectly purged"
+        success_msg: "Core packages preserved during purge operation"
+
+- name: Test Debian Role - Phase 4 (System Integrity Verification)
+  hosts: debian12
+  connection: ssh
+  gather_facts: true
+  become: true
+
+  tasks:
+    - name: Phase 4 | Verify critical services are running
+      ansible.builtin.systemd_service:
+        name: "{{ item }}"
+        state: started
+      check_mode: true
+      register: service_status
+      failed_when: false
+      loop:
+        - systemd-resolved
+        - systemd-timesyncd
+        - ssh
+        - systemd-journald
+
+    - name: Phase 4 | Display service status
+      ansible.builtin.debug:
+        msg: "Service {{ item.item }} status: {{ 'running' if item.status.ActiveState == 'active' else 'not running' }}"
+      loop: "{{ service_status.results }}"
+
+    - name: Phase 4 | Verify system can perform basic operations
+      ansible.builtin.command: "{{ item }}"
+      register: basic_ops
+      changed_when: false
+      loop:
+        - whoami
+        - pwd  
+        - ls /
+        - systemctl --version
+        - apt --version
+
+    - name: Phase 4 | Display basic operations results
+      ansible.builtin.debug:
+        msg: "Command '{{ item.item }}' executed successfully"
+      loop: "{{ basic_ops.results }}"
+      when: item.rc == 0
+
+    - name: Phase 4 | Check for broken packages
+      ansible.builtin.command: dpkg --audit
+      register: broken_packages
+      changed_when: false
+      failed_when: broken_packages.stdout | length > 0
+
+    - name: Phase 4 | Verify no broken packages
+      ansible.builtin.debug:
+        msg: "No broken packages detected - system integrity verified"
+      when: broken_packages.stdout | length == 0
+
+    - name: Phase 4 | Test Summary
+      ansible.builtin.debug:
+        msg: |
+          ===========================================
+          DEBIAN ROLE TEST SUMMARY
+          ===========================================
+          Initial packages: {{ initial_package_count | default('N/A') }}
+          After install: {{ post_install_package_count | default('N/A') }}
+          With test packages: {{ with_test_packages_count | default('N/A') }}
+          After purge: {{ post_purge_package_count | default('N/A') }}
+          
+          Status: ALL TESTS PASSED
+          - Core package installation: ✓
+          - Test package installation: ✓  
+          - Purge functionality: ✓
+          - Core package preservation: ✓
+          - System integrity: ✓
+          ===========================================

@@ -45,6 +45,9 @@ vm-reset: ## Recreate VM and test connectivity
 test: ## Run playbook against VM
 	ansible-playbook tests/playbooks/debian12-apt.yml
 
+test-debian: ## Run debian role test with purge functionality
+	ansible-playbook tests/playbooks/debian12-debian.yml
+
 .PHONY: clean
 clean: ## Clean up the build artifacts, object files, executables, and any other generated files
 	rm -rf *.tar.gz
