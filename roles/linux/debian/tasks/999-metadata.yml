@@ -71,6 +71,6 @@
     group: root
     mode: "0644"
     content: |
-      {% if (lookup('file', '/var/lib/instance-metadata/ipv4-public-ingress') | trim) == (debian__ipv4_public_egress.stdout | trim) %}
+      {% if (lookup('file', '/var/lib/instance-metadata/ipv4-public-ingress', errors='ignore') | trim) == (debian__ipv4_public_egress.stdout | trim) %}
       {{ debian__ipv4_public_egress.stdout | trim }}
       {% endif %}
