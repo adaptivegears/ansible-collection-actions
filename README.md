@@ -9,3 +9,7 @@ flowchart TB
     Debian12 -- @adaptivegears/standard-debian --> StandardDebian
     Debian12 -- @adaptivegears/standard-debian -m --> MinimalDebian
 ```
+
+# reference
+
+- https://portal.cloud.hashicorp.com/vagrant/discover/bento/debian-12
