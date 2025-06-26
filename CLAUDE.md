@@ -2,6 +2,63 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## POLICY
+
+### NEVER DO THIS
+- NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
+- NEVER break the established directory structure
+
+## INSTRUCTIONS
+
+### GitHub Flow Workflow
+When implementing GitHub Flow workflow, ALWAYS follow these steps:
+
+1. **Start from main branch**:
+   ```bash
+   git checkout main
+   git pull origin main
+   ```
+
+2. **Create feature branch**:
+   ```bash
+   git checkout -b feature/descriptive-name
+   # or: bugfix/issue-description, refactor/component-name
+   ```
+
+3. **Make changes and commit**:
+   - Follow existing code conventions
+   - Run `make lint` before committing
+   - Use descriptive commit messages
+
+4. **Push and create pull request**:
+   ```bash
+   git push origin feature/descriptive-name
+   gh pr create --title "Clear PR title" --body "Description" --assignee andreygubarev
+   ```
+
+5. **Wait for review**:
+   - User will review the pull request
+   - Address any review comments by making additional commits
+   - Re-request review after changes
+
+6. **Merge when approved**:
+   ```bash
+   gh pr merge --squash  # or --merge as appropriate
+   ```
+
+### Branch Naming Conventions
+- `feature/description` - New functionality
+- `bugfix/issue-description` - Bug fixes
+- `refactor/component-name` - Code refactoring
+- `docs/topic` - Documentation updates
+
+### Pull Request Requirements
+- Assign to @andreygubarev
+- Include clear title and description
+- Ensure `make lint` passes
+- Reference related issues if applicable
+- Keep commits focused and atomic
+
 ## Project Overview
 
 This is the `adaptivegears.actions` Ansible Collection - a structured package of automation content for infrastructure provisioning and server management, specifically focused on Debian-based systems. The collection provides standardized roles, playbooks, and a metadata management system for consistent server deployments across cloud providers.
