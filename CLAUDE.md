@@ -10,11 +10,17 @@ This is the `adaptivegears.actions` Ansible Collection - a structured package of
 
 ### Essential Commands
 - `make help` - Show all available make targets
-- `make test` - Run lint checks on all roles
+- `make lint` - Run lint checks on all roles
 - `make format` - Format code using ansible-lint
 - `make build` - Build collection archive (runs format first)
 - `make install` - Install collection locally (builds first)
 - `make clean` - Remove build artifacts
+
+### VM Testing Workflow
+- `make vm-reset` - **Complete test reset**: Destroy VM, create fresh VM, test connectivity
+- `make test` - Run apt role test playbook against VM
+- `make vm-up` - Start test VM
+- `make vm-down` - Stop test VM
 
 ### Testing Individual Roles
 - `ansible-lint roles/<role-name>` - Lint a specific role
@@ -41,10 +47,8 @@ The project includes a centralized testing configuration:
 - **Inventory**: `tests/inventory` - VM connection details with Python3 interpreter
 - **Makefile**: `tests/Makefile` - Testing automation commands
 
-### Testing Commands
-- `ansible debian12 -m ping` - Test connectivity (works from project root)
-- `cd tests && make vm-up` - Start VM using Makefile
-- `cd tests && make test-connectivity` - Test Ansible connection
+### Manual Testing Commands
+- `ansible debian12 -m ping` - Test connectivity directly from project root
 
 ### Test Playbooks
 Located in `tests/playbooks/` directory with naming pattern `debian12-{role}.yml`:
