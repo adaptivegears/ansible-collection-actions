@@ -58,14 +58,12 @@ ALWAYS follow these steps when implementing changes:
 
 3. **Make changes and commit**:
    - Follow existing code conventions
-   - Run `make lint` before committing
    - Use descriptive commit messages
 
 4. **Push and create pull request**:
    ```bash
    git push origin feature/descriptive-name
    gh pr create --title "Clear PR title" --body "Description" --assignee andreygubarev
-   gh pr edit --add-reviewer copilot
    ```
 
 5. **Wait for review and merge when approved**:
@@ -76,7 +74,6 @@ ALWAYS follow these steps when implementing changes:
 ### Pull Request Requirements
 - Assign to @andreygubarev
 - Include clear title and description
-- Ensure `make lint` passes
 - Reference related issues if applicable
 - Keep commits focused and atomic
 
