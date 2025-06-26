@@ -1,6 +1,6 @@
 ---
 # Test Playbook: Debian Role with Purge Testing
-# This playbook comprehensively tests the linux/debian role including:
+# This playbook comprehensively tests the debian role including:
 # - Package installation functionality
 # - Purge/cleanup functionality with proper dependency handling
 # - System integrity verification across all phases
@@ -30,7 +30,7 @@
 
     - name: Phase 1 | Apply Debian Role (Install Mode)
       ansible.builtin.include_role:
-        name: linux/debian
+        name: debian
       vars:
         # Supply required metadata variables
         metadata_topology_provider: "test"
@@ -112,7 +112,7 @@
   tasks:
     - name: Phase 3 | Apply Debian Role (Purge Mode)
       ansible.builtin.include_role:
-        name: linux/debian
+        name: debian
       vars:
         # Supply required metadata variables
         metadata_topology_provider: "test"

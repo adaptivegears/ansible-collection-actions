@@ -35,4 +35,4 @@
 
     - name: Include Role
       ansible.builtin.include_role:
-        name: linux/debian
+        name: debian

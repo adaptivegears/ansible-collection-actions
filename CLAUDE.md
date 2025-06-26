@@ -33,7 +33,8 @@ ansible-lint roles/<role>  # Lint specific role
 ```
 
 ### Available Roles
-- `linux/debian` - Base Debian 12 system (400+ packages)
+- `debian` - Base Debian 12 system (400+ packages)
+- `apt` - APT package management and repository configuration
 - `ssh` - SSH server hardening and access control
 - `tailscale` - VPN mesh networking setup
 - `kubernetes` - Container orchestration components
