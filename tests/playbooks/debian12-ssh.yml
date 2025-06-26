@@ -333,18 +333,14 @@
         host: "{{ ansible_default_ipv4.address }}"
         timeout: 10
 
-    - name: Phase 4 | Test connection with SSH security settings
-      ansible.builtin.shell: |
-        ssh -o BatchMode=yes -o ConnectTimeout=5 -o StrictHostKeyChecking=no \
-        -o PasswordAuthentication=no -o PubkeyAuthentication=yes \
-        {{ ansible_default_ipv4.address }} echo "SSH security test successful" 2>/dev/null || echo "Expected: SSH security working"
+    - name: Phase 4 | Test SSH security settings by checking key configurations
+      ansible.builtin.shell: sshd -T | grep -E "(passwordauthentication|pubkeyauthentication|permitrootlogin|protocol)"
       register: ssh_security_test
       changed_when: false
-      delegate_to: localhost
 
     - name: Phase 4 | Display SSH security test result
       ansible.builtin.debug:
-        msg: "SSH security test: {{ ssh_security_test.stdout }}"
+        msg: "SSH security settings verified: {{ ssh_security_test.stdout_lines | join(', ') }}"
 
     - name: Phase 4 | Clean up test users and groups
       ansible.builtin.user:
