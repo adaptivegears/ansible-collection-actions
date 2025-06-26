@@ -35,16 +35,16 @@
       ignore_errors: true
       ansible.builtin.set_fact:
         # -i or --install
-        ssh_openssh: "{{ install | default(omit) }}"
+        ssh_openssh: "{{ install | default(lookup('env', 'SSH_INSTALL') | default('true') | bool) }}"
 
         # --enable-hardening
-        ssh_hardening: "{{ enable_hardening | default(omit) }}"
+        ssh_hardening: "{{ enable_hardening | default(lookup('env', 'SSH_HARDENING') | default('true') | bool) }}"
 
         # --enable-tcp-forwarding
-        ssh_hardening_allow_tcp_forwarding: "{{ enable_tcp_forwarding | default(omit) }}"
+        ssh_hardening_allow_tcp_forwarding: "{{ enable_tcp_forwarding | default(lookup('env', 'SSH_HARDENING_ALLOW_TCP_FORWARDING') | default('true') | bool) }}"
 
         # --enable-root-login
-        ssh_hardening_allow_root_login: "{{ enable_root_login | default(omit) }}"
+        ssh_hardening_allow_root_login: "{{ enable_root_login | default(lookup('env', 'SSH_HARDENING_ALLOW_ROOT_LOGIN') | default('false') | bool) }}"
 
         # -u or --user=andrey:andreygubarev (where andreygubarev is github username)
         # -U or --user-key=andreygubarev (where andreygubarev is github username)
@@ -54,7 +54,7 @@
           {%- elif user_key is string and user_key | length > 0 -%}
           {{ [dict(["name", "key"] | zip(["admin", user_key])) | combine({"state": "allow"})] }}
           {%- else -%}
-          {{ [] }}
+          {{ lookup('env', 'SSH_USERS', default='[]') | from_json }}
           {%- endif -%}
 
         # -g or --group=group1
@@ -62,7 +62,7 @@
           {%- if group is string and group | length > 0 -%}
           {{ [dict(["name"] | zip([group])) | combine({"state": "allow"})] }}
           {%- else -%}
-          {{ [] }}
+          {{ lookup('env', 'SSH_GROUPS', default='[]') | from_json }}
           {%- endif -%}
 
     - name: Include Role

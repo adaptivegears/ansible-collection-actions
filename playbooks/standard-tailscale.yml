@@ -12,17 +12,21 @@
         msg:
           - "Usage: @adaptivegears/tailscale [OPTIONS]"
           - "Options:"
-          - "  -i, --install             Install Tailscale Client (default: true)"
-          - "  -t, --token               Tailscale AuthKey"
-          - "  --advertise-exit-node     Advertise Exit Node"
-          - "  --accept-dns              Accept DNS"
-          - "  --accept-routes           Accept Routes"
+          - "  -i, --install             Install Tailscale Client (TAILSCALE_INSTALL, default: true)"
+          - "  -t, --token               Tailscale AuthKey (TAILSCALE_AUTHKEY)"
+          - "  --login-server            Login Server (TAILSCALE_LOGINSERVER, default: '')"
+          - "  --login-timeout           Login Timeout (TAILSCALE_LOGINTIMEOUT, default: 30)"
+          - "  --advertise-exit-node     Advertise Exit Node (TAILSCALE_ADVERTISE_EXIT_NODE, default: '')"
+          - "  --accept-dns              Accept DNS (TAILSCALE_ACCEPT_DNS, default: '')"
+          - "  --accept-routes           Accept Routes (TAILSCALE_ACCEPT_ROUTES, default: '')"
 
     - name: Parse Arguments
       ignore_errors: true
       ansible.builtin.set_fact:
         install: "{{ install | default(i) | default(omit) }}"
         token: "{{ token | default(t) | default(omit) }}"
+        login_server: "{{ login_server | default(omit) }}"
+        login_timeout: "{{ login_timeout | default(omit) }}"
         advertise_exit_node: "{{ advertise_exit_node | default(omit) }}"
         accept_dns: "{{ accept_dns | default(omit) }}"
         accept_routes: "{{ accept_routes | default(omit) }}"
@@ -31,15 +35,19 @@
       ignore_errors: true
       ansible.builtin.set_fact:
         # -i or --install
-        tailscale_install: "{{ install | default(omit) }}"
-        # -t or --token
-        tailscale_authkey: "{{ token | default(omit) }}"
-        # --advertise-exit-node
-        tailscale_advertise_exit_node: "{{ advertise_exit_node | default(omit) }}"
-        # --accept-dns
-        tailscale_accept_dns: "{{ accept_dns | default(omit) }}"
-        # --accept-routes
-        tailscale_accept_routes: "{{ accept_routes | default(omit) }}"
+        tailscale_install: "{{ install | default(lookup('env', 'TAILSCALE_INSTALL') | default('true') | bool) }}"
+        # -t or --token (sensitive, omit if not provided)
+        tailscale_authkey: "{{ token | default(lookup('env', 'TAILSCALE_AUTHKEY')) | default(omit) }}"
+        # --login-server (empty string default)
+        tailscale_login_server: "{{ login_server | default(lookup('env', 'TAILSCALE_LOGINSERVER') | default('')) }}"
+        # --login-timeout (integer default)
+        tailscale_login_timeout: "{{ login_timeout | default(lookup('env', 'TAILSCALE_LOGINTIMEOUT') | default(30) | int) }}"
+        # --advertise-exit-node (empty string default, no default() in original)
+        tailscale_advertise_exit_node: "{{ advertise_exit_node | default(lookup('env', 'TAILSCALE_ADVERTISE_EXIT_NODE') | default('')) }}"
+        # --accept-dns (empty string default, no default() in original)
+        tailscale_accept_dns: "{{ accept_dns | default(lookup('env', 'TAILSCALE_ACCEPT_DNS') | default('')) }}"
+        # --accept-routes (empty string default, no default() in original)
+        tailscale_accept_routes: "{{ accept_routes | default(lookup('env', 'TAILSCALE_ACCEPT_ROUTES') | default('')) }}"
 
     - name: Include Role
       ansible.builtin.include_role:
