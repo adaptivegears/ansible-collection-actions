@@ -27,6 +27,16 @@ This is the `adaptivegears.actions` Ansible Collection - a structured package of
 - `pipenv install` - Install dependencies (if needed)
 - Requires Python 3.11, Ansible ~=10.0, direnv installed
 
+### Local Testing with Vagrant
+- **VM Setup**: `cd tests/vm && vagrant up` - Start Debian 12 VM for testing
+- **VM Access**: `vagrant ssh` - Connect to test VM
+- **VM Management**: `vagrant halt` / `vagrant destroy -f` - Stop/remove VM
+- **Requirements**: VMware Fusion, Vagrant with vagrant-vmware-desktop plugin
+- **VM Specs**: Debian 12 (bento/debian-12), 2GB RAM, 2 CPUs, IP 192.168.56.10
+
+### Testing Commands
+- `ansible -i tests/inventory debian12 -m ping` - Test Ansible connectivity to VM
+
 ## Architecture Overview
 
 ### Core Innovation: Metadata System
