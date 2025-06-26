@@ -12,7 +12,23 @@
       failed_when: usage
       ansible.builtin.debug:
         msg:
-          - "Usage: @adaptivegears/standard-kubernetes"
+          - "Usage: @adaptivegears/standard-kubernetes [OPTIONS]"
+          - "Options:"
+          - "  -h, --help                       Show this help message and exit"
+          - "  --topology-region                Set topology region (env: KUBERNETES_TOPOLOGY_REGION)"
+          - "  --topology-zone                  Set topology zone (env: KUBERNETES_TOPOLOGY_ZONE)"
+          - "  --hostname                       Set hostname (env: KUBERNETES_HOSTNAME)"
+          - "  --ipv4-public                    Set public IPv4 (env: KUBERNETES_IPV4_PUBLIC)"
+          - "  --ipv4-private                   Set private IPv4 (env: KUBERNETES_IPV4_PRIVATE)"
+
+    - name: Set Facts
+      ignore_errors: true
+      ansible.builtin.set_fact:
+        kubernetes_topology_region: "{{ topology_region | default(lookup('env', 'KUBERNETES_TOPOLOGY_REGION')) | default(omit) }}"
+        kubernetes_topology_zone: "{{ topology_zone | default(lookup('env', 'KUBERNETES_TOPOLOGY_ZONE')) | default(omit) }}"
+        kubernetes_hostname: "{{ hostname | default(lookup('env', 'KUBERNETES_HOSTNAME')) | default(omit) }}"
+        kubernetes_ipv4_public: "{{ ipv4_public | default(lookup('env', 'KUBERNETES_IPV4_PUBLIC')) | default(omit) }}"
+        kubernetes_ipv4_private: "{{ ipv4_private | default(lookup('env', 'KUBERNETES_IPV4_PRIVATE')) | default(omit) }}"
 
     - name: Include Role
       ansible.builtin.include_role:

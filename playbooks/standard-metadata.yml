@@ -1,0 +1,27 @@
+---
+- name: Standard Metadata
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  become: true
+  tasks:
+    - name: Print Usage
+      when: help | default(h) | default(false)
+      failed_when: help | default(h) | default(false)
+      ansible.builtin.debug:
+        msg:
+          - "Usage: @adaptivegears/standard-metadata [OPTIONS]"
+          - "Options:"
+          - "  -h, --help                       Show this help message and exit"
+          - "  --topology-region                Set topology region (env: METADATA_TOPOLOGY_REGION)"
+          - "  --topology-zone                  Set topology zone (env: METADATA_TOPOLOGY_ZONE)"
+
+    - name: Set Facts
+      ignore_errors: true
+      ansible.builtin.set_fact:
+        metadata_topology_region: "{{ topology_region | default(lookup('env', 'METADATA_TOPOLOGY_REGION')) | default(omit) }}"
+        metadata_topology_zone: "{{ topology_zone | default(lookup('env', 'METADATA_TOPOLOGY_ZONE')) | default(omit) }}"
+
+    - name: Include Role
+      ansible.builtin.include_role:
+        name: metadata
