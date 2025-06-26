@@ -24,11 +24,11 @@
     - name: Set Facts
       ignore_errors: true
       ansible.builtin.set_fact:
-        kubernetes_topology_region: "{{ topology_region | default(lookup('env', 'KUBERNETES_TOPOLOGY_REGION')) | default(omit) }}"
-        kubernetes_topology_zone: "{{ topology_zone | default(lookup('env', 'KUBERNETES_TOPOLOGY_ZONE')) | default(omit) }}"
-        kubernetes_hostname: "{{ hostname | default(lookup('env', 'KUBERNETES_HOSTNAME')) | default(omit) }}"
-        kubernetes_ipv4_public: "{{ ipv4_public | default(lookup('env', 'KUBERNETES_IPV4_PUBLIC')) | default(omit) }}"
-        kubernetes_ipv4_private: "{{ ipv4_private | default(lookup('env', 'KUBERNETES_IPV4_PRIVATE')) | default(omit) }}"
+        kubernetes_topology_region: "{{ topology_region | default(lookup('env', 'KUBERNETES_TOPOLOGY_REGION')) | default('') | trim }}"
+        kubernetes_topology_zone: "{{ topology_zone | default(lookup('env', 'KUBERNETES_TOPOLOGY_ZONE')) | default('') | trim }}"
+        kubernetes_hostname: "{{ hostname | default(lookup('env', 'KUBERNETES_HOSTNAME')) | default('') | trim }}"
+        kubernetes_ipv4_public: "{{ ipv4_public | default(lookup('env', 'KUBERNETES_IPV4_PUBLIC')) | default('') | trim }}"
+        kubernetes_ipv4_private: "{{ ipv4_private | default(lookup('env', 'KUBERNETES_IPV4_PRIVATE')) | default('') | trim }}"
 
     - name: Include Role
       ansible.builtin.include_role:
