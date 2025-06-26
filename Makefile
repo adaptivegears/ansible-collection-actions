@@ -48,6 +48,9 @@ test: ## Run playbook against VM
 test-debian: ## Run debian role test with purge functionality
 	ansible-playbook tests/playbooks/debian12-debian.yml
 
+test-ssh: ## Run SSH role test with comprehensive security validation
+	ansible-playbook tests/playbooks/debian12-ssh.yml
+
 .PHONY: clean
 clean: ## Clean up the build artifacts, object files, executables, and any other generated files
 	rm -rf *.tar.gz
