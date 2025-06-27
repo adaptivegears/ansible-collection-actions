@@ -9,9 +9,9 @@
 - name: Debian > Prerequisites > Assert architecture
   ansible.builtin.assert:
     that:
-      - ansible_architecture == "x86_64"
-    fail_msg: "This role is only supported on amd64 (x86_64) architecture"
+      - ansible_architecture in ["x86_64", "aarch64"]
+    fail_msg: "This role is only supported on amd64 (x86_64) and arm64 (aarch64) architectures"
 
 - name: Tailscale > Prerequisites > Get hostname
   ansible.builtin.set_fact:
-    tailscale__hostname: "{{ lookup('file', '/var/lib/instance-metadata/hostname') }}"
+    tailscale__hostname: "{{ lookup('file', '/var/lib/instance-metadata/hostname', errors='ignore') | default(ansible_hostname) }}"

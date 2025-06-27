@@ -51,6 +51,9 @@ test-debian: ## Run debian role test with purge functionality
 test-ssh: ## Run SSH role test with comprehensive security validation
 	ansible-playbook tests/playbooks/debian12-ssh.yml
 
+test-tailscale: ## Run Tailscale role test with CLI and service validation
+	ansible-playbook tests/playbooks/debian12-tailscale.yml
+
 .PHONY: clean
 clean: ## Clean up the build artifacts, object files, executables, and any other generated files
 	rm -rf *.tar.gz
