@@ -1,0 +1,410 @@
+ansible-playbook tests/playbooks/debian12-tailscale.yml
+
+PLAY [Test Tailscale Role - Phase 1 (Prerequisites and Installation)] **********
+
+TASK [Gathering Facts] *********************************************************
+Friday 27 June 2025  12:40:58 +0400 (0:00:00.008)       0:00:00.008 *********** 
+ok: [debian12]
+
+TASK [Phase 1 | Create test metadata directory] ********************************
+Friday 27 June 2025  12:40:59 +0400 (0:00:00.779)       0:00:00.787 *********** 
+changed: [debian12]
+
+TASK [Phase 1 | Create test hostname metadata] *********************************
+Friday 27 June 2025  12:40:59 +0400 (0:00:00.138)       0:00:00.926 *********** 
+changed: [debian12]
+
+TASK [Phase 1 | Check initial state - tailscale command availability] **********
+Friday 27 June 2025  12:40:59 +0400 (0:00:00.324)       0:00:01.250 *********** 
+ok: [debian12]
+
+TASK [Phase 1 | Display initial tailscale availability] ************************
+Friday 27 June 2025  12:40:59 +0400 (0:00:00.132)       0:00:01.383 *********** 
+ok: [debian12] => {
+    "msg": "Initial tailscale availability: not available"
+}
+
+TASK [Phase 1 | Include Tailscale Role] ****************************************
+Friday 27 June 2025  12:40:59 +0400 (0:00:00.010)       0:00:01.393 *********** 
+included: tailscale for debian12
+
+TASK [tailscale : Tailscale | prerequisites] ***********************************
+Friday 27 June 2025  12:40:59 +0400 (0:00:00.015)       0:00:01.409 *********** 
+included: /Users/andrey/Workspace/Development/adaptivegears.studio/ansible-collection-actions/roles/tailscale/tasks/000-prerequisite.yml for debian12
+
+TASK [tailscale : Debian > Prerequisites > Assert distribution and architecture] ***
+Friday 27 June 2025  12:40:59 +0400 (0:00:00.013)       0:00:01.422 *********** 
+ok: [debian12] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+TASK [tailscale : Debian > Prerequisites > Assert architecture] ****************
+Friday 27 June 2025  12:40:59 +0400 (0:00:00.010)       0:00:01.433 *********** 
+ok: [debian12] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+TASK [tailscale : Tailscale > Prerequisites > Get hostname] ********************
+Friday 27 June 2025  12:40:59 +0400 (0:00:00.010)       0:00:01.443 *********** 
+ok: [debian12]
+
+TASK [tailscale : Tailscale | install] *****************************************
+Friday 27 June 2025  12:41:00 +0400 (0:00:00.016)       0:00:01.459 *********** 
+included: /Users/andrey/Workspace/Development/adaptivegears.studio/ansible-collection-actions/roles/tailscale/tasks/100-install.yml for debian12
+
+TASK [tailscale : Tailscale > Package > Create download directory] *************
+Friday 27 June 2025  12:41:00 +0400 (0:00:00.013)       0:00:01.473 *********** 
+changed: [debian12]
+
+TASK [tailscale : Tailscale > Package > Download] ******************************
+Friday 27 June 2025  12:41:00 +0400 (0:00:00.095)       0:00:01.569 *********** 
+[WARNING]: Module remote_tmp /root/.ansible/tmp did not exist and was created
+with a mode of 0700, this may cause issues when running as another user. To
+avoid this, create the remote_tmp dir with the correct permissions manually
+changed: [debian12]
+
+TASK [tailscale : Tailscale > Package > Install] *******************************
+Friday 27 June 2025  12:41:04 +0400 (0:00:04.849)       0:00:06.418 *********** 
+changed: [debian12]
+
+TASK [tailscale : Tailscale > Systemd > Enable] ********************************
+Friday 27 June 2025  12:41:09 +0400 (0:00:04.338)       0:00:10.756 *********** 
+ok: [debian12]
+
+TASK [tailscale : Tailscale > Systemd > Start] *********************************
+Friday 27 June 2025  12:41:09 +0400 (0:00:00.268)       0:00:11.025 *********** 
+ok: [debian12]
+
+TASK [tailscale : Tailscale | Configure] ***************************************
+Friday 27 June 2025  12:41:09 +0400 (0:00:00.165)       0:00:11.191 *********** 
+included: /Users/andrey/Workspace/Development/adaptivegears.studio/ansible-collection-actions/roles/tailscale/tasks/200-configuration.yml for debian12
+
+TASK [tailscale : Tailscale > Config > Wait for readiness] *********************
+Friday 27 June 2025  12:41:09 +0400 (0:00:00.015)       0:00:11.206 *********** 
+ok: [debian12]
+
+TASK [tailscale : Tailscale > Config > Get status] *****************************
+Friday 27 June 2025  12:41:09 +0400 (0:00:00.137)       0:00:11.343 *********** 
+ok: [debian12]
+
+TASK [tailscale : Tailscale > Login | Assert auth key] *************************
+Friday 27 June 2025  12:41:09 +0400 (0:00:00.100)       0:00:11.443 *********** 
+ok: [debian12] => {
+    "changed": false,
+    "msg": "Tailscale auth key is defined"
+}
+
+TASK [tailscale : Tailscale > Login > Login] ***********************************
+Friday 27 June 2025  12:41:10 +0400 (0:00:00.017)       0:00:11.461 *********** 
+fatal: [debian12]: FAILED! => {"changed": true, "cmd": ["tailscale", "--socket=/run/tailscale/tailscaled.sock", "up", "--auth-key=tskey-test-dummy-key-no-login", "--hostname="], "delta": "0:00:00.919718", "end": "2025-06-27 08:41:11.154568", "msg": "non-zero return code", "rc": 1, "start": "2025-06-27 08:41:10.234850", "stderr": "backend error: invalid key: unable to validate API key", "stderr_lines": ["backend error: invalid key: unable to validate API key"], "stdout": "", "stdout_lines": []}
+
+TASK [Phase 1 | Handle expected login failure] *********************************
+Friday 27 June 2025  12:41:11 +0400 (0:00:01.051)       0:00:12.512 *********** 
+ok: [debian12] => {
+    "msg": "Tailscale role failed as expected (dummy auth key or login issue)"
+}
+
+TASK [Phase 1 | Verify tailscale CLI tool is installed] ************************
+Friday 27 June 2025  12:41:11 +0400 (0:00:00.016)       0:00:12.529 *********** 
+ok: [debian12]
+
+TASK [Phase 1 | Assert tailscale CLI is available] *****************************
+Friday 27 June 2025  12:41:11 +0400 (0:00:00.103)       0:00:12.632 *********** 
+ok: [debian12] => {
+    "changed": false,
+    "msg": "tailscale CLI tool installed successfully"
+}
+
+TASK [Phase 1 | Test tailscale version command] ********************************
+Friday 27 June 2025  12:41:11 +0400 (0:00:00.011)       0:00:12.643 *********** 
+ok: [debian12]
+
+TASK [Phase 1 | Validate tailscale version output] *****************************
+Friday 27 June 2025  12:41:11 +0400 (0:00:00.096)       0:00:12.740 *********** 
+ok: [debian12] => {
+    "changed": false,
+    "msg": "tailscale version command successful"
+}
+
+TASK [Phase 1 | Verify package installation via dpkg] **************************
+Friday 27 June 2025  12:41:11 +0400 (0:00:00.011)       0:00:12.751 *********** 
+ok: [debian12]
+
+TASK [Phase 1 | Assert package is properly installed] **************************
+Friday 27 June 2025  12:41:11 +0400 (0:00:00.097)       0:00:12.848 *********** 
+ok: [debian12] => {
+    "changed": false,
+    "msg": "tailscale package installation verified"
+}
+
+TASK [Phase 1 | Display installation results] **********************************
+Friday 27 June 2025  12:41:11 +0400 (0:00:00.011)       0:00:12.860 *********** 
+ok: [debian12] => {
+    "msg": "Phase 1 Complete: Tailscale installation and CLI availability verified"
+}
+
+RUNNING HANDLER [tailscale : Tailscale > Restart] ******************************
+Friday 27 June 2025  12:41:11 +0400 (0:00:00.010)       0:00:12.871 *********** 
+changed: [debian12]
+
+PLAY [Test Tailscale Role - Phase 2 (Service Management)] **********************
+
+TASK [Gathering Facts] *********************************************************
+Friday 27 June 2025  12:41:12 +0400 (0:00:01.131)       0:00:14.002 *********** 
+ok: [debian12]
+
+TASK [Phase 2 | Check tailscaled service status] *******************************
+Friday 27 June 2025  12:41:13 +0400 (0:00:00.547)       0:00:14.550 *********** 
+ok: [debian12]
+
+TASK [Phase 2 | Verify tailscaled service is enabled] **************************
+Friday 27 June 2025  12:41:13 +0400 (0:00:00.268)       0:00:14.819 *********** 
+ok: [debian12]
+
+TASK [Phase 2 | Assert tailscaled service configuration] ***********************
+Friday 27 June 2025  12:41:13 +0400 (0:00:00.163)       0:00:14.982 *********** 
+ok: [debian12] => {
+    "changed": false,
+    "msg": "tailscaled service is properly enabled"
+}
+
+TASK [Phase 2 | Start tailscaled service for testing] **************************
+Friday 27 June 2025  12:41:13 +0400 (0:00:00.011)       0:00:14.993 *********** 
+ok: [debian12]
+
+TASK [Phase 2 | Wait for tailscaled socket creation] ***************************
+Friday 27 June 2025  12:41:13 +0400 (0:00:00.179)       0:00:15.173 *********** 
+ok: [debian12]
+
+TASK [Phase 2 | Verify socket file exists and permissions] *********************
+Friday 27 June 2025  12:41:13 +0400 (0:00:00.094)       0:00:15.268 *********** 
+ok: [debian12]
+
+TASK [Phase 2 | Assert socket file properties] *********************************
+Friday 27 June 2025  12:41:13 +0400 (0:00:00.096)       0:00:15.365 *********** 
+ok: [debian12] => {
+    "changed": false,
+    "msg": "tailscaled socket file verified"
+}
+
+TASK [Phase 2 | Test service restart capability] *******************************
+Friday 27 June 2025  12:41:13 +0400 (0:00:00.011)       0:00:15.376 *********** 
+changed: [debian12]
+
+TASK [Phase 2 | Verify service is running after restart] ***********************
+Friday 27 June 2025  12:41:14 +0400 (0:00:00.939)       0:00:16.316 *********** 
+ok: [debian12]
+
+TASK [Phase 2 | Assert service survived restart] *******************************
+Friday 27 June 2025  12:41:15 +0400 (0:00:00.166)       0:00:16.482 *********** 
+ok: [debian12] => {
+    "changed": false,
+    "msg": "tailscaled service restart successful"
+}
+
+TASK [Phase 2 | Display service management results] ****************************
+Friday 27 June 2025  12:41:15 +0400 (0:00:00.011)       0:00:16.493 *********** 
+ok: [debian12] => {
+    "msg": "Phase 2 Complete: Tailscale service management verified"
+}
+
+PLAY [Test Tailscale Role - Phase 3 (CLI Commands and Configuration)] **********
+
+TASK [Gathering Facts] *********************************************************
+Friday 27 June 2025  12:41:15 +0400 (0:00:00.010)       0:00:16.504 *********** 
+ok: [debian12]
+
+TASK [Phase 3 | Test tailscale help command] ***********************************
+Friday 27 June 2025  12:41:15 +0400 (0:00:00.580)       0:00:17.085 *********** 
+ok: [debian12]
+
+TASK [Phase 3 | Validate help command output] **********************************
+Friday 27 June 2025  12:41:15 +0400 (0:00:00.097)       0:00:17.182 *********** 
+ok: [debian12] => {
+    "changed": false,
+    "msg": "tailscale help command verified"
+}
+
+TASK [Phase 3 | Test tailscale status command (expect NeedsLogin)] *************
+Friday 27 June 2025  12:41:15 +0400 (0:00:00.011)       0:00:17.193 *********** 
+ok: [debian12]
+
+TASK [Phase 3 | Parse tailscale status JSON] ***********************************
+Friday 27 June 2025  12:41:15 +0400 (0:00:00.097)       0:00:17.291 *********** 
+ok: [debian12]
+
+TASK [Phase 3 | Validate status command structure] *****************************
+Friday 27 June 2025  12:41:15 +0400 (0:00:00.013)       0:00:17.305 *********** 
+ok: [debian12] => {
+    "changed": false,
+    "msg": "tailscale status command and JSON parsing verified"
+}
+
+TASK [Phase 3 | Test tailscale logout command (should handle gracefully)] ******
+Friday 27 June 2025  12:41:15 +0400 (0:00:00.012)       0:00:17.318 *********** 
+ok: [debian12]
+
+TASK [Phase 3 | Validate logout command handling] ******************************
+Friday 27 June 2025  12:41:15 +0400 (0:00:00.096)       0:00:17.414 *********** 
+ok: [debian12] => {
+    "changed": false,
+    "msg": "tailscale logout command handled correctly"
+}
+
+TASK [Phase 3 | Test invalid tailscale command handling] ***********************
+Friday 27 June 2025  12:41:15 +0400 (0:00:00.010)       0:00:17.425 *********** 
+ok: [debian12]
+
+TASK [Phase 3 | Validate error handling] ***************************************
+Friday 27 June 2025  12:41:16 +0400 (0:00:00.096)       0:00:17.522 *********** 
+ok: [debian12] => {
+    "changed": false,
+    "msg": "tailscale invalid command handling verified"
+}
+
+TASK [Phase 3 | Test tailscale ip command (without login)] *********************
+Friday 27 June 2025  12:41:16 +0400 (0:00:00.010)       0:00:17.532 *********** 
+ok: [debian12]
+
+TASK [Phase 3 | Validate IP command behavior when not logged in] ***************
+Friday 27 June 2025  12:41:16 +0400 (0:00:00.096)       0:00:17.629 *********** 
+ok: [debian12] => {
+    "changed": false,
+    "msg": "tailscale ip command behavior verified"
+}
+
+TASK [Phase 3 | Display CLI testing results] ***********************************
+Friday 27 June 2025  12:41:16 +0400 (0:00:00.012)       0:00:17.641 *********** 
+ok: [debian12] => {
+    "msg": "Phase 3 Complete: Tailscale CLI commands and configuration validation successful"
+}
+
+PLAY [Test Tailscale Role - Phase 4 (Metadata and File Operations)] ************
+
+TASK [Gathering Facts] *********************************************************
+Friday 27 June 2025  12:41:16 +0400 (0:00:00.010)       0:00:17.652 *********** 
+ok: [debian12]
+
+TASK [Phase 4 | Create test auth key for metadata testing] *********************
+Friday 27 June 2025  12:41:16 +0400 (0:00:00.578)       0:00:18.231 *********** 
+changed: [debian12]
+
+TASK [Phase 4 | Verify metadata directory exists] ******************************
+Friday 27 June 2025  12:41:17 +0400 (0:00:00.236)       0:00:18.467 *********** 
+ok: [debian12]
+
+TASK [Phase 4 | Assert metadata directory properties] **************************
+Friday 27 June 2025  12:41:17 +0400 (0:00:00.096)       0:00:18.563 *********** 
+ok: [debian12] => {
+    "changed": false,
+    "msg": "metadata directory verified"
+}
+
+TASK [Phase 4 | Check if auth key was saved] ***********************************
+Friday 27 June 2025  12:41:17 +0400 (0:00:00.011)       0:00:18.575 *********** 
+ok: [debian12]
+
+TASK [Phase 4 | Verify auth key file properties] *******************************
+Friday 27 June 2025  12:41:17 +0400 (0:00:00.100)       0:00:18.676 *********** 
+ok: [debian12] => {
+    "changed": false,
+    "msg": "tailscale auth key file permissions verified"
+}
+
+TASK [Phase 4 | Read auth key content] *****************************************
+Friday 27 June 2025  12:41:17 +0400 (0:00:00.012)       0:00:18.688 *********** 
+ok: [debian12]
+
+TASK [Phase 4 | Validate stored auth key content] ******************************
+Friday 27 June 2025  12:41:17 +0400 (0:00:00.143)       0:00:18.832 *********** 
+ok: [debian12] => {
+    "changed": false,
+    "msg": "auth key storage and retrieval verified"
+}
+
+TASK [Phase 4 | Check hostname metadata] ***************************************
+Friday 27 June 2025  12:41:17 +0400 (0:00:00.013)       0:00:18.845 *********** 
+ok: [debian12]
+
+TASK [Phase 4 | Verify hostname metadata exists] *******************************
+Friday 27 June 2025  12:41:17 +0400 (0:00:00.115)       0:00:18.960 *********** 
+ok: [debian12] => {
+    "changed": false,
+    "msg": "hostname metadata file verified"
+}
+
+TASK [Phase 4 | Test file persistence (simulate idempotency)] ******************
+Friday 27 June 2025  12:41:17 +0400 (0:00:00.015)       0:00:18.976 *********** 
+ok: [debian12]
+
+TASK [Phase 4 | Verify auth key file remains unchanged (idempotency)] **********
+Friday 27 June 2025  12:41:17 +0400 (0:00:00.220)       0:00:19.197 *********** 
+ok: [debian12] => {
+    "changed": false,
+    "msg": "File persistence and idempotency verified"
+}
+
+TASK [Phase 4 | Final Tailscale functionality check] ***************************
+Friday 27 June 2025  12:41:17 +0400 (0:00:00.010)       0:00:19.207 *********** 
+ok: [debian12]
+
+TASK [Phase 4 | Validate final Tailscale functionality] ************************
+Friday 27 June 2025  12:41:17 +0400 (0:00:00.095)       0:00:19.302 *********** 
+ok: [debian12] => {
+    "changed": false,
+    "msg": "Tailscale CLI functionality verified after all tests"
+}
+
+TASK [Phase 4 | Clean up test auth key] ****************************************
+Friday 27 June 2025  12:41:17 +0400 (0:00:00.011)       0:00:19.314 *********** 
+changed: [debian12]
+
+TASK [Phase 4 | Stop tailscaled service for cleanup] ***************************
+Friday 27 June 2025  12:41:17 +0400 (0:00:00.095)       0:00:19.410 *********** 
+changed: [debian12]
+
+TASK [Phase 4 | Final service status check] ************************************
+Friday 27 June 2025  12:41:18 +0400 (0:00:00.710)       0:00:20.120 *********** 
+ok: [debian12]
+
+TASK [Phase 4 | Assert final service state] ************************************
+Friday 27 June 2025  12:41:18 +0400 (0:00:00.157)       0:00:20.277 *********** 
+ok: [debian12] => {
+    "changed": false,
+    "msg": "tailscaled service cleanup verified"
+}
+
+TASK [Phase 4 | Test Summary] **************************************************
+Friday 27 June 2025  12:41:18 +0400 (0:00:00.011)       0:00:20.289 *********** 
+ok: [debian12] => {
+    "msg": "===========================================\nTAILSCALE ROLE TEST SUMMARY\n===========================================\n\nStatus: ALL TESTS PASSED\n- Prerequisites validation: ✓\n- Package installation: ✓\n- CLI tool availability: ✓\n- Service management: ✓\n- Socket communication: ✓\n- CLI commands: ✓\n- Error handling: ✓\n- Metadata operations: ✓\n- File permissions: ✓\n- Role idempotency: ✓\n- Cleanup: ✓\n===========================================\n\nNote: Network connectivity tests were not performed\nas requested - only CLI functionality was validated."
+}
+
+PLAY RECAP *********************************************************************
+debian12                   : ok=73   changed=10   unreachable=0    failed=0    skipped=0    rescued=1    ignored=0   
+
+Playbook run took 0 days, 0 hours, 0 minutes, 20 seconds
+Friday 27 June 2025  12:41:18 +0400 (0:00:00.007)       0:00:20.296 *********** 
+=============================================================================== 
+tailscale : Tailscale > Package > Download ------------------------------ 4.85s
+tailscale : Tailscale > Package > Install ------------------------------- 4.34s
+tailscale : Tailscale > Restart ----------------------------------------- 1.13s
+tailscale : Tailscale > Login > Login ----------------------------------- 1.05s
+Phase 2 | Test service restart capability ------------------------------- 0.94s
+Gathering Facts --------------------------------------------------------- 0.78s
+Phase 4 | Stop tailscaled service for cleanup --------------------------- 0.71s
+Gathering Facts --------------------------------------------------------- 0.58s
+Gathering Facts --------------------------------------------------------- 0.58s
+Gathering Facts --------------------------------------------------------- 0.55s
+Phase 1 | Create test hostname metadata --------------------------------- 0.32s
+Phase 2 | Check tailscaled service status ------------------------------- 0.27s
+tailscale : Tailscale > Systemd > Enable -------------------------------- 0.27s
+Phase 4 | Create test auth key for metadata testing --------------------- 0.24s
+Phase 4 | Test file persistence (simulate idempotency) ------------------ 0.22s
+Phase 2 | Start tailscaled service for testing -------------------------- 0.18s
+Phase 2 | Verify service is running after restart ----------------------- 0.17s
+tailscale : Tailscale > Systemd > Start --------------------------------- 0.17s
+Phase 2 | Verify tailscaled service is enabled -------------------------- 0.16s
+Phase 4 | Final service status check ------------------------------------ 0.16s
