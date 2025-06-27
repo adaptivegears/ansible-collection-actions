@@ -1,0 +1,113 @@
+---
+- name: "Metadata > Kubernetes > Create metadata directory"
+  ansible.builtin.file:
+    path: /var/lib/instance-metadata
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: "Metadata > Kubernetes > Create auth directory"
+  ansible.builtin.file:
+    path: /var/lib/instance-metadata/auth
+    state: directory
+    owner: root
+    group: root
+    mode: '0500'
+
+- name: "Metadata > Kubernetes > Store kubernetes role"
+  ansible.builtin.copy:
+    content: "{{ kubernetes_role }}"
+    dest: /var/lib/instance-metadata/kubernetes-role
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: "Metadata > Kubernetes > Store cluster endpoint for control-plane nodes"
+  ansible.builtin.copy:
+    content: "{{ kubernetes_ipv4_private | default(kubernetes_ipv4_public) }}:6443"
+    dest: /var/lib/instance-metadata/kubernetes-join-endpoint
+    owner: root
+    group: root
+    mode: '0644'
+  when: kubernetes_role == 'control-plane'
+
+- name: "Metadata > Kubernetes > Get bootstrap token for control-plane nodes"
+  ansible.builtin.shell: |
+    kubeadm token list | grep "authentication,signing" | head -1 | cut -d' ' -f1
+  args:
+    executable: /bin/bash
+  register: bootstrap_token_result
+  when:
+    - kubernetes_role == 'control-plane'
+    - kubernetes_join_token == ''
+  failed_when: false
+  changed_when: false
+
+- name: "Metadata > Kubernetes > Create bootstrap token if none exists"
+  ansible.builtin.shell: |
+    kubeadm token create --ttl 24h
+  register: new_bootstrap_token_result
+  when:
+    - kubernetes_role == 'control-plane'
+    - kubernetes_join_token == ''
+    - bootstrap_token_result.stdout == ''
+  changed_when: true
+
+- name: "Metadata > Kubernetes > Store bootstrap token"
+  ansible.builtin.copy:
+    content: "{{ new_bootstrap_token_result.stdout | default(bootstrap_token_result.stdout) }}"
+    dest: /var/lib/instance-metadata/auth/kubernetes-join-token
+    owner: root
+    group: root
+    mode: '0400'
+  when:
+    - kubernetes_role == 'control-plane'
+    - kubernetes_join_token == ''
+    - (new_bootstrap_token_result.stdout is defined or bootstrap_token_result.stdout != '')
+
+- name: "Metadata > Kubernetes > Get discovery token CA cert hash"
+  ansible.builtin.shell: |
+    openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+  args:
+    executable: /bin/bash
+  register: discovery_hash_result
+  when:
+    - kubernetes_role == 'control-plane'
+    - kubernetes_join_discovery_hash == ''
+  changed_when: false
+
+- name: "Metadata > Kubernetes > Store discovery token CA cert hash"
+  ansible.builtin.copy:
+    content: "sha256:{{ discovery_hash_result.stdout }}"
+    dest: /var/lib/instance-metadata/auth/kubernetes-join-discovery-hash
+    owner: root
+    group: root
+    mode: '0400'
+  when:
+    - kubernetes_role == 'control-plane'
+    - kubernetes_join_discovery_hash == ''
+    - discovery_hash_result.stdout is defined
+
+- name: "Metadata > Kubernetes > Get certificate key for control-plane joins"
+  ansible.builtin.shell: |
+    kubeadm init phase upload-certs --upload-certs | tail -1
+  args:
+    executable: /bin/bash
+  register: certificate_key_result
+  when:
+    - kubernetes_role == 'control-plane'
+    - kubernetes_join_certificate_key == ''
+  changed_when: false
+
+- name: "Metadata > Kubernetes > Store certificate key"
+  ansible.builtin.copy:
+    content: "{{ certificate_key_result.stdout }}"
+    dest: /var/lib/instance-metadata/auth/kubernetes-join-certificate-key
+    owner: root
+    group: root
+    mode: '0400'
+  when:
+    - kubernetes_role == 'control-plane'
+    - kubernetes_join_certificate_key == ''
+    - certificate_key_result.stdout is defined

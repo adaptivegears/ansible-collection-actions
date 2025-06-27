@@ -27,6 +27,13 @@ make test-debian           # Run debian role test with purge functionality
 make vm-up                 # Start test VM
 make vm-down               # Stop test VM
 
+# Multi-node cluster testing workflow
+make vm-cluster-up         # Start both control plane and worker VMs
+make vm-cluster-down       # Stop both VMs
+make vm-cluster-reset      # Complete multi-node reset: destroy, create, test connectivity
+make test-kubernetes-multinode  # Run real multi-node cluster test
+make test-kubernetes-join  # Run join logic validation test
+
 # Manual testing
 ansible debian12 -m ping   # Test VM connectivity
 ansible-lint roles/<role>  # Lint specific role
@@ -106,19 +113,28 @@ The project uses Vagrant with VMware Fusion for local testing:
 
 **VM Specifications:**
 - OS: Debian 12 (bento/debian-12)
-- Resources: 2GB RAM, 2 CPUs
-- Network: IP 192.168.56.10
+- Resources: 2GB RAM, 2 CPUs per VM
+- Single VM: IP 192.168.56.10 (debian12)
+- Multi-node cluster:
+  - Control plane: IP 192.168.56.10 (debian12)
+  - Worker node: IP 192.168.56.11 (debian12-worker)
 - Requirements: VMware Fusion, Vagrant with vagrant-vmware-desktop plugin
 
 **VM Management Commands:**
 ```bash
-# Complete workflow
+# Single VM workflow
 make vm-reset              # Destroy → create → test connectivity
-
-# Individual operations
 make vm-up                 # Start VM
 make vm-down              # Stop VM
-cd tests/vm && vagrant ssh # Connect to VM
+
+# Multi-node cluster workflow  
+make vm-cluster-reset      # Destroy → create both VMs → test connectivity
+make vm-cluster-up         # Start both control plane and worker VMs
+make vm-cluster-down       # Stop both VMs
+
+# VM access
+cd tests/vm && vagrant ssh debian12        # Connect to control plane
+cd tests/vm && vagrant ssh debian12-worker # Connect to worker node
 ```
 
 **Testing Configuration:**
@@ -130,9 +146,14 @@ cd tests/vm && vagrant ssh # Connect to VM
 Located in `tests/playbooks/` with pattern `debian12-{role}.yml`:
 
 ```bash
-# Run specific test playbooks
+# Single-node role tests
 ansible-playbook tests/playbooks/debian12-apt.yml
 ansible-playbook tests/playbooks/debian12-debian.yml
+ansible-playbook tests/playbooks/debian12-kubernetes.yml
+
+# Multi-node cluster tests
+ansible-playbook tests/playbooks/debian12-kubernetes-multinode.yml  # Real cluster
+ansible-playbook tests/playbooks/debian12-kubernetes-join.yml       # Join logic
 
 # Run with options
 ansible-playbook tests/playbooks/debian12-apt.yml -v               # Verbose
@@ -145,6 +166,8 @@ ansible-playbook tests/playbooks/debian12-apt.yml -e "var=value"   # Extra vars
 3. **Metadata System Testing**: Validate `/var/lib/instance-metadata/` functionality
 4. **Integration Testing**: Test role interactions and dependencies
 5. **Package Installation**: Verify 400+ package installations in linux/debian role
+6. **Multi-node Cluster Testing**: Validate real Kubernetes cluster join functionality
+7. **Join Logic Validation**: Test role-based execution paths and configuration generation
 
 ### Code Quality
 - **Linting**: ansible-lint for code quality and best practices

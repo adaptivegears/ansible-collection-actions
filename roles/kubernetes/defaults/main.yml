@@ -2,6 +2,51 @@ kubernetes_name: "kubernetes"
 kubernetes_subnet_pod: "10.100.0.0/16"
 kubernetes_subnet_service: "10.110.0.0/16"
 
+kubernetes_role: >-
+  {{
+    (
+      lookup('env', 'KUBERNETES_ROLE') or
+      lookup('file', '/var/lib/instance-metadata/kubernetes-role', errors='ignore') or
+      'control-plane'
+    ) | trim
+  }}
+
+kubernetes_join_token: >-
+  {{
+    (
+      lookup('env', 'KUBERNETES_JOIN_TOKEN') or
+      lookup('file', '/var/lib/instance-metadata/auth/kubernetes-join-token', errors='ignore') or
+      ''
+    ) | trim
+  }}
+
+kubernetes_join_discovery_hash: >-
+  {{
+    (
+      lookup('env', 'KUBERNETES_JOIN_DISCOVERY_HASH') or
+      lookup('file', '/var/lib/instance-metadata/auth/kubernetes-join-discovery-hash', errors='ignore') or
+      ''
+    ) | trim
+  }}
+
+kubernetes_join_endpoint: >-
+  {{
+    (
+      lookup('env', 'KUBERNETES_JOIN_ENDPOINT') or
+      lookup('file', '/var/lib/instance-metadata/kubernetes-join-endpoint', errors='ignore') or
+      ''
+    ) | trim
+  }}
+
+kubernetes_join_certificate_key: >-
+  {{
+    (
+      lookup('env', 'KUBERNETES_JOIN_CERTIFICATE_KEY') or
+      lookup('file', '/var/lib/instance-metadata/auth/kubernetes-join-certificate-key', errors='ignore') or
+      ''
+    ) | trim
+  }}
+
 kubernetes_topology_region: "{{ lookup('file', '/var/lib/instance-metadata/topology-region', errors='ignore') | trim }}"
 kubernetes_topology_zone: "{{ lookup('file', '/var/lib/instance-metadata/topology-zone', errors='ignore') | trim }}"
 kubernetes_hostname: "{{ lookup('file', '/var/lib/instance-metadata/hostname', errors='ignore') | trim }}"

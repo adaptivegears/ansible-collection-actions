@@ -42,6 +42,15 @@ vm-down: ## Stop test VM
 vm-reset: ## Recreate VM and test connectivity
 	$(MAKE) -C tests clean && $(MAKE) -C tests up && $(MAKE) -C tests check
 
+vm-cluster-up: ## Start multi-node cluster VMs
+	cd tests/vm && vagrant up debian12 debian12-worker
+
+vm-cluster-down: ## Stop multi-node cluster VMs  
+	cd tests/vm && vagrant halt debian12 debian12-worker
+
+vm-cluster-reset: vm-cluster-down vm-cluster-up ## Complete multi-node cluster reset
+	ansible cluster -m ping
+
 test: ## Run playbook against VM
 	ansible-playbook tests/playbooks/debian12-apt.yml
 
@@ -56,6 +65,12 @@ test-tailscale: ## Run Tailscale role test with CLI and service validation
 
 test-kubernetes: ## Run Kubernetes role test with cluster initialization and validation
 	ansible-playbook tests/playbooks/debian12-kubernetes.yml
+
+test-kubernetes-multinode: ## Run multi-node kubernetes cluster test
+	ansible-playbook tests/playbooks/debian12-kubernetes-multinode.yml
+
+test-kubernetes-join: ## Run kubernetes join logic validation test
+	ansible-playbook tests/playbooks/debian12-kubernetes-join.yml
 
 .PHONY: clean
 clean: ## Clean up the build artifacts, object files, executables, and any other generated files

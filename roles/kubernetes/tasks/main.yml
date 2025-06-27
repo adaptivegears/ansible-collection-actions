@@ -13,17 +13,34 @@
   ansible.builtin.include_tasks:
     file: 100-kubeadm.yml
 
-- name: Kubernetes > Kubelet > Wait for Readiness
+- name: Kubernetes > Kubelet > Wait for API Server (Control Plane)
   ansible.builtin.wait_for:
-    host: "{{ ansible_default_ipv4.address }}"
+    host: "{{ kubernetes_ipv4_private }}"
     port: 6443
     delay: 5
     timeout: 300
+  when: kubernetes_role == 'control-plane'
+
+- name: Kubernetes > Kubelet > Wait for API Server (Worker Node)
+  ansible.builtin.wait_for:
+    host: "{{ kubernetes_join_endpoint.split(':')[0] }}"
+    port: "{{ kubernetes_join_endpoint.split(':')[1] | default('6443') }}"
+    delay: 5
+    timeout: 300
+  when:
+    - kubernetes_role == 'worker'
+    - kubernetes_join_endpoint != ''
 
 - name: Kubernetes > Kubelet
   ansible.builtin.include_tasks:
     file: 110-kubelet.yml
 
-- name: Kubernetes > Kubectl
+- name: Kubernetes > Kubectl (Control Plane Only)
   ansible.builtin.include_tasks:
     file: 120-kubectl.yml
+  when: kubernetes_role == 'control-plane'
+
+- name: Kubernetes > Metadata
+  ansible.builtin.include_tasks:
+    file: 999-metadata.yml
+  when: kubernetes_role == 'control-plane'
