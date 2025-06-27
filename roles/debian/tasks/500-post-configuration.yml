@@ -72,8 +72,17 @@
     state: started
     enabled: true
 
+- name: Debian > Network > Check if networking.service exists
+  ansible.builtin.systemd:
+    name: networking
+  register: networking_service_status
+  failed_when: false
+
 - name: Debian > Network > Disable networking.service
-  when: not (ansible_virtualization_type is defined and ansible_virtualization_type == "VMware")
+  when: 
+    - not (ansible_virtualization_type is defined and ansible_virtualization_type == "VMware")
+    - networking_service_status.status is defined
+    - networking_service_status.status.LoadState != "not-found"
   ansible.builtin.systemd_service:
     name: networking
     state: stopped
