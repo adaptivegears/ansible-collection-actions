@@ -7,7 +7,7 @@
 
 # https://kubernetes.io/docs/reference/config-api/kubeadm-config.v1beta4/
 # https://kubernetes.io/docs/reference/config-api/kubelet-config.v1beta1/
-- name: Kubernetes > Kubeadm > Configure
+- name: Kubernetes > Kubeadm > Configure for Control Plane Init
   ansible.builtin.copy:
     dest: /etc/kubernetes/kubeadm-config.yaml
     owner: root
@@ -61,10 +61,130 @@
           enabled: false
         webhook:
           enabled: true
+  when: kubernetes_role == 'control-plane'
 
-- name: Kubernetes > Kubeadm > Initialize
+- name: Kubernetes > Kubeadm > Configure for Control Plane Join
+  ansible.builtin.copy:
+    dest: /etc/kubernetes/kubeadm-join-config.yaml
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      ---
+      apiVersion: kubeadm.k8s.io/v1beta4
+      kind: JoinConfiguration
+
+      discovery:
+        bootstrapToken:
+          token: "{{ kubernetes_join_token }}"
+          apiServerEndpoint: "{{ kubernetes_join_endpoint }}"
+          caCertHashes:
+            - "{{ kubernetes_join_discovery_hash }}"
+
+      controlPlane:
+        certificateKey: "{{ kubernetes_join_certificate_key }}"
+        localAPIEndpoint:
+          advertiseAddress: "{{ kubernetes_ipv4_private }}"
+          bindPort: 6443
+
+      nodeRegistration:
+        name: "{{ kubernetes_hostname }}"
+        criSocket: unix:///var/run/containerd/containerd.sock
+        kubeletExtraArgs:
+          - name: "node-ip"
+            value: "{{ kubernetes_ipv4_private }}"
+          - name: "node-labels"
+            value: "topology.kubernetes.io/region={{ kubernetes_topology_region }},topology.kubernetes.io/zone={{ kubernetes_topology_zone }}"
+
+      ---
+      apiVersion: kubelet.config.k8s.io/v1beta1
+      kind: KubeletConfiguration
+      cgroupDriver: systemd
+      authentication:
+        anonymous:
+          enabled: false
+        webhook:
+          enabled: true
+  when:
+    - kubernetes_role == 'control-plane'
+    - kubernetes_join_token != ''
+    - kubernetes_join_endpoint != ''
+    - kubernetes_join_discovery_hash != ''
+    - kubernetes_join_certificate_key != ''
+
+- name: Kubernetes > Kubeadm > Configure for Worker Join
+  ansible.builtin.copy:
+    dest: /etc/kubernetes/kubeadm-join-config.yaml
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      ---
+      apiVersion: kubeadm.k8s.io/v1beta4
+      kind: JoinConfiguration
+
+      discovery:
+        bootstrapToken:
+          token: "{{ kubernetes_join_token }}"
+          apiServerEndpoint: "{{ kubernetes_join_endpoint }}"
+          caCertHashes:
+            - "{{ kubernetes_join_discovery_hash }}"
+
+      nodeRegistration:
+        name: "{{ kubernetes_hostname }}"
+        criSocket: unix:///var/run/containerd/containerd.sock
+        kubeletExtraArgs:
+          - name: "node-ip"
+            value: "{{ kubernetes_ipv4_private }}"
+          - name: "node-labels"
+            value: "topology.kubernetes.io/region={{ kubernetes_topology_region }},topology.kubernetes.io/zone={{ kubernetes_topology_zone }}"
+
+      ---
+      apiVersion: kubelet.config.k8s.io/v1beta1
+      kind: KubeletConfiguration
+      cgroupDriver: systemd
+      authentication:
+        anonymous:
+          enabled: false
+        webhook:
+          enabled: true
+  when:
+    - kubernetes_role == 'worker'
+    - kubernetes_join_token != ''
+    - kubernetes_join_endpoint != ''
+    - kubernetes_join_discovery_hash != ''
+
+- name: Kubernetes > Kubeadm > Initialize Control Plane
   ansible.builtin.command:
     cmd: >-
       kubeadm init
       --config /etc/kubernetes/kubeadm-config.yaml
+  when:
+    - kubernetes_role == 'control-plane'
+    - kubernetes_join_token == ''
+  changed_when: false
+
+- name: Kubernetes > Kubeadm > Join Control Plane Node
+  ansible.builtin.command:
+    cmd: >-
+      kubeadm join
+      --config /etc/kubernetes/kubeadm-join-config.yaml
+  when:
+    - kubernetes_role == 'control-plane'
+    - kubernetes_join_token != ''
+    - kubernetes_join_endpoint != ''
+    - kubernetes_join_discovery_hash != ''
+    - kubernetes_join_certificate_key != ''
+  changed_when: false
+
+- name: Kubernetes > Kubeadm > Join Worker Node
+  ansible.builtin.command:
+    cmd: >-
+      kubeadm join
+      --config /etc/kubernetes/kubeadm-join-config.yaml
+  when:
+    - kubernetes_role == 'worker'
+    - kubernetes_join_token != ''
+    - kubernetes_join_endpoint != ''
+    - kubernetes_join_discovery_hash != ''
   changed_when: false
