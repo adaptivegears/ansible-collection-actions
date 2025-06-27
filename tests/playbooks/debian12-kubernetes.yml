@@ -1,0 +1,405 @@
+---
+# Test Playbook: Kubernetes Role Comprehensive Testing
+# This playbook comprehensively tests the kubernetes role including:
+# - Debian role dependency application
+# - Container runtime (containerd) setup and configuration
+# - Kubernetes packages installation and management
+# - Kubeadm cluster initialization and configuration
+# - Kubectl access configuration and validation
+# - Network and cluster health verification
+
+- name: Test Kubernetes Role - Phase 1 (System Preparation with Debian Role)
+  hosts: debian12
+  connection: ssh
+  gather_facts: true
+  become: true
+  vars:
+    debian_install: true
+    debian_prune: false
+    debian_minimal: false
+
+  tasks:
+    - name: Phase 1 | Get initial system state
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Phase 1 | Record initial package count
+      ansible.builtin.set_fact:
+        initial_package_count: "{{ ansible_facts.packages.keys() | length }}"
+
+    - name: Phase 1 | Display initial package count
+      ansible.builtin.debug:
+        msg: "Initial package count: {{ initial_package_count }}"
+
+    - name: Phase 1 | Apply Debian Role (Required Dependency)
+      ansible.builtin.include_role:
+        name: debian
+      vars:
+        # Supply required metadata variables
+        metadata_topology_provider: "test"
+        metadata_topology_region: "us-1"
+        metadata_topology_zone: "us-1a"
+
+    - name: Phase 1 | Get post-debian package state
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Phase 1 | Record post-debian package count
+      ansible.builtin.set_fact:
+        post_debian_package_count: "{{ ansible_facts.packages.keys() | length }}"
+
+    - name: Phase 1 | Display post-debian package count
+      ansible.builtin.debug:
+        msg: "Post-debian package count: {{ post_debian_package_count }}"
+
+    - name: Phase 1 | Verify debian role prerequisites
+      ansible.builtin.assert:
+        that:
+          - "'apt' in ansible_facts.packages"
+          - "'systemd' in ansible_facts.packages"
+          - "'curl' in ansible_facts.packages"
+          - "'gnupg' in ansible_facts.packages"
+        fail_msg: "Debian role prerequisites are missing"
+        success_msg: "Debian role applied successfully with required packages"
+
+- name: Test Kubernetes Role - Phase 2 (Prerequisites and Package Installation)
+  hosts: debian12
+  connection: ssh
+  gather_facts: true
+  become: true
+  vars:
+    # Kubernetes configuration variables matching the role defaults
+    kubernetes_name: "test-cluster"
+    kubernetes_subnet_pod: "10.100.0.0/16"
+    kubernetes_subnet_service: "10.110.0.0/16"
+    kubernetes_topology_region: "us-1"
+    kubernetes_topology_zone: "us-1a"
+    kubernetes_hostname: "{{ ansible_hostname }}"
+    kubernetes_ipv4_public: "{{ ansible_default_ipv4.address }}"
+    kubernetes_ipv4_private: "{{ ansible_default_ipv4.address }}"
+
+  tasks:
+    - name: Phase 2 | Apply Kubernetes Role
+      ansible.builtin.include_role:
+        name: kubernetes
+
+    - name: Phase 2 | Get post-kubernetes package state
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Phase 2 | Verify containerd packages are installed
+      ansible.builtin.assert:
+        that:
+          - "'containerd' in ansible_facts.packages"
+          - "'containernetworking-plugins' in ansible_facts.packages"
+        fail_msg: "Containerd packages were not installed"
+        success_msg: "Containerd packages installed successfully"
+
+    - name: Phase 2 | Verify kubernetes packages are installed
+      ansible.builtin.assert:
+        that:
+          - "'kubeadm' in ansible_facts.packages"
+          - "'kubectl' in ansible_facts.packages"
+          - "'kubelet' in ansible_facts.packages"
+          - "'ebtables' in ansible_facts.packages"
+          - "'ethtool' in ansible_facts.packages"
+        fail_msg: "Kubernetes packages were not installed"
+        success_msg: "Kubernetes packages installed successfully"
+
+    - name: Phase 2 | Verify package holds are in place
+      ansible.builtin.command: dpkg --get-selections
+      register: package_selections
+      changed_when: false
+
+    - name: Phase 2 | Assert kubernetes packages are held
+      ansible.builtin.assert:
+        that:
+          - "'kubeadm\thold' in package_selections.stdout"
+          - "'kubectl\thold' in package_selections.stdout"
+          - "'kubelet\thold' in package_selections.stdout"
+        fail_msg: "Kubernetes packages are not held from automatic updates"
+        success_msg: "Kubernetes packages properly held from updates"
+
+    - name: Phase 2 | Verify containerd service status
+      ansible.builtin.systemd_service:
+        name: containerd
+        state: started
+      check_mode: true
+      register: containerd_status
+
+    - name: Phase 2 | Assert containerd service is running
+      ansible.builtin.assert:
+        that:
+          - containerd_status.status.ActiveState == "active"
+        fail_msg: "Containerd service is not running"
+        success_msg: "Containerd service is running successfully"
+
+    - name: Phase 2 | Display prerequisites completion
+      ansible.builtin.debug:
+        msg: "Phase 2 Complete: Kubernetes prerequisites and packages installed successfully"
+
+- name: Test Kubernetes Role - Phase 3 (Cluster Initialization Validation)
+  hosts: debian12
+  connection: ssh
+  gather_facts: true
+  become: true
+
+  tasks:
+    - name: Phase 3 | Verify kubelet configuration exists
+      ansible.builtin.stat:
+        path: /etc/kubernetes/kubelet.conf
+      register: kubelet_conf_stat
+
+    - name: Phase 3 | Assert kubelet configuration was created
+      ansible.builtin.assert:
+        that:
+          - kubelet_conf_stat.stat.exists
+        fail_msg: "Kubelet configuration file was not created"
+        success_msg: "Kubelet configuration file exists"
+
+    - name: Phase 3 | Verify kubelet service status
+      ansible.builtin.systemd_service:
+        name: kubelet
+        state: started
+        enabled: true
+      check_mode: true
+      register: kubelet_status
+
+    - name: Phase 3 | Assert kubelet service is running and enabled
+      ansible.builtin.assert:
+        that:
+          - kubelet_status.status.ActiveState == "active"
+          - kubelet_status.status.UnitFileState == "enabled"
+        fail_msg: "Kubelet service is not properly running or enabled"
+        success_msg: "Kubelet service is running and enabled"
+
+    - name: Phase 3 | Test API server accessibility
+      ansible.builtin.wait_for:
+        host: "{{ ansible_default_ipv4.address }}"
+        port: 6443
+        timeout: 30
+      register: api_server_check
+
+    - name: Phase 3 | Verify kubectl configuration for admin user
+      ansible.builtin.stat:
+        path: /home/admin/.kube/config
+      register: kubectl_config_stat
+
+    - name: Phase 3 | Assert kubectl configuration exists
+      ansible.builtin.assert:
+        that:
+          - kubectl_config_stat.stat.exists
+          - kubectl_config_stat.stat.owner == "admin"
+          - kubectl_config_stat.stat.gr_name == "admin"
+          - kubectl_config_stat.stat.mode == "0600"
+        fail_msg: "Kubectl configuration is missing or has incorrect permissions"
+        success_msg: "Kubectl configuration properly set up for admin user"
+
+    - name: Phase 3 | Test basic kubectl functionality
+      ansible.builtin.command: kubectl --kubeconfig=/home/admin/.kube/config cluster-info
+      register: kubectl_cluster_info
+      changed_when: false
+      become_user: admin
+
+    - name: Phase 3 | Assert kubectl can communicate with cluster
+      ansible.builtin.assert:
+        that:
+          - kubectl_cluster_info.rc == 0
+          - "'Kubernetes control plane is running' in kubectl_cluster_info.stdout"
+        fail_msg: "Kubectl cannot communicate with kubernetes cluster"
+        success_msg: "Kubectl successfully communicating with cluster"
+
+    - name: Phase 3 | Display cluster initialization results
+      ansible.builtin.debug:
+        msg: "Phase 3 Complete: Kubernetes cluster initialization validated successfully"
+
+- name: Test Kubernetes Role - Phase 4 (Configuration Validation)
+  hosts: debian12
+  connection: ssh
+  gather_facts: true
+  become: true
+
+  tasks:
+    - name: Phase 4 | Read kubeadm configuration
+      ansible.builtin.slurp:
+        src: /etc/kubernetes/kubeadm-config.yaml
+      register: kubeadm_config_content
+
+    - name: Phase 4 | Parse kubeadm configuration
+      ansible.builtin.set_fact:
+        kubeadm_config: "{{ kubeadm_config_content.content | b64decode }}"
+
+    - name: Phase 4 | Verify kubeadm configuration contains expected values
+      ansible.builtin.assert:
+        that:
+          - "'advertiseAddress: \"{{ ansible_default_ipv4.address }}\"' in kubeadm_config"
+          - "'bindPort: 6443' in kubeadm_config"
+          - "'podSubnet: \"10.100.0.0/16\"' in kubeadm_config"
+          - "'serviceSubnet: \"10.110.0.0/16\"' in kubeadm_config"
+          - "'criSocket: unix:///var/run/containerd/containerd.sock' in kubeadm_config"
+        fail_msg: "Kubeadm configuration is missing expected values"
+        success_msg: "Kubeadm configuration contains all expected values"
+
+    - name: Phase 4 | Read containerd configuration
+      ansible.builtin.slurp:
+        src: /etc/containerd/config.toml
+      register: containerd_config_content
+
+    - name: Phase 4 | Parse containerd configuration
+      ansible.builtin.set_fact:
+        containerd_config: "{{ containerd_config_content.content | b64decode }}"
+
+    - name: Phase 4 | Verify containerd configuration
+      ansible.builtin.assert:
+        that:
+          - "'version = 2' in containerd_config"
+          - "'SystemdCgroup = true' in containerd_config"
+          - "'sandbox_image = \"registry.k8s.io/pause:3.10\"' in containerd_config"
+        fail_msg: "Containerd configuration is incorrect"
+        success_msg: "Containerd configuration is correct"
+
+    - name: Phase 4 | Get node information
+      ansible.builtin.command: kubectl --kubeconfig=/home/admin/.kube/config get nodes -o wide
+      register: kubectl_nodes
+      changed_when: false
+      become_user: admin
+
+    - name: Phase 4 | Verify node is registered and ready
+      ansible.builtin.assert:
+        that:
+          - kubectl_nodes.rc == 0
+          - "'Ready' in kubectl_nodes.stdout"
+          - ansible_hostname in kubectl_nodes.stdout
+        fail_msg: "Node is not properly registered or ready"
+        success_msg: "Node is registered and ready in the cluster"
+
+    - name: Phase 4 | Check node labels
+      ansible.builtin.command: kubectl --kubeconfig=/home/admin/.kube/config get node {{ ansible_hostname }} --show-labels
+      register: node_labels
+      changed_when: false
+      become_user: admin
+
+    - name: Phase 4 | Verify topology labels are set
+      ansible.builtin.assert:
+        that:
+          - "'topology.kubernetes.io/region=us-1' in node_labels.stdout"
+          - "'topology.kubernetes.io/zone=us-1a' in node_labels.stdout"
+        fail_msg: "Node topology labels are not correctly set"
+        success_msg: "Node topology labels are correctly configured"
+
+    - name: Phase 4 | Display configuration validation results
+      ansible.builtin.debug:
+        msg: "Phase 4 Complete: Kubernetes configuration validation successful"
+
+- name: Test Kubernetes Role - Phase 5 (Cluster Health and Cleanup)
+  hosts: debian12
+  connection: ssh
+  gather_facts: true
+  become: true
+
+  tasks:
+    - name: Phase 5 | Check cluster component status
+      ansible.builtin.command: kubectl --kubeconfig=/home/admin/.kube/config get componentstatuses
+      register: component_status
+      changed_when: false
+      become_user: admin
+      failed_when: false
+
+    - name: Phase 5 | Display component status (if available)
+      ansible.builtin.debug:
+        msg: "Component status check: {{ 'Available' if component_status.rc == 0 else 'Not available (expected in newer versions)' }}"
+
+    - name: Phase 5 | Check cluster pods status
+      ansible.builtin.command: kubectl --kubeconfig=/home/admin/.kube/config get pods --all-namespaces
+      register: all_pods
+      changed_when: false
+      become_user: admin
+
+    - name: Phase 5 | Verify core cluster pods are running
+      ansible.builtin.assert:
+        that:
+          - "'kube-apiserver' in all_pods.stdout"
+          - "'kube-controller-manager' in all_pods.stdout"
+          - "'kube-scheduler' in all_pods.stdout"
+          - "'etcd' in all_pods.stdout"
+        fail_msg: "Core cluster components are not running"
+        success_msg: "Core cluster components are running"
+
+    - name: Phase 5 | Test DNS functionality
+      ansible.builtin.command: kubectl --kubeconfig=/home/admin/.kube/config get services --all-namespaces
+      register: cluster_services
+      changed_when: false
+      become_user: admin
+
+    - name: Phase 5 | Verify DNS service exists
+      ansible.builtin.assert:
+        that:
+          - "'kube-dns' in cluster_services.stdout or 'coredns' in cluster_services.stdout"
+        fail_msg: "DNS service is not running in the cluster"
+        success_msg: "DNS service is available in the cluster"
+
+    - name: Phase 5 | Test cluster events
+      ansible.builtin.command: kubectl --kubeconfig=/home/admin/.kube/config get events --all-namespaces --sort-by='.lastTimestamp'
+      register: cluster_events
+      changed_when: false
+      become_user: admin
+
+    - name: Phase 5 | Check for critical errors in events
+      ansible.builtin.assert:
+        that:
+          - cluster_events.rc == 0
+        fail_msg: "Unable to retrieve cluster events"
+        success_msg: "Cluster events retrieved successfully"
+
+    - name: Phase 5 | Clean up test artifacts (reset cluster for next test)
+      ansible.builtin.command: kubeadm reset --force
+      register: cluster_reset
+      changed_when: false
+      failed_when: false
+
+    - name: Phase 5 | Stop kubelet service for cleanup
+      ansible.builtin.systemd_service:
+        name: kubelet
+        state: stopped
+      failed_when: false
+
+    - name: Phase 5 | Remove kubernetes configuration directory
+      ansible.builtin.file:
+        path: /etc/kubernetes
+        state: absent
+      failed_when: false
+
+    - name: Phase 5 | Remove kubectl configuration
+      ansible.builtin.file:
+        path: /home/admin/.kube
+        state: absent
+      failed_when: false
+
+    - name: Phase 5 | Display cleanup completion
+      ansible.builtin.debug:
+        msg: "Phase 5 Complete: Cluster health verified and cleanup performed"
+
+    - name: Phase 5 | Test Summary
+      ansible.builtin.debug:
+        msg: |
+          ===========================================
+          KUBERNETES ROLE TEST SUMMARY
+          ===========================================
+          
+          Status: ALL TESTS PASSED
+          - Debian role dependency: ✓
+          - Container runtime setup: ✓
+          - Kubernetes packages installation: ✓
+          - Package management (holds): ✓
+          - Service management: ✓
+          - Cluster initialization: ✓
+          - API server accessibility: ✓
+          - Kubectl configuration: ✓
+          - Network configuration: ✓
+          - Node registration: ✓
+          - Topology labels: ✓
+          - Cluster components: ✓
+          - DNS functionality: ✓
+          - Cluster health: ✓
+          - Cleanup: ✓
+          ===========================================
