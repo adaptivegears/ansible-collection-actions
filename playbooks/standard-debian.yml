@@ -30,8 +30,8 @@
         debian_minimal: "{{ minimal | default(m) | default(lookup('env', 'DEBIAN_MINIMAL') | default('false') | bool) }}"
         debian_prune: "{{ prune | default(p) | default(lookup('env', 'DEBIAN_PRUNE') | default('false') | bool) }}"
         debian_hostname: "{{ hostname | default(lookup('env', 'DEBIAN_HOSTNAME')) | default(omit) }}"
-        metadata_topology_region: "{{ topology_region | default(omit) }}"
-        metadata_topology_zone: "{{ topology_zone | default(omit) }}"
+        metadata_topology_region: "{{ topology_region | default(lookup('env', 'DEBIAN_TOPOLOGY_REGION')) | default('') | lower }}"
+        metadata_topology_zone: "{{ topology_zone | default(lookup('env', 'DEBIAN_TOPOLOGY_ZONE')) | default('') | lower }}"
 
     - name: Include Role
       ansible.builtin.include_role:
