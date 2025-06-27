@@ -293,7 +293,7 @@
       ansible.builtin.debug:
         msg: "Phase 4 Complete: Kubernetes configuration validation successful"
 
-- name: Test Kubernetes Role - Phase 5 (Cluster Health and Cleanup)
+- name: Test Kubernetes Role - Phase 5 (Cluster Health Verification)
   hosts: debian12
   connection: ssh
   gather_facts: true
@@ -353,33 +353,9 @@
         fail_msg: "Unable to retrieve cluster events"
         success_msg: "Cluster events retrieved successfully"
 
-    - name: Phase 5 | Clean up test artifacts (reset cluster for next test)
-      ansible.builtin.command: kubeadm reset --force
-      register: cluster_reset
-      changed_when: false
-      failed_when: false
-
-    - name: Phase 5 | Stop kubelet service for cleanup
-      ansible.builtin.systemd_service:
-        name: kubelet
-        state: stopped
-      failed_when: false
-
-    - name: Phase 5 | Remove kubernetes configuration directory
-      ansible.builtin.file:
-        path: /etc/kubernetes
-        state: absent
-      failed_when: false
-
-    - name: Phase 5 | Remove kubectl configuration
-      ansible.builtin.file:
-        path: /home/admin/.kube
-        state: absent
-      failed_when: false
-
-    - name: Phase 5 | Display cleanup completion
+    - name: Phase 5 | Display health verification completion
       ansible.builtin.debug:
-        msg: "Phase 5 Complete: Cluster health verified and cleanup performed"
+        msg: "Phase 5 Complete: Cluster health verified successfully"
 
     - name: Phase 5 | Test Summary
       ansible.builtin.debug:
@@ -403,5 +379,4 @@
           - Cluster components: ✓
           - DNS functionality: ✓
           - Cluster health: ✓
-          - Cleanup: ✓
           ===========================================
