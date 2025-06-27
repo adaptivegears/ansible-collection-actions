@@ -54,6 +54,9 @@ test-ssh: ## Run SSH role test with comprehensive security validation
 test-tailscale: ## Run Tailscale role test with CLI and service validation
 	ansible-playbook tests/playbooks/debian12-tailscale.yml
 
+test-kubernetes: ## Run Kubernetes role test with cluster initialization and validation
+	ansible-playbook tests/playbooks/debian12-kubernetes.yml
+
 .PHONY: clean
 clean: ## Clean up the build artifacts, object files, executables, and any other generated files
 	rm -rf *.tar.gz
