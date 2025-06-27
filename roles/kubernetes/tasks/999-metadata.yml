@@ -34,8 +34,9 @@
 
 - name: "Metadata > Kubernetes > Get bootstrap token for control-plane nodes"
   ansible.builtin.shell: |
-    set -o pipefail
     kubeadm token list | grep "authentication,signing" | head -1 | cut -d' ' -f1
+  args:
+    executable: /bin/bash
   register: bootstrap_token_result
   when:
     - kubernetes_role == 'control-plane'
@@ -67,8 +68,9 @@
 
 - name: "Metadata > Kubernetes > Get discovery token CA cert hash"
   ansible.builtin.shell: |
-    set -o pipefail
     openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+  args:
+    executable: /bin/bash
   register: discovery_hash_result
   when:
     - kubernetes_role == 'control-plane'
@@ -89,8 +91,9 @@
 
 - name: "Metadata > Kubernetes > Get certificate key for control-plane joins"
   ansible.builtin.shell: |
-    set -o pipefail
     kubeadm init phase upload-certs --upload-certs | tail -1
+  args:
+    executable: /bin/bash
   register: certificate_key_result
   when:
     - kubernetes_role == 'control-plane'
