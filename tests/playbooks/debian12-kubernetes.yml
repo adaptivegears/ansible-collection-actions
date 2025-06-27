@@ -107,16 +107,17 @@
         success_msg: "Kubernetes packages installed successfully"
 
     - name: Phase 2 | Verify package holds are in place
-      ansible.builtin.command: dpkg --get-selections
-      register: package_selections
+      ansible.builtin.shell: dpkg --get-selections | grep -E '^(kubeadm|kubectl|kubelet)' | grep hold
+      register: package_holds
       changed_when: false
 
     - name: Phase 2 | Assert kubernetes packages are held
       ansible.builtin.assert:
         that:
-          - "'kubeadm\thold' in package_selections.stdout"
-          - "'kubectl\thold' in package_selections.stdout"
-          - "'kubelet\thold' in package_selections.stdout"
+          - package_holds.stdout_lines | length == 3
+          - "'kubeadm' in package_holds.stdout"
+          - "'kubectl' in package_holds.stdout"
+          - "'kubelet' in package_holds.stdout"
         fail_msg: "Kubernetes packages are not held from automatic updates"
         success_msg: "Kubernetes packages properly held from updates"
 
@@ -189,7 +190,7 @@
       ansible.builtin.assert:
         that:
           - kubectl_config_stat.stat.exists
-          - kubectl_config_stat.stat.owner == "admin"
+          - kubectl_config_stat.stat.pw_name == "admin"
           - kubectl_config_stat.stat.gr_name == "admin"
           - kubectl_config_stat.stat.mode == "0600"
         fail_msg: "Kubectl configuration is missing or has incorrect permissions"
@@ -205,7 +206,8 @@
       ansible.builtin.assert:
         that:
           - kubectl_cluster_info.rc == 0
-          - "'Kubernetes control plane is running' in kubectl_cluster_info.stdout"
+          - "'control plane' in kubectl_cluster_info.stdout"
+          - "'is running at' in kubectl_cluster_info.stdout"
         fail_msg: "Kubectl cannot communicate with kubernetes cluster"
         success_msg: "Kubectl successfully communicating with cluster"
 
@@ -232,7 +234,7 @@
     - name: Phase 4 | Verify kubeadm configuration contains expected values
       ansible.builtin.assert:
         that:
-          - "'advertiseAddress: \"{{ ansible_default_ipv4.address }}\"' in kubeadm_config"
+          - "('advertiseAddress: \"' + ansible_default_ipv4.address + '\"') in kubeadm_config"
           - "'bindPort: 6443' in kubeadm_config"
           - "'podSubnet: \"10.100.0.0/16\"' in kubeadm_config"
           - "'serviceSubnet: \"10.110.0.0/16\"' in kubeadm_config"
