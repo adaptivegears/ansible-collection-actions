@@ -26,25 +26,24 @@
     - name: Parse Arguments
       ignore_errors: true
       ansible.builtin.set_fact:
-        install: "{{ install | default(i) | default(omit) }}"
-        user: "{{ user | default(u) | default(omit) }}"
-        group: "{{ group | default(g) | default(omit) }}"
-        user_key: "{{ user_key | default(U) | default(omit) }}"
+        user: "{{ user | default(u) | default(omit, true) }}"
+        group: "{{ group | default(g) | default(omit, true) }}"
+        user_key: "{{ user_key | default(U) | default(omit, true) }}"
 
     - name: Prepare Variables
       ignore_errors: true
       ansible.builtin.set_fact:
         # -i or --install
-        ssh_openssh: "{{ install | default(lookup('env', 'SSH_INSTALL') | default('true') | bool) }}"
+        ssh_openssh: "{{ lookup('env', 'SSH_INSTALL') | default(install, true) | default(i, true) | default(omit, true) }}"
 
         # --enable-hardening
-        ssh_hardening: "{{ enable_hardening | default(lookup('env', 'SSH_HARDENING') | default('true') | bool) }}"
+        ssh_hardening: "{{ lookup('env', 'SSH_HARDENING') | default(enable_hardening, true) | default(omit, true) }}"
 
         # --enable-tcp-forwarding
-        ssh_hardening_allow_tcp_forwarding: "{{ enable_tcp_forwarding | default(lookup('env', 'SSH_HARDENING_ALLOW_TCP_FORWARDING') | default('true') | bool) }}"
+        ssh_hardening_allow_tcp_forwarding: "{{ lookup('env', 'SSH_HARDENING_ALLOW_TCP_FORWARDING') | default(enable_tcp_forwarding, true) | default(omit, true) }}"
 
         # --enable-root-login
-        ssh_hardening_allow_root_login: "{{ enable_root_login | default(lookup('env', 'SSH_HARDENING_ALLOW_ROOT_LOGIN') | default('false') | bool) }}"
+        ssh_hardening_allow_root_login: "{{ lookup('env', 'SSH_HARDENING_ALLOW_ROOT_LOGIN') | default(enable_root_login, true) | default(omit, true) }}"
 
         # -u or --user=andrey:andreygubarev (where andreygubarev is github username)
         # -U or --user-key=andreygubarev (where andreygubarev is github username)
