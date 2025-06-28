@@ -1,13 +1,13 @@
 ---
-- name: Debian > Pre-configure | Hostname
+- name: Debian > Pre-configure > Hostname
   when: debian_hostname | length > 0
 
   block:
-    - name: Debian > Pre-configure | Set Hostname
+    - name: Debian > Pre-configure > Set Hostname
       ansible.builtin.hostname:
         name: "{{ debian_hostname }}"
 
-    - name: Debian > Pre-configure | Set Hosts
+    - name: Debian > Pre-configure > Set Hosts
       ansible.builtin.lineinfile:
         path: /etc/hosts
         line: "{{ item }}"
@@ -15,11 +15,11 @@
         - "127.0.0.1  localhost {{ debian_hostname }}"
         - "::1        localhost {{ debian_hostname }}"
 
-- name: Debian > Pre-configure | Get installed packages
+- name: Debian > Pre-configure > Get installed packages
   ansible.builtin.package_facts:
     manager: auto
 
-- name: Debian > Pre-configure | Iptables
+- name: Debian > Pre-configure > Iptables
   when: '"iptables" in ansible_facts.packages'
   community.general.alternatives:
     name: "{{ item.name }}"
@@ -33,8 +33,8 @@
       link: "/usr/sbin/ip6tables"
       path: "/usr/sbin/ip6tables-nft"
 
-- name: Debian > Pre-configure | Kernel
+- name: Debian > Pre-configure > Kernel
   ansible.builtin.import_tasks: 310-pre-configure-kernel.yml
 
-- name: Debian > Pre-configure | Swap
+- name: Debian > Pre-configure > Swap
   ansible.builtin.import_tasks: 320-pre-configure-swap.yml
