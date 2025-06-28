@@ -32,40 +32,53 @@ release: clean build ## Publish collection
 	ansible-galaxy collection publish *.tar.gz --api-key $(GALAXY_API_KEY)
 
 ### Testing ###################################################################
-.PHONY: vm-up vm-down vm-reset test-run
+VAGRANT := $(MAKE) -C tests/vm
+
+.PHONY: vm-up
 vm-up: ## Start test VM
-	$(MAKE) -C tests up
+	$(VAGRANT) up
 
-vm-down: ## Stop test VM
-	$(MAKE) -C tests down
+.PHONY: vm-cluster-up
+vm-cluster-up: ## Start multi-node test VMs
+	$(VAGRANT) cluster-up
 
-vm-reset: ## Recreate VM and test connectivity
-	$(MAKE) -C tests clean && $(MAKE) -C tests up && $(MAKE) -C tests check
+.PHONY: vm-destroy
+vm-destroy: ## Stop test VM
+	$(VAGRANT) destroy
 
-vm-cluster-up: ## Start multi-node cluster VMs
-	cd tests/vm && vagrant up debian12 debian12-worker
+.PHONY: vm-reset
+vm-reset: ## Reset test VM
+	$(VAGRANT) destroy
+	$(VAGRANT) up
+	$(VAGRANT) check
 
-vm-cluster-down: ## Stop multi-node cluster VMs  
-	cd tests/vm && vagrant halt debian12 debian12-worker
+.PHONY: vm-cluster-reset
+vm-cluster-reset: ## Reset multi-node test VMs
+	$(VAGRANT) destroy
+	$(VAGRANT) cluster-up
+	$(VAGRANT) check
 
-vm-cluster-reset: vm-cluster-down vm-cluster-up ## Complete multi-node cluster reset
-	ansible cluster -m ping
-
+.PHONY: test
 test: ## Run playbook against VM
 	ansible-playbook tests/playbooks/debian12-apt.yml
 
+.PHONY: test-debian
 test-debian: ## Run debian role test with purge functionality
 	ansible-playbook tests/playbooks/debian12-debian.yml
 
+.PHONY: test-ssh
 test-ssh: ## Run SSH role test with comprehensive security validation
 	ansible-playbook tests/playbooks/debian12-ssh.yml
 
+.PHONY: test-tailscale
 test-tailscale: ## Run Tailscale role test with CLI and service validation
 	ansible-playbook tests/playbooks/debian12-tailscale.yml
 
+.PHONY: test-kubernetes
 test-kubernetes: ## Run Kubernetes role test with cluster initialization and validation
 	ansible-playbook tests/playbooks/debian12-kubernetes.yml
 
+.PHONY: test-kubernetes-multinode
 test-kubernetes-multinode: ## Run multi-node kubernetes cluster test
 	ansible-playbook tests/playbooks/debian12-kubernetes-multinode.yml
 

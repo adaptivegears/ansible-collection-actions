@@ -1,19 +1,19 @@
+node1 ansible_host=192.168.56.10 ansible_user=vagrant ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key ansible_ssh_common_args='-o StrictHostKeyChecking=no' ansible_python_interpreter=/usr/bin/python3 kubernetes_role=control-plane
+
+node2 ansible_host=192.168.56.11 ansible_user=vagrant ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key ansible_ssh_common_args='-o StrictHostKeyChecking=no' ansible_python_interpreter=/usr/bin/python3 kubernetes_role=worker
+
 [vagrant]
-debian12 ansible_host=127.0.0.1 ansible_port=2222 ansible_user=vagrant ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key ansible_ssh_common_args='-o StrictHostKeyChecking=no' ansible_python_interpreter=/usr/bin/python3
+node1
 
 [debian]
-debian12
+node1
 
 [control_plane]
-debian12 kubernetes_role=control-plane
+node1
 
 [workers]
-debian12-worker ansible_host=192.168.56.11 ansible_user=vagrant ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key ansible_ssh_common_args='-o StrictHostKeyChecking=no' ansible_python_interpreter=/usr/bin/python3 kubernetes_role=worker
+node2
 
 [cluster:children]
 control_plane
 workers
-
-[test_targets:children]
-vagrant
-debian
