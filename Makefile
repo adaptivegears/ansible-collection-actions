@@ -68,7 +68,7 @@ test-ansible-role-debian: ## Run debian role test with purge functionality
 
 .PHONY: test-ansible-role-ssh
 test-ansible-role-ssh: ## Run SSH role test with comprehensive security validation
-	ansible-playbook tests/playbooks/debian12-ssh.yml
+	ansible-playbook tests/playbooks/ansible-role-ssh.yml
 
 .PHONY: test-tailscale
 test-tailscale: ## Run Tailscale role test with CLI and service validation

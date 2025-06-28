@@ -74,7 +74,7 @@
         msg: "Phase 1 Complete: SSH basic installation and service verification successful"
 
 - name: Test SSH Role - Phase 2 (Hardening Configuration Validation)
-  hosts: debian12
+  hosts: node1
   connection: ssh
   gather_facts: true
   become: true
@@ -211,7 +211,7 @@
         msg: "Phase 2 Complete: SSH hardening configuration validation successful"
 
 - name: Test SSH Role - Phase 3 (Access Control Testing)
-  hosts: debian12
+  hosts: node1
   connection: ssh
   gather_facts: true
   become: true
@@ -309,7 +309,7 @@
         msg: "Phase 3 Complete: SSH access control configuration verified"
 
 - name: Test SSH Role - Phase 4 (Security Validation and Cleanup)
-  hosts: debian12
+  hosts: node1
   connection: ssh
   gather_facts: true
   become: true

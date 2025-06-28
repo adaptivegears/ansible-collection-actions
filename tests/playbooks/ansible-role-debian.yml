@@ -59,7 +59,7 @@
         success_msg: "Core packages verified successfully"
 
 - name: Test Debian Role - Phase 2 (Install Test Dependencies)
-  hosts: debian12
+  hosts: node1
   connection: ssh
   gather_facts: true
   become: true
@@ -98,7 +98,7 @@
         success_msg: "Test packages installed successfully"
 
 - name: Test Debian Role - Phase 3 (Purge Mode Testing)
-  hosts: debian12
+  hosts: node1
   connection: ssh
   gather_facts: true
   become: true
@@ -150,7 +150,7 @@
         success_msg: "Core packages preserved during purge operation"
 
 - name: Test Debian Role - Phase 4 (System Integrity Verification)
-  hosts: debian12
+  hosts: node1
   connection: ssh
   gather_facts: true
   become: true
