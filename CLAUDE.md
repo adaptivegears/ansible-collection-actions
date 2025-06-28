@@ -22,20 +22,22 @@ make install                 # Install collection locally
 
 # VM testing workflow
 make vm-reset               # Complete test reset: destroy, create, test connectivity
-make test                   # Run apt role test against VM
-make test-debian           # Run debian role test with purge functionality
 make vm-up                 # Start test VM
-make vm-down               # Stop test VM
+make vm-destroy            # Stop test VM
 
 # Multi-node cluster testing workflow
 make vm-cluster-up         # Start both control plane and worker VMs
-make vm-cluster-down       # Stop both VMs
 make vm-cluster-reset      # Complete multi-node reset: destroy, create, test connectivity
-make test-kubernetes-multinode  # Run real multi-node cluster test
-make test-kubernetes-join  # Run join logic validation test
+
+# Role testing
+make test-ansible-role-apt        # Run APT role test against VM
+make test-ansible-role-debian     # Run debian role test with purge functionality
+make test-ansible-role-ssh       # Run SSH role test with security validation
+make test-ansible-role-kubernetes # Run consolidated kubernetes role test
+make test-tailscale              # Run Tailscale role test
 
 # Manual testing
-ansible debian12 -m ping   # Test VM connectivity
+ansible node1 -m ping      # Test VM connectivity
 ansible-lint roles/<role>  # Lint specific role
 ```
 
@@ -114,10 +116,10 @@ The project uses Vagrant with VMware Fusion for local testing:
 **VM Specifications:**
 - OS: Debian 12 (bento/debian-12)
 - Resources: 2GB RAM, 2 CPUs per VM
-- Single VM: IP 192.168.56.10 (debian12)
+- Single VM: IP 192.168.56.10 (node1)
 - Multi-node cluster:
-  - Control plane: IP 192.168.56.10 (debian12)
-  - Worker node: IP 192.168.56.11 (debian12-worker)
+  - Control plane: IP 192.168.56.10 (node1)
+  - Worker node: IP 192.168.56.11 (node2)
 - Requirements: VMware Fusion, Vagrant with vagrant-vmware-desktop plugin
 
 **VM Management Commands:**
@@ -125,16 +127,15 @@ The project uses Vagrant with VMware Fusion for local testing:
 # Single VM workflow
 make vm-reset              # Destroy → create → test connectivity
 make vm-up                 # Start VM
-make vm-down              # Stop VM
+make vm-destroy            # Stop VM
 
 # Multi-node cluster workflow  
 make vm-cluster-reset      # Destroy → create both VMs → test connectivity
 make vm-cluster-up         # Start both control plane and worker VMs
-make vm-cluster-down       # Stop both VMs
 
 # VM access
-cd tests/vm && vagrant ssh debian12        # Connect to control plane
-cd tests/vm && vagrant ssh debian12-worker # Connect to worker node
+cd tests/vm && vagrant ssh node1   # Connect to control plane
+cd tests/vm && vagrant ssh node2   # Connect to worker node
 ```
 
 **Testing Configuration:**
@@ -143,31 +144,29 @@ cd tests/vm && vagrant ssh debian12-worker # Connect to worker node
 - **Environment**: `.envrc` sets `ANSIBLE_CONFIG` automatically
 
 ### Test Playbooks
-Located in `tests/playbooks/` with pattern `debian12-{role}.yml`:
+Located in `tests/playbooks/` with pattern `ansible-role-{role}.yml`:
 
 ```bash
-# Single-node role tests
-ansible-playbook tests/playbooks/debian12-apt.yml
-ansible-playbook tests/playbooks/debian12-debian.yml
-ansible-playbook tests/playbooks/debian12-kubernetes.yml
-
-# Multi-node cluster tests
-ansible-playbook tests/playbooks/debian12-kubernetes-multinode.yml  # Real cluster
-ansible-playbook tests/playbooks/debian12-kubernetes-join.yml       # Join logic
+# Role tests
+ansible-playbook tests/playbooks/ansible-role-apt.yml
+ansible-playbook tests/playbooks/ansible-role-debian.yml
+ansible-playbook tests/playbooks/ansible-role-ssh.yml
+ansible-playbook tests/playbooks/ansible-role-kubernetes.yml    # Consolidated multi-node test
+ansible-playbook tests/playbooks/ansible-role-tailscale.yml
 
 # Run with options
-ansible-playbook tests/playbooks/debian12-apt.yml -v               # Verbose
-ansible-playbook tests/playbooks/debian12-apt.yml -e "var=value"   # Extra vars
+ansible-playbook tests/playbooks/ansible-role-apt.yml -v               # Verbose
+ansible-playbook tests/playbooks/ansible-role-apt.yml -e "var=value"   # Extra vars
 ```
 
 ### Testing Use Cases
-1. **Role Development**: Test roles against clean Debian 12 environment
+1. **Role Development**: Test roles against clean Debian 12 environment using standardized node1/node2 hostnames
 2. **Playbook Validation**: Verify playbooks work before deployment
 3. **Metadata System Testing**: Validate `/var/lib/instance-metadata/` functionality
 4. **Integration Testing**: Test role interactions and dependencies
-5. **Package Installation**: Verify 400+ package installations in linux/debian role
-6. **Multi-node Cluster Testing**: Validate real Kubernetes cluster join functionality
-7. **Join Logic Validation**: Test role-based execution paths and configuration generation
+5. **Package Installation**: Verify 400+ package installations in debian role
+6. **Multi-node Cluster Testing**: Consolidated kubernetes role test handles both single-node and multi-node scenarios
+7. **Security Validation**: SSH role includes comprehensive security configuration testing
 
 ### Code Quality
 - **Linting**: ansible-lint for code quality and best practices
