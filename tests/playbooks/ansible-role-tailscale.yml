@@ -9,13 +9,13 @@
 # NOTE: This test does NOT attempt actual Tailscale network connections
 
 - name: Test Tailscale Role - Phase 1 (Prerequisites and Installation)
-  hosts: debian12
+  hosts: node1
   connection: ssh
   gather_facts: true
   become: true
   vars:
     tailscale_install: true
-    tailscale_authkey: "tskey-test-dummy-key-no-login"  # Dummy key to pass validation
+    tailscale_authkey: "tskey-test-dummy-key-no-login" # Dummy key to pass validation
     tailscale_login_server: ""
     tailscale_advertise_exit_node: ""
     tailscale_accept_dns: ""
@@ -180,7 +180,7 @@
 - name: Test Tailscale Role - Phase 3 (CLI Commands and Configuration)
   hosts: debian12
   connection: ssh
-  gather_facts: true  
+  gather_facts: true
   become: true
 
   tasks:
@@ -227,7 +227,7 @@
     - name: Phase 3 | Validate logout command handling
       ansible.builtin.assert:
         that:
-          - tailscale_logout.rc in [0, 1]  # Success or expected failure
+          - tailscale_logout.rc in [0, 1] # Success or expected failure
         fail_msg: "tailscale logout command had unexpected error"
         success_msg: "tailscale logout command handled correctly"
 
@@ -268,7 +268,7 @@
   become: true
   vars:
     tailscale_install: true
-    tailscale_authkey: "tskey-test-key-for-validation-only"  # Test key for metadata testing
+    tailscale_authkey: "tskey-test-key-for-validation-only" # Test key for metadata testing
 
   tasks:
     - name: Phase 4 | Create test auth key for metadata testing
@@ -392,7 +392,7 @@
           ===========================================
           TAILSCALE ROLE TEST SUMMARY
           ===========================================
-          
+
           Status: ALL TESTS PASSED
           - Prerequisites validation: ✓
           - Package installation: ✓

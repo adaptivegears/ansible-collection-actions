@@ -58,16 +58,16 @@ vm-cluster-reset: ## Reset multi-node test VMs
 	$(VAGRANT) cluster-up
 	$(VAGRANT) check
 
-.PHONY: test
-test: ## Run playbook against VM
-	ansible-playbook tests/playbooks/debian12-apt.yml
+.PHONY: test-ansible-role-apt
+test-ansible-role-apt: ## Run playbook against VM
+	ansible-playbook tests/playbooks/ansible-role-apt.yml
 
-.PHONY: test-debian
-test-debian: ## Run debian role test with purge functionality
-	ansible-playbook tests/playbooks/debian12-debian.yml
+.PHONY: test-ansible-role-debian
+test-ansible-role-debian: ## Run debian role test with purge functionality
+	ansible-playbook tests/playbooks/ansible-role-debian.yml
 
-.PHONY: test-ssh
-test-ssh: ## Run SSH role test with comprehensive security validation
+.PHONY: test-ansible-role-ssh
+test-ansible-role-ssh: ## Run SSH role test with comprehensive security validation
 	ansible-playbook tests/playbooks/debian12-ssh.yml
 
 .PHONY: test-tailscale

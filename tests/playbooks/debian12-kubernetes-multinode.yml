@@ -19,7 +19,6 @@
       ansible.builtin.include_role:
         name: debian
       vars:
-        metadata_topology_provider: "test"
         metadata_topology_region: "us-1"
         metadata_topology_zone: "{{ 'us-1a' if inventory_hostname == 'debian12' else 'us-1b' }}"
 

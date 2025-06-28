@@ -7,7 +7,7 @@
 # - Security validation and file permissions
 
 - name: Test SSH Role - Phase 1 (Installation and Basic Setup)
-  hosts: debian12
+  hosts: node1
   connection: ssh
   gather_facts: true
   become: true
@@ -106,8 +106,8 @@
     - name: Phase 2 | Check SSH private host key permissions
       ansible.builtin.find:
         paths: /etc/ssh
-        patterns: 'ssh_host_*_key'
-        excludes: '*.pub'
+        patterns: "ssh_host_*_key"
+        excludes: "*.pub"
       register: ssh_private_keys
 
     - name: Phase 2 | Verify private key permissions (CIS 5.2.2)
@@ -129,7 +129,7 @@
     - name: Phase 2 | Check SSH public host key permissions
       ansible.builtin.find:
         paths: /etc/ssh
-        patterns: 'ssh_host_*.pub'
+        patterns: "ssh_host_*.pub"
       register: ssh_public_keys
 
     - name: Phase 2 | Verify public key permissions (CIS 5.2.3)
@@ -390,7 +390,7 @@
           ===========================================
           SSH ROLE TEST SUMMARY
           ===========================================
-          
+
           Status: ALL TESTS PASSED
           - Package installation: ✓
           - Service management: ✓

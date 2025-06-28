@@ -6,7 +6,7 @@
 # - System integrity verification across all phases
 
 - name: Test Debian Role - Phase 1 (Initial Package Installation)
-  hosts: debian12
+  hosts: node1
   connection: ssh
   gather_facts: true
   become: true
@@ -32,7 +32,6 @@
         name: debian
       vars:
         # Supply required metadata variables
-        metadata_topology_provider: "test"
         metadata_topology_region: "us-1"
         metadata_topology_zone: "us-1a"
 
@@ -113,7 +112,6 @@
         name: debian
       vars:
         # Supply required metadata variables
-        metadata_topology_provider: "test"
         metadata_topology_region: "us-1"
         metadata_topology_zone: "us-1a"
 
