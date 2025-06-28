@@ -1,3 +1,3 @@
 ---
-metadata_topology_region: "{{ lookup('file', metadata_directory + '/topology-region', errors='ignore') | lower }}"
-metadata_topology_zone: "{{ lookup('file', metadata_directory + '/topology-zone', errors='ignore') | lower }}"
+metadata_topology_region: "{{ lookup('file', metadata_directory + '/topology-region', errors='ignore') }}"
+metadata_topology_zone: "{{ lookup('file', metadata_directory + '/topology-zone', errors='ignore') }}"
