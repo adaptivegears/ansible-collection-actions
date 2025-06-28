@@ -79,7 +79,7 @@
   failed_when: false
 
 - name: Debian > Network > Disable networking.service
-  when: 
+  when:
     - not (ansible_virtualization_type is defined and ansible_virtualization_type == "VMware")
     - networking_service_status.status is defined
     - networking_service_status.status.LoadState != "not-found"
