@@ -69,6 +69,10 @@ ALWAYS follow these steps when implementing changes:
 3. **Make changes and commit**:
    - Follow existing code conventions
    - Use descriptive commit messages
+   - **CRITICAL**: Before committing, validate changes for functional errors:
+     - Verify YAML syntax is valid
+     - Ensure variable references are correct
+     - Test that role dependencies are intact
 
 4. **Push and create pull request**:
    ```bash
@@ -129,7 +133,7 @@ make vm-reset              # Destroy → create → test connectivity
 make vm-up                 # Start VM
 make vm-destroy            # Stop VM
 
-# Multi-node cluster workflow  
+# Multi-node cluster workflow
 make vm-cluster-reset      # Destroy → create both VMs → test connectivity
 make vm-cluster-up         # Start both control plane and worker VMs
 
