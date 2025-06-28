@@ -25,11 +25,11 @@
     - name: Set Facts
       ignore_errors: true
       ansible.builtin.set_fact:
-        debian_install: "{{ install | default(i) | default(lookup('env', 'DEBIAN_INSTALL') | default('true') | bool) }}"
-        debian_prune: "{{ prune | default(p) | default(lookup('env', 'DEBIAN_PRUNE') | default('false') | bool) }}"
-        debian_hostname: "{{ hostname | default(lookup('env', 'DEBIAN_HOSTNAME')) | default(omit) }}"
-        metadata_topology_region: "{{ topology_region | default(lookup('env', 'DEBIAN_TOPOLOGY_REGION')) | default('') | lower }}"
-        metadata_topology_zone: "{{ topology_zone | default(lookup('env', 'DEBIAN_TOPOLOGY_ZONE')) | default('') | lower }}"
+        debian_hostname: "{{ lookup('env', 'DEBIAN_HOSTNAME') | default(hostname, true) | default(omit, true) }}"
+        debian_install: "{{ lookup('env', 'DEBIAN_INSTALL') | default(install, true) | default(i, true) | default(omit, true) }}"
+        debian_prune: "{{ lookup('env', 'DEBIAN_PRUNE') | default(prune, false) | default(p, false) | default(omit, true) }}"
+        metadata_topology_region: "{{ lookup('env', 'DEBIAN_TOPOLOGY_REGION') | default(topology_region, true) | default(omit, true) }}"
+        metadata_topology_zone: "{{ lookup('env', 'DEBIAN_TOPOLOGY_ZONE') | default(topology_zone, true) | default(omit, true) }}"
 
     - name: Include Role
       ansible.builtin.include_role:
