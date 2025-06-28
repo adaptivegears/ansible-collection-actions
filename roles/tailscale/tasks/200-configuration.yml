@@ -16,7 +16,7 @@
 - name: Tailscale > Config > Login
   when: (tailscale_status.stdout | from_json)['BackendState'] == 'NeedsLogin'
   block:
-    - name: Tailscale > Login | Assert auth key
+    - name: Tailscale > Login > Assert auth key
       ansible.builtin.assert:
         that:
           - tailscale_authkey is defined
