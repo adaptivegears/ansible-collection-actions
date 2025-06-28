@@ -79,8 +79,8 @@
       register: metadata_check
       loop:
         - /var/lib/instance-metadata/kubernetes-join-endpoint
-        - /var/lib/instance-metadata/auth/kubernetes-join-token
-        - /var/lib/instance-metadata/auth/kubernetes-join-discovery-hash
+        - /var/lib/instance-metadata/kubernetes-join-token
+        - /var/lib/instance-metadata/kubernetes-join-discovery-hash
 
     - name: Phase 2 | Assert join credentials were generated
       ansible.builtin.assert:
@@ -96,8 +96,8 @@
       register: join_creds
       loop:
         - /var/lib/instance-metadata/kubernetes-join-endpoint
-        - /var/lib/instance-metadata/auth/kubernetes-join-token
-        - /var/lib/instance-metadata/auth/kubernetes-join-discovery-hash
+        - /var/lib/instance-metadata/kubernetes-join-token
+        - /var/lib/instance-metadata/kubernetes-join-discovery-hash
 
     - name: Phase 2 | Store join credentials for worker nodes
       ansible.builtin.set_fact:
