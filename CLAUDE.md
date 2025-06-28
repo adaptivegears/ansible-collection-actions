@@ -270,5 +270,5 @@ make release                   # Publish (requires GALAXY_API_KEY)
 - **Branch names**: `feature/description`, `bugfix/issue-description`, `refactor/component-name`, `docs/topic`
 - **Variable naming**:
   - **Public variables**: Use single underscore prefix (e.g., `kubernetes_role`, `kubernetes_join_token`)
-  - **Private variables**: Use double underscore prefix (e.g., `kubernetes__bootstrap_token_result`, `kubernetes__containerd_config`)
+  - **Private variables**: Use double underscore prefix, avoid redundant suffixes (e.g., `kubernetes__bootstrap_token`, `kubernetes__containerd_config`)
   - **Metadata files**: Use role prefix with hyphen separator (e.g., `kubernetes-join-token`, `kubernetes-role`)
