@@ -16,7 +16,6 @@
   vars:
     debian_install: true
     debian_prune: false
-    debian_minimal: false
 
   tasks:
     - name: Phase 1 | Get initial system state
@@ -234,10 +233,10 @@
     - name: Phase 4 | Verify kubeadm configuration contains expected values
       ansible.builtin.assert:
         that:
-          - "('advertiseAddress: \"' + ansible_default_ipv4.address + '\"') in kubeadm_config"
+          - '(''advertiseAddress: "'' + ansible_default_ipv4.address + ''"'') in kubeadm_config'
           - "'bindPort: 6443' in kubeadm_config"
-          - "'podSubnet: \"10.100.0.0/16\"' in kubeadm_config"
-          - "'serviceSubnet: \"10.110.0.0/16\"' in kubeadm_config"
+          - '''podSubnet: "10.100.0.0/16"'' in kubeadm_config'
+          - '''serviceSubnet: "10.110.0.0/16"'' in kubeadm_config'
           - "'criSocket: unix:///var/run/containerd/containerd.sock' in kubeadm_config"
         fail_msg: "Kubeadm configuration is missing expected values"
         success_msg: "Kubeadm configuration contains all expected values"
@@ -256,7 +255,7 @@
         that:
           - "'version = 2' in containerd_config"
           - "'SystemdCgroup = true' in containerd_config"
-          - "'sandbox_image = \"registry.k8s.io/pause:3.10\"' in containerd_config"
+          - '''sandbox_image = "registry.k8s.io/pause:3.10"'' in containerd_config'
         fail_msg: "Containerd configuration is incorrect"
         success_msg: "Containerd configuration is correct"
 
@@ -363,7 +362,7 @@
           ===========================================
           KUBERNETES ROLE TEST SUMMARY
           ===========================================
-          
+
           Status: ALL TESTS PASSED
           - Debian role dependency: ✓
           - Container runtime setup: ✓

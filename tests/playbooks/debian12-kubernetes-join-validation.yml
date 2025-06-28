@@ -11,7 +11,6 @@
   vars:
     debian_install: true
     debian_prune: false
-    debian_minimal: false
     kubernetes_role: "control-plane"
     kubernetes_name: "test-cluster"
     kubernetes_subnet_pod: "10.100.0.0/16"
@@ -63,11 +62,11 @@
     - name: Phase 1 | Verify file permissions
       ansible.builtin.assert:
         that:
-          - metadata_files.results[0].stat.mode == "0644"  # kubernetes-role
-          - metadata_files.results[1].stat.mode == "0644"  # join-endpoint
-          - metadata_files.results[2].stat.mode == "0400"  # join-token
-          - metadata_files.results[3].stat.mode == "0400"  # discovery-hash
-          - metadata_files.results[4].stat.mode == "0400"  # certificate-key
+          - metadata_files.results[0].stat.mode == "0644" # kubernetes-role
+          - metadata_files.results[1].stat.mode == "0644" # join-endpoint
+          - metadata_files.results[2].stat.mode == "0400" # join-token
+          - metadata_files.results[3].stat.mode == "0400" # discovery-hash
+          - metadata_files.results[4].stat.mode == "0400" # certificate-key
         fail_msg: "Metadata files have incorrect permissions"
         success_msg: "Metadata files have correct permissions"
 
@@ -112,7 +111,7 @@
         state: directory
         owner: root
         group: root
-        mode: '0500'
+        mode: "0500"
 
     - name: Phase 2 | Set worker node metadata
       ansible.builtin.copy:
@@ -123,16 +122,32 @@
         mode: "{{ item.mode }}"
       loop:
         - { path: "kubernetes-role", content: "worker", mode: "0644" }
-        - { path: "kubernetes-join-endpoint", content: "{{ kubernetes_join_endpoint }}", mode: "0644" }
-        - { path: "auth/kubernetes-join-token", content: "{{ kubernetes_join_token }}", mode: "0400" }
-        - { path: "auth/kubernetes-join-discovery-hash", content: "{{ kubernetes_join_discovery_hash }}", mode: "0400" }
-        - { path: "hostname", content: "{{ kubernetes_hostname }}", mode: "0644" }
+        - {
+            path: "kubernetes-join-endpoint",
+            content: "{{ kubernetes_join_endpoint }}",
+            mode: "0644",
+          }
+        - {
+            path: "auth/kubernetes-join-token",
+            content: "{{ kubernetes_join_token }}",
+            mode: "0400",
+          }
+        - {
+            path: "auth/kubernetes-join-discovery-hash",
+            content: "{{ kubernetes_join_discovery_hash }}",
+            mode: "0400",
+          }
+        - {
+            path: "hostname",
+            content: "{{ kubernetes_hostname }}",
+            mode: "0644",
+          }
 
     - name: Phase 2 | Test worker join configuration generation
       ansible.builtin.template:
         src: /dev/stdin
         dest: /tmp/test-kubeadm-join-config.yaml
-        mode: '0644'
+        mode: "0644"
       vars:
         template_content: |
           ---
@@ -163,10 +178,10 @@
     - name: Phase 2 | Verify join configuration contains expected values
       ansible.builtin.assert:
         that:
-          - "'token: \"abcdef.0123456789abcdef\"' in (join_config.content | b64decode)"
-          - "'apiServerEndpoint: \"192.168.1.100:6443\"' in (join_config.content | b64decode)"
+          - '''token: "abcdef.0123456789abcdef"'' in (join_config.content | b64decode)'
+          - '''apiServerEndpoint: "192.168.1.100:6443"'' in (join_config.content | b64decode)'
           - "'sha256:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef' in (join_config.content | b64decode)"
-          - "'name: \"test-worker\"' in (join_config.content | b64decode)"
+          - '''name: "test-worker"'' in (join_config.content | b64decode)'
           - "'node-ip' in (join_config.content | b64decode)"
           - "'topology.kubernetes.io/region=us-1' in (join_config.content | b64decode)"
         fail_msg: "Join configuration is missing expected values"
@@ -176,7 +191,7 @@
       ansible.builtin.template:
         src: /dev/stdin
         dest: /tmp/test-kubeadm-controlplane-join-config.yaml
-        mode: '0644'
+        mode: "0644"
       vars:
         kubernetes_role: "control-plane"
         kubernetes_join_certificate_key: "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
@@ -210,9 +225,9 @@
     - name: Phase 2 | Verify control plane join configuration
       ansible.builtin.assert:
         that:
-          - "'certificateKey: \"1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef\"' in (cp_join_config.content | b64decode)"
+          - '''certificateKey: "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"'' in (cp_join_config.content | b64decode)'
           - "'controlPlane:' in (cp_join_config.content | b64decode)"
-          - "'advertiseAddress: \"192.168.1.101\"' in (cp_join_config.content | b64decode)"
+          - '''advertiseAddress: "192.168.1.101"'' in (cp_join_config.content | b64decode)'
           - "'bindPort: 6443' in (cp_join_config.content | b64decode)"
         fail_msg: "Control plane join configuration is incorrect"
         success_msg: "Control plane join configuration generated correctly"
@@ -239,7 +254,7 @@
           - role: "control-plane"
             join_token: ""
             expected_action: "init"
-          - role: "control-plane" 
+          - role: "control-plane"
             join_token: "abcdef.0123456789abcdef"
             expected_action: "join_cp"
           - role: "worker"
@@ -250,7 +265,7 @@
       ansible.builtin.assert:
         that:
           - (item.role == 'control-plane' and item.join_token == '') == (item.expected_action == 'init')
-          - (item.role == 'control-plane' and item.join_token != '') == (item.expected_action == 'join_cp')  
+          - (item.role == 'control-plane' and item.join_token != '') == (item.expected_action == 'join_cp')
           - (item.role == 'worker' and item.join_token != '') == (item.expected_action == 'join_worker')
         fail_msg: "Conditional logic incorrect for scenario: {{ item }}"
         success_msg: "Conditional logic correct for role={{ item.role }}, join_token={{ item.join_token != '' }}"
@@ -262,7 +277,7 @@
           ===========================================
           KUBERNETES JOIN LOGIC VALIDATION SUMMARY
           ===========================================
-          
+
           Status: ALL VALIDATION TESTS PASSED
           - Control plane metadata generation: ✓
           - Join credential format validation: ✓
@@ -272,13 +287,13 @@
           - Conditional logic validation: ✓
           - Role-based execution path verification: ✓
           ===========================================
-          
+
           The kubernetes role join functionality has been validated:
           • Metadata system integration works correctly
           • Join configurations generate with proper formats
           • Conditional logic correctly routes execution paths
           • Security permissions are properly applied
           • All role scenarios (init/join_cp/join_worker) are supported
-          
+
           Note: This validates the LOGIC of join functionality.
           Actual multi-node testing requires multiple VMs/containers.

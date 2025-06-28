@@ -1,5 +1,4 @@
 ---
 debian_install: true
-debian_minimal: false
 debian_prune: false
 debian_hostname: "{{ lookup('file', '/var/lib/instance-metadata/hostname', errors='ignore') }}"

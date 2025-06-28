@@ -1,5 +1,5 @@
 ---
-# Test Playbook: Kubernetes Role Join Logic Validation  
+# Test Playbook: Kubernetes Role Join Logic Validation
 # This playbook validates the kubernetes role join functionality logic including:
 # - Control plane node initialization with metadata generation
 # - Join configuration generation and validation
@@ -15,7 +15,6 @@
     # First node acts as control plane
     debian_install: true
     debian_prune: false
-    debian_minimal: false
     kubernetes_role: "control-plane"
     kubernetes_name: "test-cluster"
     kubernetes_subnet_pod: "10.100.0.0/16"
@@ -124,12 +123,12 @@
       ansible.builtin.file:
         path: /tmp/test-join-configs
         state: directory
-        mode: '0755'
+        mode: "0755"
 
     - name: Phase 2 | Generate worker join configuration for validation
       ansible.builtin.copy:
         dest: /tmp/test-join-configs/worker-join-config.yaml
-        mode: '0644'
+        mode: "0644"
         content: |
           ---
           apiVersion: kubeadm.k8s.io/v1beta4
@@ -154,7 +153,7 @@
     - name: Phase 2 | Generate control plane join configuration for validation
       ansible.builtin.copy:
         dest: /tmp/test-join-configs/controlplane-join-config.yaml
-        mode: '0644'
+        mode: "0644"
         content: |
           ---
           apiVersion: kubeadm.k8s.io/v1beta4
@@ -184,7 +183,7 @@
       failed_when: false
       changed_when: false
 
-    - name: Phase 2 | Validate control plane join configuration syntax  
+    - name: Phase 2 | Validate control plane join configuration syntax
       ansible.builtin.shell: |
         kubeadm config validate --config /tmp/test-join-configs/controlplane-join-config.yaml
       register: cp_config_validation
@@ -232,7 +231,7 @@
         msg: |
           Phase 2 Complete: Join configuration validation successful
           - Worker join configuration syntax: ✓
-          - Control plane join configuration syntax: ✓  
+          - Control plane join configuration syntax: ✓
           - Conditional execution logic: ✓
           - Role-based operation determination: ✓
 
@@ -262,7 +261,7 @@
         state: directory
         owner: root
         group: root
-        mode: '0500'
+        mode: "0500"
 
     - name: Phase 3 | Set control plane metadata
       ansible.builtin.copy:
@@ -272,10 +271,26 @@
         group: root
         mode: "{{ item.mode }}"
       loop:
-        - { path: "/var/lib/instance-metadata/kubernetes-role", content: "control-plane", mode: "0644" }
-        - { path: "/var/lib/instance-metadata/hostname", content: "{{ ansible_hostname }}", mode: "0644" }
-        - { path: "/var/lib/instance-metadata/topology-region", content: "us-1", mode: "0644" }
-        - { path: "/var/lib/instance-metadata/topology-zone", content: "us-1a", mode: "0644" }
+        - {
+            path: "/var/lib/instance-metadata/kubernetes-role",
+            content: "control-plane",
+            mode: "0644",
+          }
+        - {
+            path: "/var/lib/instance-metadata/hostname",
+            content: "{{ ansible_hostname }}",
+            mode: "0644",
+          }
+        - {
+            path: "/var/lib/instance-metadata/topology-region",
+            content: "us-1",
+            mode: "0644",
+          }
+        - {
+            path: "/var/lib/instance-metadata/topology-zone",
+            content: "us-1a",
+            mode: "0644",
+          }
 
     - name: Phase 3 | Reinitialize control plane
       ansible.builtin.include_role:
@@ -312,7 +327,7 @@
           ===========================================
           KUBERNETES JOIN FUNCTIONALITY TEST SUMMARY
           ===========================================
-          
+
           Status: ALL TESTS PASSED
           - Control plane initialization: ✓
           - Metadata generation: ✓
@@ -323,10 +338,10 @@
           - Automatic token management: ✓
           - Role-based execution paths: ✓
           ===========================================
-          
+
           The kubernetes role now supports:
           • Control plane initialization (kubernetes_role: control-plane)
-          • Worker node joining (kubernetes_role: worker)  
+          • Worker node joining (kubernetes_role: worker)
           • Additional control plane nodes (with certificate keys)
           • Automatic join credential generation and management
           • Metadata-driven configuration with fallback support

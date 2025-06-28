@@ -13,7 +13,6 @@
   vars:
     debian_install: true
     debian_prune: false
-    debian_minimal: false
 
   tasks:
     - name: Phase 1 | Apply Debian Role (Required Dependency)
@@ -275,26 +274,26 @@
           ===========================================
           MULTI-NODE KUBERNETES CLUSTER TEST SUMMARY
           ===========================================
-          
+
           Status: ALL TESTS PASSED ✓
-          
+
           Infrastructure:
           - Control Plane: debian12 (192.168.56.10) ✓
           - Worker Node: debian12-worker (192.168.56.11) ✓
-          
+
           Cluster Formation:
           - Control plane initialization ✓
           - Join credential generation ✓
           - Worker node join process ✓
           - Multi-node cluster validation ✓
-          
+
           Functionality Tests:
           - Node registration and readiness ✓
           - Topology label assignment ✓
           - Pod scheduling across nodes ✓
           - Cluster networking ✓
           - Service discovery ✓
-          
+
           Join Functionality Validation:
           - Automatic token generation ✓
           - Discovery hash extraction ✓
@@ -302,7 +301,7 @@
           - Role-based execution paths ✓
           - Metadata system integration ✓
           ===========================================
-          
+
           The kubernetes role successfully supports:
           • Real multi-node cluster deployment
           • Automatic join credential management

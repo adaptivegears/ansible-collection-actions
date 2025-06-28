@@ -13,7 +13,6 @@
   vars:
     debian_install: true
     debian_prune: false
-    debian_minimal: false
 
   tasks:
     - name: Phase 1 | Get initial package state
@@ -107,7 +106,6 @@
   vars:
     debian_install: true
     debian_prune: true
-    debian_minimal: false
 
   tasks:
     - name: Phase 3 | Apply Debian Role (Purge Mode)
@@ -184,7 +182,7 @@
       changed_when: false
       loop:
         - whoami
-        - pwd  
+        - pwd
         - ls /
         - systemctl --version
         - apt --version
@@ -216,10 +214,10 @@
           After install: {{ post_install_package_count | default('N/A') }}
           With test packages: {{ with_test_packages_count | default('N/A') }}
           After purge: {{ post_purge_package_count | default('N/A') }}
-          
+
           Status: ALL TESTS PASSED
           - Core package installation: ✓
-          - Test package installation: ✓  
+          - Test package installation: ✓
           - Purge functionality: ✓
           - Core package preservation: ✓
           - System integrity: ✓
