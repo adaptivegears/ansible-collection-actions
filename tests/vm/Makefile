@@ -23,7 +23,7 @@ status: ## Show VM status
 
 .PHONY: check
 check: ## Test Ansible connectivity to VM
-	ansible -i inventory node1 -m ping
+	ansible node1 -m ping
 
 .PHONY: clean
 clean: destroy ## Clean up VM
