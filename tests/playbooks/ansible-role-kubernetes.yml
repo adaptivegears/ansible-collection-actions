@@ -1,8 +1,8 @@
 ---
 # Test Playbook: Kubernetes Role Multi-Node Cluster Testing
 # This playbook tests real multi-node Kubernetes cluster functionality using two VMs:
-# - debian12 (192.168.56.10): Control plane node
-# - debian12-worker (192.168.56.11): Worker node
+# - node1 (192.168.56.10): Control plane node
+# - node2 (192.168.56.11): Worker node
 
 - name: Multi-Node Kubernetes Test - Phase 1 (System Preparation)
   hosts: cluster
@@ -12,15 +12,14 @@
   serial: 1
   vars:
     debian_install: true
-    debian_prune: false
+    debian_prune: true
+    metadata_topology_region: "us-1"
+    metadata_topology_zone: "us-1a"
 
   tasks:
     - name: Phase 1 | Apply Debian Role (Required Dependency)
       ansible.builtin.include_role:
         name: debian
-      vars:
-        metadata_topology_region: "us-1"
-        metadata_topology_zone: "{{ 'us-1a' if inventory_hostname == 'debian12' else 'us-1b' }}"
 
     - name: Phase 1 | Verify basic system readiness
       ansible.builtin.package_facts:
@@ -40,7 +39,7 @@
   gather_facts: true
   become: true
   vars:
-    kubernetes_name: "test-multinode-cluster"
+    kubernetes_name: "ansible-cluster"
     kubernetes_subnet_pod: "10.100.0.0/16"
     kubernetes_subnet_service: "10.110.0.0/16"
     kubernetes_topology_region: "us-1"
@@ -129,7 +128,7 @@
   gather_facts: true
   become: true
   vars:
-    kubernetes_name: "test-multinode-cluster"
+    kubernetes_name: "ansible-cluster"
     kubernetes_subnet_pod: "10.100.0.0/16"
     kubernetes_subnet_service: "10.110.0.0/16"
     kubernetes_topology_region: "us-1"
@@ -195,8 +194,8 @@
     - name: Phase 4 | Verify both nodes are in cluster
       ansible.builtin.assert:
         that:
-          - "'debian12' in cluster_nodes.stdout"
-          - "'debian12-worker' in cluster_nodes.stdout"
+          - "'node1' in cluster_nodes.stdout"
+          - "'node2' in cluster_nodes.stdout"
           - cluster_nodes.stdout.count('Ready') >= 1
         fail_msg: "Not all nodes are present or ready in cluster"
         success_msg: "Multi-node cluster formation successful"
@@ -277,8 +276,8 @@
           Status: ALL TESTS PASSED ✓
 
           Infrastructure:
-          - Control Plane: debian12 (192.168.56.10) ✓
-          - Worker Node: debian12-worker (192.168.56.11) ✓
+          - Control Plane: node1 (192.168.56.10) ✓
+          - Worker Node: node2 (192.168.56.11) ✓
 
           Cluster Formation:
           - Control plane initialization ✓

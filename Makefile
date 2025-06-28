@@ -74,17 +74,11 @@ test-ansible-role-ssh: ## Run SSH role test with comprehensive security validati
 test-tailscale: ## Run Tailscale role test with CLI and service validation
 	ansible-playbook tests/playbooks/debian12-tailscale.yml
 
-.PHONY: test-kubernetes
-test-kubernetes: ## Run Kubernetes role test with cluster initialization and validation
-	ansible-playbook tests/playbooks/debian12-kubernetes.yml
 
-.PHONY: test-kubernetes-multinode
-test-kubernetes-multinode: ## Run multi-node kubernetes cluster test
-	ansible-playbook tests/playbooks/debian12-kubernetes-multinode.yml
+.PHONY: test-ansible-role-kubernetes
+test-ansible-role-kubernetes: ## Run multi-node kubernetes cluster test
+	ansible-playbook tests/playbooks/ansible-role-kubernetes.yml
 
-.PHONY: test-kubernetes-join
-test-kubernetes-join: ## Run kubernetes join logic validation test
-	ansible-playbook tests/playbooks/debian12-kubernetes-join.yml
 
 .PHONY: clean
 clean: ## Clean up the build artifacts, object files, executables, and any other generated files
