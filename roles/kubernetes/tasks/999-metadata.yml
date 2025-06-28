@@ -7,13 +7,6 @@
     group: root
     mode: '0755'
 
-- name: "Metadata > Kubernetes > Create auth directory"
-  ansible.builtin.file:
-    path: /var/lib/instance-metadata/auth
-    state: directory
-    owner: root
-    group: root
-    mode: '0500'
 
 - name: "Metadata > Kubernetes > Store kubernetes role"
   ansible.builtin.copy:
@@ -57,7 +50,7 @@
 - name: "Metadata > Kubernetes > Store bootstrap token"
   ansible.builtin.copy:
     content: "{{ new_bootstrap_token_result.stdout | default(bootstrap_token_result.stdout) }}"
-    dest: /var/lib/instance-metadata/auth/kubernetes-join-token
+    dest: /var/lib/instance-metadata/kubernetes-join-token
     owner: root
     group: root
     mode: '0400'
@@ -80,7 +73,7 @@
 - name: "Metadata > Kubernetes > Store discovery token CA cert hash"
   ansible.builtin.copy:
     content: "sha256:{{ discovery_hash_result.stdout }}"
-    dest: /var/lib/instance-metadata/auth/kubernetes-join-discovery-hash
+    dest: /var/lib/instance-metadata/kubernetes-join-discovery-hash
     owner: root
     group: root
     mode: '0400'
@@ -103,7 +96,7 @@
 - name: "Metadata > Kubernetes > Store certificate key"
   ansible.builtin.copy:
     content: "{{ certificate_key_result.stdout }}"
-    dest: /var/lib/instance-metadata/auth/kubernetes-join-certificate-key
+    dest: /var/lib/instance-metadata/kubernetes-join-certificate-key
     owner: root
     group: root
     mode: '0400'

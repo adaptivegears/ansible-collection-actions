@@ -15,7 +15,7 @@ kubernetes_join_token: >-
   {{
     (
       lookup('env', 'KUBERNETES_JOIN_TOKEN') or
-      lookup('file', '/var/lib/instance-metadata/auth/kubernetes-join-token', errors='ignore') or
+      lookup('file', '/var/lib/instance-metadata/kubernetes-join-token', errors='ignore') or
       ''
     ) | trim
   }}
@@ -24,7 +24,7 @@ kubernetes_join_discovery_hash: >-
   {{
     (
       lookup('env', 'KUBERNETES_JOIN_DISCOVERY_HASH') or
-      lookup('file', '/var/lib/instance-metadata/auth/kubernetes-join-discovery-hash', errors='ignore') or
+      lookup('file', '/var/lib/instance-metadata/kubernetes-join-discovery-hash', errors='ignore') or
       ''
     ) | trim
   }}
@@ -42,7 +42,7 @@ kubernetes_join_certificate_key: >-
   {{
     (
       lookup('env', 'KUBERNETES_JOIN_CERTIFICATE_KEY') or
-      lookup('file', '/var/lib/instance-metadata/auth/kubernetes-join-certificate-key', errors='ignore') or
+      lookup('file', '/var/lib/instance-metadata/kubernetes-join-certificate-key', errors='ignore') or
       ''
     ) | trim
   }}
