@@ -199,7 +199,12 @@ Filesystem-based metadata storage at `/var/lib/instance-metadata/` addresses Ans
 ├── topology-provider         # Cloud provider (aws, azure, gcp, etc.)
 ├── topology-region           # Provider region identifier
 ├── topology-zone             # Provider zone identifier
-└── auth/                     # Authentication tokens (0500 permissions)
+├── kubernetes-role           # Kubernetes node role (control-plane/worker)
+├── kubernetes-join-endpoint  # Kubernetes cluster endpoint
+├── kubernetes-join-token     # Bootstrap token for cluster joining (0400)
+├── kubernetes-join-discovery-hash # CA certificate hash (0400)
+├── kubernetes-join-certificate-key # Certificate key for control plane (0400)
+└── auth/                     # Legacy authentication tokens (0500 permissions)
     └── tailscale-authkey     # Tailscale auth key (0400 permissions)
 ```
 
@@ -263,3 +268,7 @@ make release                   # Publish (requires GALAXY_API_KEY)
 - **Topology identifiers**: Lowercase, alphanumeric with hyphens
 - **File permissions**: 0644 for readable metadata, 0400/0500 for sensitive data
 - **Branch names**: `feature/description`, `bugfix/issue-description`, `refactor/component-name`, `docs/topic`
+- **Variable naming**:
+  - **Public variables**: Use single underscore prefix (e.g., `kubernetes_role`, `kubernetes_join_token`)
+  - **Private variables**: Use double underscore prefix (e.g., `kubernetes__bootstrap_token_result`, `kubernetes__containerd_config`)
+  - **Metadata files**: Use role prefix with hyphen separator (e.g., `kubernetes-join-token`, `kubernetes-role`)
