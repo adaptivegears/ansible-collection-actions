@@ -82,6 +82,7 @@ test-kubernetes: ## Run Kubernetes role test with cluster initialization and val
 test-kubernetes-multinode: ## Run multi-node kubernetes cluster test
 	ansible-playbook tests/playbooks/debian12-kubernetes-multinode.yml
 
+.PHONY: test-kubernetes-join
 test-kubernetes-join: ## Run kubernetes join logic validation test
 	ansible-playbook tests/playbooks/debian12-kubernetes-join.yml
 
