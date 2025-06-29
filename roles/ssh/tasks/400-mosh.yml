@@ -9,7 +9,7 @@
 
 - name: SSH > Mosh > Check if iptables is available
   ansible.builtin.command: which iptables
-  register: ssh__iptables_available
+  register: ssh__iptables_present
   failed_when: false
   changed_when: false
 
@@ -19,7 +19,7 @@
     ssh__mosh_port_end: "{{ ssh_mosh_ports.split(':')[1] }}"
 
 - name: SSH > Mosh > Configure iptables firewall rules
-  when: ssh__iptables_available.rc == 0
+  when: ssh__iptables_present.rc == 0
   block:
     - name: SSH > Mosh > Ensure iptables directory exists
       ansible.builtin.file:
@@ -49,6 +49,6 @@
       notify: Save iptables rules
 
 - name: SSH > Mosh > Warning when iptables not available
-  when: ssh__iptables_available.rc != 0
+  when: ssh__iptables_present.rc != 0
   ansible.builtin.debug:
     msg: "Warning: iptables not found. Mosh firewall rules not configured. Please manually configure firewall to allow UDP ports {{ ssh_mosh_ports }}."
