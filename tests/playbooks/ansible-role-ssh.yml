@@ -349,7 +349,9 @@
       when: iptables_check.rc == 0
       block:
         - name: Phase 4 | Check iptables rules for mosh ports
-          ansible.builtin.shell: iptables -L INPUT -n | grep -E "60000:61000.*udp.*ACCEPT"
+          ansible.builtin.shell: |
+            set -o pipefail
+            iptables -L INPUT -n | grep -E "60000:61000.*udp.*ACCEPT"
           register: iptables_mosh_rule
           changed_when: false
           failed_when: false
@@ -452,18 +454,14 @@
         host: "{{ ansible_default_ipv4.address }}"
         timeout: 10
 
-    - name: Phase 5 | Test connection with SSH security settings
-      ansible.builtin.shell: |
-        ssh -o BatchMode=yes -o ConnectTimeout=5 -o StrictHostKeyChecking=no \
-        -o PasswordAuthentication=no -o PubkeyAuthentication=yes \
-        {{ ansible_default_ipv4.address }} echo "SSH security test successful" 2>/dev/null || echo "Expected: SSH security working"
-      register: ssh_security_test
+    - name: Phase 5 | Test SSH daemon configuration validation
+      ansible.builtin.command: sshd -T
+      register: ssh_config_test
       changed_when: false
-      delegate_to: localhost
 
-    - name: Phase 5 | Display SSH security test result
+    - name: Phase 5 | Display SSH configuration test result
       ansible.builtin.debug:
-        msg: "SSH security test: {{ ssh_security_test.stdout }}"
+        msg: "SSH configuration validation: {{ 'passed' if ssh_config_test.rc == 0 else 'failed' }}"
 
     - name: Phase 5 | Clean up test users and groups
       ansible.builtin.user:
