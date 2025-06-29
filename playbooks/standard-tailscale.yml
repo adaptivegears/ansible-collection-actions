@@ -20,34 +20,16 @@
           - "  --accept-dns              Accept DNS (TAILSCALE_ACCEPT_DNS, default: '')"
           - "  --accept-routes           Accept Routes (TAILSCALE_ACCEPT_ROUTES, default: '')"
 
-    - name: Parse Arguments
+    - name: Set Facts
       ignore_errors: true
       ansible.builtin.set_fact:
-        install: "{{ install | default(i) | default(omit) }}"
-        token: "{{ token | default(t) | default(omit) }}"
-        login_server: "{{ login_server | default(omit) }}"
-        login_timeout: "{{ login_timeout | default(omit) }}"
-        advertise_exit_node: "{{ advertise_exit_node | default(omit) }}"
-        accept_dns: "{{ accept_dns | default(omit) }}"
-        accept_routes: "{{ accept_routes | default(omit) }}"
-
-    - name: Prepare Variables
-      ignore_errors: true
-      ansible.builtin.set_fact:
-        # -i or --install
-        tailscale_install: "{{ install | default(lookup('env', 'TAILSCALE_INSTALL') | default('true') | bool) }}"
-        # -t or --token (sensitive, omit if not provided)
-        tailscale_authkey: "{{ token | default(lookup('env', 'TAILSCALE_AUTHKEY')) | default(omit) }}"
-        # --login-server (empty string default)
-        tailscale_login_server: "{{ login_server | default(lookup('env', 'TAILSCALE_LOGINSERVER') | default('')) }}"
-        # --login-timeout (integer default)
-        tailscale_login_timeout: "{{ login_timeout | default(lookup('env', 'TAILSCALE_LOGINTIMEOUT') | default(30) | int) }}"
-        # --advertise-exit-node (empty string default, no default() in original)
-        tailscale_advertise_exit_node: "{{ advertise_exit_node | default(lookup('env', 'TAILSCALE_ADVERTISE_EXIT_NODE') | default('')) }}"
-        # --accept-dns (empty string default, no default() in original)
-        tailscale_accept_dns: "{{ accept_dns | default(lookup('env', 'TAILSCALE_ACCEPT_DNS') | default('')) }}"
-        # --accept-routes (empty string default, no default() in original)
-        tailscale_accept_routes: "{{ accept_routes | default(lookup('env', 'TAILSCALE_ACCEPT_ROUTES') | default('')) }}"
+        tailscale_install: "{{ lookup('env', 'TAILSCALE_INSTALL') | default(install, true) | default(i, true) | default('true', true) | bool }}"
+        tailscale_authkey: "{{ lookup('env', 'TAILSCALE_AUTHKEY') | default(token, true) | default(t, true) | default(omit, true) }}"
+        tailscale_login_server: "{{ lookup('env', 'TAILSCALE_LOGINSERVER') | default(login_server, true) | default('', true) }}"
+        tailscale_login_timeout: "{{ lookup('env', 'TAILSCALE_LOGINTIMEOUT') | default(login_timeout, true) | default(30, true) | int }}"
+        tailscale_advertise_exit_node: "{{ lookup('env', 'TAILSCALE_ADVERTISE_EXIT_NODE') | default(advertise_exit_node, true) | default('', true) }}"
+        tailscale_accept_dns: "{{ lookup('env', 'TAILSCALE_ACCEPT_DNS') | default(accept_dns, true) | default('', true) }}"
+        tailscale_accept_routes: "{{ lookup('env', 'TAILSCALE_ACCEPT_ROUTES') | default(accept_routes, true) | default('', true) }}"
 
     - name: Include Role
       ansible.builtin.include_role:
