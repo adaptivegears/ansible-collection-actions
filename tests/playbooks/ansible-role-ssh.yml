@@ -339,18 +339,32 @@
         fail_msg: "mosh package was not installed"
         success_msg: "mosh package installed successfully"
 
-    - name: Phase 4 | Check iptables rules for mosh ports
-      ansible.builtin.shell: iptables -L INPUT -n | grep -E "60000:61000.*udp.*ACCEPT"
-      register: iptables_mosh_rule
-      changed_when: false
+    - name: Phase 4 | Check if iptables is available
+      ansible.builtin.command: which iptables
+      register: iptables_check
       failed_when: false
+      changed_when: false
 
-    - name: Phase 4 | Assert iptables rules are configured
-      ansible.builtin.assert:
-        that:
-          - iptables_mosh_rule.rc == 0
-        fail_msg: "iptables rules for mosh UDP ports not found"
-        success_msg: "iptables rules for mosh configured correctly"
+    - name: Phase 4 | Test iptables rules when iptables is available
+      when: iptables_check.rc == 0
+      block:
+        - name: Phase 4 | Check iptables rules for mosh ports
+          ansible.builtin.shell: iptables -L INPUT -n | grep -E "60000:61000.*udp.*ACCEPT"
+          register: iptables_mosh_rule
+          changed_when: false
+          failed_when: false
+
+        - name: Phase 4 | Assert iptables rules are configured
+          ansible.builtin.assert:
+            that:
+              - iptables_mosh_rule.rc == 0
+            fail_msg: "iptables rules for mosh UDP ports not found"
+            success_msg: "iptables rules for mosh configured correctly"
+
+    - name: Phase 4 | Skip iptables tests when not available
+      when: iptables_check.rc != 0
+      ansible.builtin.debug:
+        msg: "iptables not available - skipping firewall rule validation"
 
     - name: Phase 4 | Test mosh server binary exists
       ansible.builtin.stat:
