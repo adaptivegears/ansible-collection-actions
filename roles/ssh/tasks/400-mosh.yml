@@ -47,8 +47,3 @@
         comment: "Allow mosh UDP connections"
         ip_version: ipv6
       notify: Save iptables rules
-
-- name: SSH > Mosh > Warning when iptables not available
-  when: ssh__iptables_present.rc != 0
-  ansible.builtin.debug:
-    msg: "Warning: iptables not found. Mosh firewall rules not configured. Please manually configure firewall to allow UDP ports {{ ssh_mosh_ports }}."
