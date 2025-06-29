@@ -9,14 +9,14 @@
 
 - name: SSH > Mosh > Parse port range
   ansible.builtin.set_fact:
-    ssh_mosh_port_start: "{{ ssh_mosh_ports.split(':')[0] }}"
-    ssh_mosh_port_end: "{{ ssh_mosh_ports.split(':')[1] }}"
+    ssh__mosh_port_start: "{{ ssh_mosh_ports.split(':')[0] }}"
+    ssh__mosh_port_end: "{{ ssh_mosh_ports.split(':')[1] }}"
 
 - name: SSH > Mosh > Configure iptables for mosh UDP ports
   ansible.builtin.iptables:
     chain: INPUT
     protocol: udp
-    destination_port: "{{ ssh_mosh_port_start }}:{{ ssh_mosh_port_end }}"
+    destination_port: "{{ ssh__mosh_port_start }}:{{ ssh__mosh_port_end }}"
     jump: ACCEPT
     comment: "Allow mosh UDP connections"
   notify: Save iptables rules
@@ -25,7 +25,7 @@
   ansible.builtin.iptables:
     chain: INPUT
     protocol: udp
-    destination_port: "{{ ssh_mosh_port_start }}:{{ ssh_mosh_port_end }}"
+    destination_port: "{{ ssh__mosh_port_start }}:{{ ssh__mosh_port_end }}"
     jump: ACCEPT
     comment: "Allow mosh UDP connections"
     ip_version: ipv6

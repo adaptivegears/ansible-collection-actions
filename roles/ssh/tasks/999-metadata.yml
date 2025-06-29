@@ -2,10 +2,10 @@
 - name: SSH > Metadata > Check if metadata directory exists
   ansible.builtin.stat:
     path: /var/lib/instance-metadata
-  register: metadata_directory
+  register: ssh__metadata_directory
 
 - name: SSH > Metadata > Store mosh configuration
-  when: metadata_directory.stat.exists and metadata_directory.stat.isdir
+  when: ssh__metadata_directory.stat.exists and ssh__metadata_directory.stat.isdir
   block:
     - name: SSH > Metadata > Store ssh_mosh setting
       ansible.builtin.copy:
