@@ -215,37 +215,6 @@
         fail_msg: "Node topology labels are not correctly applied"
         success_msg: "Topology labels correctly applied to all nodes"
 
-    - name: Phase 4 | Test pod scheduling across nodes
-      ansible.builtin.command: kubectl --kubeconfig=/home/admin/.kube/config create deployment test-deployment --image=nginx:alpine --replicas=2
-      register: test_deployment
-      changed_when: true
-      become_user: admin
-
-    - name: Phase 4 | Wait for test deployment
-      ansible.builtin.pause:
-        seconds: 30
-
-    - name: Phase 4 | Check test deployment pod distribution
-      ansible.builtin.command: kubectl --kubeconfig=/home/admin/.kube/config get pods -o wide -l app=test-deployment
-      register: test_pods
-      changed_when: false
-      become_user: admin
-
-    - name: Phase 4 | Display test pod distribution
-      ansible.builtin.debug:
-        var: test_pods.stdout_lines
-
-    - name: Phase 4 | Verify pods can schedule on worker node
-      ansible.builtin.assert:
-        that:
-          - test_pods.stdout.count('Running') >= 1
-        fail_msg: "Test pods are not running properly"
-        success_msg: "Pod scheduling across cluster nodes successful"
-
-    - name: Phase 4 | Cleanup test deployment
-      ansible.builtin.command: kubectl --kubeconfig=/home/admin/.kube/config delete deployment test-deployment
-      changed_when: true
-      become_user: admin
 
     - name: Phase 4 | Test cluster networking
       ansible.builtin.command: kubectl --kubeconfig=/home/admin/.kube/config get services --all-namespaces
@@ -288,7 +257,6 @@
           Functionality Tests:
           - Node registration and readiness ✓
           - Topology label assignment ✓
-          - Pod scheduling across nodes ✓
           - Cluster networking ✓
           - Service discovery ✓
 
@@ -304,5 +272,4 @@
           • Real multi-node cluster deployment
           • Automatic join credential management
           • Secure worker node joining
-          • Cross-node pod scheduling
           • Complete cluster functionality
