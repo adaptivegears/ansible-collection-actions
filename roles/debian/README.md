@@ -216,6 +216,9 @@ https://packages.debian.org/bookworm/ncurses-bin
 https://packages.debian.org/bookworm/ncurses-term
 `ncurses-term` package provides terminal definitions for the ncurses library. It includes terminfo database entries for various terminal types.
 
+https://packages.debian.org/bookworm/tmux
+`tmux` package provides a terminal multiplexer that allows users to create multiple terminal sessions within a single terminal window. It enables session persistence, window management, and remote session sharing for enhanced terminal productivity.
+
 https://packages.debian.org/bookworm/whiptail
 `whiptail` package provides a utility for creating dialog boxes in shell scripts. It allows you to create interactive text-based interfaces for user input and feedback.
 

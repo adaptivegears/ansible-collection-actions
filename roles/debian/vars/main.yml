@@ -106,6 +106,7 @@ debian_packages_common:
   - file
   - tree
   - htop
+  - tmux
   - readline-common
   - ncurses-bin
   - ncurses-term
