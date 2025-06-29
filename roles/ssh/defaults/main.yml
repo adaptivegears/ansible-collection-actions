@@ -20,3 +20,6 @@ ssh_groups: []
 #     state: allow
 #   - name: group2
 #     state: deny
+
+ssh_mosh: false
+ssh_mosh_ports: "60000:61000"
