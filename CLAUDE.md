@@ -272,3 +272,31 @@ make release                   # Publish (requires GALAXY_API_KEY)
   - **Public variables**: Use single underscore prefix (e.g., `kubernetes_role`, `kubernetes_join_token`)
   - **Private variables**: Use double underscore prefix, avoid redundant suffixes (e.g., `kubernetes__bootstrap_token`, `kubernetes__containerd_config`)
   - **Metadata files**: Use role prefix with hyphen separator (e.g., `kubernetes-join-token`, `kubernetes-role`)
+  - **Descriptive naming**: Use clear, descriptive names for boolean checks (e.g., `ssh__iptables_present` not `ssh__iptables_available`)
+
+### System Dependencies and Conditional Logic
+- **Never force-install system packages**: Check availability before use, don't automatically install system tools like `iptables`, `ufw`, etc.
+- **Graceful degradation**: When optional tools are unavailable, skip functionality silently rather than failing
+- **Availability checks**: Use `which` command with `failed_when: false` to check tool presence
+- **Conditional blocks**: Group related tasks that depend on system tools using `when` conditions
+
+```yaml
+# Good: Check before use
+- name: Check if iptables is available
+  ansible.builtin.command: which iptables
+  register: ssh__iptables_present
+  failed_when: false
+  changed_when: false
+
+- name: Configure firewall rules
+  when: ssh__iptables_present.rc == 0
+  block:
+    - name: Add iptables rule
+      ansible.builtin.iptables: ...
+```
+
+### Code Quality Standards
+- **No unnecessary debug output**: Avoid `ansible.builtin.debug` tasks unless specifically needed for troubleshooting
+- **Shell command safety**: Always use `set -o pipefail` in shell commands with pipes to meet lint requirements
+- **Error handling**: Use `failed_when: false` for commands that may legitimately fail
+- **Idempotency**: Ensure all tasks can be run multiple times safely with `changed_when` directives

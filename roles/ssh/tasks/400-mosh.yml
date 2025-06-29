@@ -1,0 +1,49 @@
+---
+- name: SSH > Mosh > Install mosh Package
+  ansible.builtin.apt:
+    name:
+      - mosh
+    state: present
+    update_cache: true
+    install_recommends: false
+
+- name: SSH > Mosh > Check if iptables is available
+  ansible.builtin.command: which iptables
+  register: ssh__iptables_present
+  failed_when: false
+  changed_when: false
+
+- name: SSH > Mosh > Parse port range
+  ansible.builtin.set_fact:
+    ssh__mosh_port_start: "{{ ssh_mosh_ports.split(':')[0] }}"
+    ssh__mosh_port_end: "{{ ssh_mosh_ports.split(':')[1] }}"
+
+- name: SSH > Mosh > Configure iptables firewall rules
+  when: ssh__iptables_present.rc == 0
+  block:
+    - name: SSH > Mosh > Ensure iptables directory exists
+      ansible.builtin.file:
+        path: /etc/iptables
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: SSH > Mosh > Configure iptables for mosh UDP ports
+      ansible.builtin.iptables:
+        chain: INPUT
+        protocol: udp
+        destination_port: "{{ ssh__mosh_port_start }}:{{ ssh__mosh_port_end }}"
+        jump: ACCEPT
+        comment: "Allow mosh UDP connections"
+      notify: Save iptables rules
+
+    - name: SSH > Mosh > Configure iptables for mosh UDP ports (IPv6)
+      ansible.builtin.iptables:
+        chain: INPUT
+        protocol: udp
+        destination_port: "{{ ssh__mosh_port_start }}:{{ ssh__mosh_port_end }}"
+        jump: ACCEPT
+        comment: "Allow mosh UDP connections"
+        ip_version: ipv6
+      notify: Save iptables rules

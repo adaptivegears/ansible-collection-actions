@@ -13,3 +13,10 @@
 - name: SSH > Security > Configure Access Control
   when: ssh_users | length > 0 or ssh_groups | length > 0
   ansible.builtin.include_tasks: 300-access-control.yml
+
+- name: SSH > Mosh > Install and Configure Mosh
+  when: ssh_mosh
+  ansible.builtin.include_tasks: 400-mosh.yml
+
+- name: SSH > Metadata > Store Configuration
+  ansible.builtin.include_tasks: 999-metadata.yml

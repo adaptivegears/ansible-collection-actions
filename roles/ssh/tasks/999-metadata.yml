@@ -1,0 +1,24 @@
+---
+- name: SSH > Metadata > Check if metadata directory exists
+  ansible.builtin.stat:
+    path: /var/lib/instance-metadata
+  register: ssh__metadata_directory
+
+- name: SSH > Metadata > Store mosh configuration
+  when: ssh__metadata_directory.stat.exists and ssh__metadata_directory.stat.isdir
+  block:
+    - name: SSH > Metadata > Store ssh_mosh setting
+      ansible.builtin.copy:
+        content: "{{ ssh_mosh | string | lower }}"
+        dest: /var/lib/instance-metadata/ssh-mosh
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: SSH > Metadata > Store ssh_mosh_ports setting
+      ansible.builtin.copy:
+        content: "{{ ssh_mosh_ports }}"
+        dest: /var/lib/instance-metadata/ssh-mosh-ports
+        owner: root
+        group: root
+        mode: '0644'

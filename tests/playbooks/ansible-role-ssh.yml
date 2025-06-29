@@ -308,45 +308,162 @@
       ansible.builtin.debug:
         msg: "Phase 3 Complete: SSH access control configuration verified"
 
-- name: Test SSH Role - Phase 4 (Security Validation and Cleanup)
+- name: Test SSH Role - Phase 4 (Mosh Testing)
+  hosts: node1
+  connection: ssh
+  gather_facts: true
+  become: true
+  vars:
+    ssh_openssh: true
+    ssh_hardening: true
+    ssh_hardening_allow_tcp_forwarding: true
+    ssh_hardening_allow_root_login: false
+    ssh_mosh: true
+    ssh_mosh_ports: "60000:61000"
+    ssh_users: []
+    ssh_groups: []
+
+  tasks:
+    - name: Phase 4 | Apply SSH Role with mosh enabled
+      ansible.builtin.include_role:
+        name: ssh
+
+    - name: Phase 4 | Verify mosh package is installed
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Phase 4 | Assert mosh package installation
+      ansible.builtin.assert:
+        that:
+          - "'mosh' in ansible_facts.packages"
+        fail_msg: "mosh package was not installed"
+        success_msg: "mosh package installed successfully"
+
+    - name: Phase 4 | Check if iptables is available
+      ansible.builtin.command: which iptables
+      register: iptables_check
+      failed_when: false
+      changed_when: false
+
+    - name: Phase 4 | Test iptables rules when iptables is available
+      when: iptables_check.rc == 0
+      block:
+        - name: Phase 4 | Check iptables rules for mosh ports
+          ansible.builtin.shell: |
+            set -o pipefail
+            iptables -L INPUT -n | grep -E "60000:61000.*udp.*ACCEPT"
+          register: iptables_mosh_rule
+          changed_when: false
+          failed_when: false
+
+        - name: Phase 4 | Assert iptables rules are configured
+          ansible.builtin.assert:
+            that:
+              - iptables_mosh_rule.rc == 0
+            fail_msg: "iptables rules for mosh UDP ports not found"
+            success_msg: "iptables rules for mosh configured correctly"
+
+    - name: Phase 4 | Skip iptables tests when not available
+      when: iptables_check.rc != 0
+      ansible.builtin.debug:
+        msg: "iptables not available - skipping firewall rule validation"
+
+    - name: Phase 4 | Test mosh server binary exists
+      ansible.builtin.stat:
+        path: /usr/bin/mosh-server
+      register: mosh_server_binary
+
+    - name: Phase 4 | Assert mosh-server binary exists
+      ansible.builtin.assert:
+        that:
+          - mosh_server_binary.stat.exists
+          - mosh_server_binary.stat.executable
+        fail_msg: "mosh-server binary not found or not executable"
+        success_msg: "mosh-server binary verified"
+
+    - name: Phase 4 | Check metadata directory exists
+      ansible.builtin.stat:
+        path: /var/lib/instance-metadata
+      register: metadata_dir_check
+
+    - name: Phase 4 | Verify mosh metadata files when metadata directory exists
+      when: metadata_dir_check.stat.exists and metadata_dir_check.stat.isdir
+      block:
+        - name: Phase 4 | Check ssh-mosh metadata file
+          ansible.builtin.stat:
+            path: /var/lib/instance-metadata/ssh-mosh
+          register: ssh_mosh_metadata
+
+        - name: Phase 4 | Check ssh-mosh-ports metadata file
+          ansible.builtin.stat:
+            path: /var/lib/instance-metadata/ssh-mosh-ports
+          register: ssh_mosh_ports_metadata
+
+        - name: Phase 4 | Assert metadata files exist
+          ansible.builtin.assert:
+            that:
+              - ssh_mosh_metadata.stat.exists
+              - ssh_mosh_ports_metadata.stat.exists
+            fail_msg: "mosh metadata files were not created"
+            success_msg: "mosh metadata files created successfully"
+
+        - name: Phase 4 | Verify metadata file contents
+          ansible.builtin.slurp:
+            src: "{{ item.path }}"
+          register: metadata_contents
+          loop:
+            - path: /var/lib/instance-metadata/ssh-mosh
+              expected: "true"
+            - path: /var/lib/instance-metadata/ssh-mosh-ports
+              expected: "60000:61000"
+
+        - name: Phase 4 | Assert metadata file contents
+          ansible.builtin.assert:
+            that:
+              - (item.content | b64decode | trim) == item.item.expected
+            fail_msg: "Metadata file {{ item.item.path }} contains incorrect content"
+            success_msg: "Metadata file {{ item.item.path }} content verified"
+          loop: "{{ metadata_contents.results }}"
+
+    - name: Phase 4 | Display mosh testing results
+      ansible.builtin.debug:
+        msg: "Phase 4 Complete: Mosh installation and configuration verified"
+
+- name: Test SSH Role - Phase 5 (Security Validation and Cleanup)
   hosts: node1
   connection: ssh
   gather_facts: true
   become: true
 
   tasks:
-    - name: Phase 4 | Test SSH configuration syntax
+    - name: Phase 5 | Test SSH configuration syntax
       ansible.builtin.command: sshd -t
       register: sshd_syntax_test
       changed_when: false
 
-    - name: Phase 4 | Assert SSH configuration syntax is valid
+    - name: Phase 5 | Assert SSH configuration syntax is valid
       ansible.builtin.assert:
         that:
           - sshd_syntax_test.rc == 0
         fail_msg: "SSH configuration has syntax errors: {{ sshd_syntax_test.stderr }}"
         success_msg: "SSH configuration syntax is valid"
 
-    - name: Phase 4 | Verify SSH service is responsive
+    - name: Phase 5 | Verify SSH service is responsive
       ansible.builtin.wait_for:
         port: 22
         host: "{{ ansible_default_ipv4.address }}"
         timeout: 10
 
-    - name: Phase 4 | Test connection with SSH security settings
-      ansible.builtin.shell: |
-        ssh -o BatchMode=yes -o ConnectTimeout=5 -o StrictHostKeyChecking=no \
-        -o PasswordAuthentication=no -o PubkeyAuthentication=yes \
-        {{ ansible_default_ipv4.address }} echo "SSH security test successful" 2>/dev/null || echo "Expected: SSH security working"
-      register: ssh_security_test
+    - name: Phase 5 | Test SSH daemon configuration validation
+      ansible.builtin.command: sshd -T
+      register: ssh_config_test
       changed_when: false
-      delegate_to: localhost
 
-    - name: Phase 4 | Display SSH security test result
+    - name: Phase 5 | Display SSH configuration test result
       ansible.builtin.debug:
-        msg: "SSH security test: {{ ssh_security_test.stdout }}"
+        msg: "SSH configuration validation: {{ 'passed' if ssh_config_test.rc == 0 else 'failed' }}"
 
-    - name: Phase 4 | Clean up test users and groups
+    - name: Phase 5 | Clean up test users and groups
       ansible.builtin.user:
         name: "{{ item }}"
         state: absent
@@ -355,7 +472,7 @@
         - testuser1
         - testuser2
 
-    - name: Phase 4 | Clean up test groups
+    - name: Phase 5 | Clean up test groups
       ansible.builtin.group:
         name: "{{ item }}"
         state: absent
@@ -363,28 +480,28 @@
         - testgroup1
         - testgroup2
 
-    - name: Phase 4 | Reset SSH configuration to clean state (no access control)
+    - name: Phase 5 | Reset SSH configuration to clean state (no access control)
       ansible.builtin.include_role:
         name: ssh
       vars:
         ssh_users: []
         ssh_groups: []
 
-    - name: Phase 4 | Final SSH service status check
+    - name: Phase 5 | Final SSH service status check
       ansible.builtin.systemd_service:
         name: ssh
         state: started
       check_mode: true
       register: final_ssh_status
 
-    - name: Phase 4 | Assert final SSH service health
+    - name: Phase 5 | Assert final SSH service health
       ansible.builtin.assert:
         that:
           - final_ssh_status.status.ActiveState == "active"
         fail_msg: "SSH service is not healthy after testing"
         success_msg: "SSH service is healthy after all tests"
 
-    - name: Phase 4 | Test Summary
+    - name: Phase 5 | Test Summary
       ansible.builtin.debug:
         msg: |
           ===========================================
