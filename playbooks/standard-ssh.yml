@@ -20,8 +20,12 @@
           - "  --enable-hardening               Enable OpenSSH hardening (SSH_HARDENING, default: true)"
           - "  --enable-tcp-forwarding          Enable TCP forwarding (requires --enable-hardening)"
           - "  --enable-root-login              Enable root login (requires --enable-hardening)"
+          - "  --enable-mosh                    Enable mosh (mobile shell) support (SSH_MOSH, default: false)"
+          - "  --mosh-ports=60000:61000         Configure mosh UDP port range (SSH_MOSH_PORTS, default: 60000:61000)"
           - "Examples:"
           - "  $ bootstrap -- @adaptivegears/standard-ssh -U andreygubarev"
+          - "  $ bootstrap -- @adaptivegears/standard-ssh -U andreygubarev --enable-mosh"
+          - "  $ bootstrap -- @adaptivegears/standard-ssh --enable-mosh --mosh-ports=60000:61000"
 
     - name: Parse Arguments
       ignore_errors: true
@@ -29,6 +33,8 @@
         user: "{{ user | default(u) | default(omit, true) }}"
         group: "{{ group | default(g) | default(omit, true) }}"
         user_key: "{{ user_key | default(U) | default(omit, true) }}"
+        enable_mosh: "{{ enable_mosh | default(omit, true) }}"
+        mosh_ports: "{{ mosh_ports | default(omit, true) }}"
 
     - name: Prepare Variables
       ignore_errors: true
@@ -44,6 +50,12 @@
 
         # --enable-root-login
         ssh_hardening_allow_root_login: "{{ lookup('env', 'SSH_HARDENING_ALLOW_ROOT_LOGIN') | default(enable_root_login, true) | default(omit, true) }}"
+
+        # --enable-mosh
+        ssh_mosh: "{{ lookup('env', 'SSH_MOSH') | default(enable_mosh, true) | default(omit, true) }}"
+
+        # --mosh-ports
+        ssh_mosh_ports: "{{ lookup('env', 'SSH_MOSH_PORTS') | default(mosh_ports, true) | default(omit, true) }}"
 
         # -u or --user=andrey:andreygubarev (where andreygubarev is github username)
         # -U or --user-key=andreygubarev (where andreygubarev is github username)
