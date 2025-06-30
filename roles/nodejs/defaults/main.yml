@@ -1,0 +1,6 @@
+---
+nodejs_install: true
+nodejs_verify_installation: true
+nodejs_minimum_version: "18"
+nodejs_configure_global_path: true
+nodejs_global_prefix: "/usr/local"

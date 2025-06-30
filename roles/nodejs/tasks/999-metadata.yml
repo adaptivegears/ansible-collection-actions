@@ -1,0 +1,39 @@
+---
+- name: "Node.js > Metadata > Ensure metadata directory exists"
+  ansible.builtin.file:
+    path: /var/lib/instance-metadata
+    state: directory
+    mode: '0755'
+  become: true
+
+- name: "Node.js > Metadata > Get final Node.js version"
+  ansible.builtin.command: node --version
+  register: nodejs__metadata_node_version
+  changed_when: false
+
+- name: "Node.js > Metadata > Get final npm version"
+  ansible.builtin.command: npm --version
+  register: nodejs__metadata_npm_version
+  changed_when: false
+
+- name: "Node.js > Metadata > Store Node.js version"
+  ansible.builtin.copy:
+    content: "{{ nodejs__metadata_node_version.stdout | trim }}"
+    dest: /var/lib/instance-metadata/nodejs-version
+    mode: '0644'
+  become: true
+
+- name: "Node.js > Metadata > Store npm version"
+  ansible.builtin.copy:
+    content: "{{ nodejs__metadata_npm_version.stdout | trim }}"
+    dest: /var/lib/instance-metadata/npm-version
+    mode: '0644'
+  become: true
+
+- name: "Node.js > Metadata > Store npm global prefix"
+  ansible.builtin.copy:
+    content: "{{ nodejs__final_global_prefix.stdout | default(nodejs_global_prefix) | trim }}"
+    dest: /var/lib/instance-metadata/npm-global-prefix
+    mode: '0644'
+  become: true
+  when: nodejs_configure_global_path | bool

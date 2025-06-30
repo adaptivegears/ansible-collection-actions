@@ -1,0 +1,49 @@
+---
+- name: "Node.js > Prerequisites > Validate system requirements"
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == "Debian"
+      - ansible_distribution_major_version | int >= 12 or
+        (ansible_distribution == "Ubuntu" and ansible_distribution_version is version("24.04", ">="))
+    fail_msg: "This role requires Debian 12+ or Ubuntu 24.04+"
+    success_msg: "System requirements validated"
+
+- name: "Node.js > Prerequisites > Check architecture support"
+  ansible.builtin.assert:
+    that:
+      - ansible_architecture in nodejs__supported_architectures
+    fail_msg: "Architecture {{ ansible_architecture }} not supported. Supported: {{ nodejs__supported_architectures | join(', ') }}"
+    success_msg: "Architecture {{ ansible_architecture }} is supported"
+
+- name: "Node.js > Prerequisites > Check if Node.js is already installed"
+  ansible.builtin.command: which node
+  register: nodejs__existing_node
+  failed_when: false
+  changed_when: false
+
+- name: "Node.js > Prerequisites > Get current Node.js version"
+  ansible.builtin.command: node --version
+  register: nodejs__current_version
+  failed_when: false
+  changed_when: false
+  when: nodejs__existing_node.rc == 0
+
+- name: "Node.js > Prerequisites > Extract Node.js version number"
+  ansible.builtin.set_fact:
+    nodejs__current_version_number: "{{ nodejs__current_version.stdout | regex_replace('^v', '') | regex_replace('\\..*$', '') }}"
+  when: nodejs__existing_node.rc == 0 and nodejs__current_version.rc == 0
+
+- name: "Node.js > Prerequisites > Check if current Node.js version is adequate"
+  ansible.builtin.set_fact:
+    nodejs__version_adequate: >-
+      {{
+        nodejs__existing_node.rc == 0 and
+        nodejs__current_version.rc == 0 and
+        nodejs__current_version_number | int >= (nodejs_minimum_version | int)
+      }}
+
+- name: "Node.js > Prerequisites > Update package cache"
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+  when: not nodejs__version_adequate | default(false)

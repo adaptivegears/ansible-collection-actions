@@ -1,0 +1,22 @@
+---
+galaxy_info:
+  role_name: nodejs
+  author: adaptivegears
+  description: Install Node.js and npm from system repositories
+  company: Adaptive Gears
+  license: MIT
+  min_ansible_version: "2.16"
+  platforms:
+    - name: Debian
+      versions:
+        - bookworm
+    - name: Ubuntu
+      versions:
+        - noble
+  galaxy_tags:
+    - nodejs
+    - npm
+    - javascript
+    - development
+
+dependencies: []

@@ -1,0 +1,73 @@
+---
+- name: Test Node.js Role
+  hosts: node1
+  become: true
+  vars:
+    nodejs_verify_installation: true
+  
+  tasks:
+    - name: Apply Node.js Role
+      ansible.builtin.include_role:
+        name: nodejs
+  
+  post_tasks:
+    - name: "Test > Verify Node.js command is available"
+      ansible.builtin.command: node --version
+      register: test_node_version
+      changed_when: false
+
+    - name: "Test > Verify npm command is available"
+      ansible.builtin.command: npm --version
+      register: test_npm_version
+      changed_when: false
+
+    - name: "Test > Display Node.js version"
+      ansible.builtin.debug:
+        msg: "Node.js version: {{ test_node_version.stdout }}"
+
+    - name: "Test > Display npm version"
+      ansible.builtin.debug:
+        msg: "npm version: {{ test_npm_version.stdout }}"
+
+    - name: "Test > Verify metadata files exist"
+      ansible.builtin.stat:
+        path: "/var/lib/instance-metadata/{{ item }}"
+      register: test_metadata_files
+      loop:
+        - nodejs-version
+        - npm-version
+        - npm-global-prefix
+
+    - name: "Test > Check metadata file contents"
+      ansible.builtin.slurp:
+        src: "/var/lib/instance-metadata/{{ item }}"
+      register: test_metadata_contents
+      loop:
+        - nodejs-version
+        - npm-version
+        - npm-global-prefix
+
+    - name: "Test > Display metadata contents"
+      ansible.builtin.debug:
+        msg: "{{ item.item }}: {{ item.content | b64decode | trim }}"
+      loop: "{{ test_metadata_contents.results }}"
+
+    - name: "Test > Test npm global configuration"
+      ansible.builtin.command: npm config get prefix
+      register: test_npm_prefix
+      changed_when: false
+
+    - name: "Test > Display npm global prefix"
+      ansible.builtin.debug:
+        msg: "npm global prefix: {{ test_npm_prefix.stdout }}"
+
+    - name: "Test > Test npm global package listing"
+      ansible.builtin.shell: npm list -g --depth=0 | head -5
+      args:
+        executable: /bin/bash
+      register: test_npm_global_list
+      changed_when: false
+
+    - name: "Test > Display npm global packages"
+      ansible.builtin.debug:
+        msg: "{{ test_npm_global_list.stdout_lines }}"

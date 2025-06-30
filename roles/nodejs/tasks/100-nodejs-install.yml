@@ -1,0 +1,39 @@
+---
+- name: "Node.js > Installation > Install Node.js and npm packages"
+  ansible.builtin.apt:
+    name: "{{ nodejs__packages }}"
+    state: present
+  when:
+    - nodejs_install | bool
+    - not nodejs__version_adequate | default(false)
+
+- name: "Node.js > Installation > Verify Node.js installation"
+  ansible.builtin.command: node --version
+  register: nodejs__installed_version
+  changed_when: false
+  when: nodejs_verify_installation | bool
+
+- name: "Node.js > Installation > Verify npm installation"
+  ansible.builtin.command: npm --version
+  register: nodejs__npm_version
+  changed_when: false
+  when: nodejs_verify_installation | bool
+
+- name: "Node.js > Installation > Extract installed Node.js version number"
+  ansible.builtin.set_fact:
+    nodejs__final_version_number: "{{ nodejs__installed_version.stdout | regex_replace('^v', '') | regex_replace('\\..*$', '') }}"
+  when: nodejs_verify_installation | bool and nodejs__installed_version.stdout is defined
+
+- name: "Node.js > Installation > Verify Node.js version meets minimum requirement"
+  ansible.builtin.assert:
+    that:
+      - nodejs__final_version_number | int >= (nodejs_minimum_version | int)
+    fail_msg: "Installed Node.js version {{ nodejs__final_version_number }} does not meet minimum requirement {{ nodejs_minimum_version }}"
+    success_msg: "Node.js version {{ nodejs__final_version_number }} meets minimum requirement"
+  when: nodejs_verify_installation | bool and nodejs__final_version_number is defined
+
+- name: "Node.js > Installation > Verify npm command is available"
+  ansible.builtin.command: which npm
+  register: nodejs__npm_path
+  changed_when: false
+  when: nodejs_verify_installation | bool
