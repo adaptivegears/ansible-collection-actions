@@ -1,0 +1,8 @@
+---
+- name: "Node.js > Installation > Install Node.js and npm packages"
+  ansible.builtin.apt:
+    name: "{{ nodejs__packages }}"
+    state: present
+  when:
+    - nodejs_install | bool
+    - not nodejs__version_adequate | default(false)

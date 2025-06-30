@@ -1,0 +1,10 @@
+---
+nodejs__packages:
+  - nodejs
+  - npm
+
+nodejs__supported_architectures:
+  - amd64
+  - arm64
+  - aarch64
+  - x86_64

@@ -1,0 +1,6 @@
+---
+- name: "Node.js > Prerequisites"
+  ansible.builtin.include_tasks: 000-prerequisites.yml
+
+- name: "Node.js > Installation"
+  ansible.builtin.include_tasks: 100-nodejs-install.yml

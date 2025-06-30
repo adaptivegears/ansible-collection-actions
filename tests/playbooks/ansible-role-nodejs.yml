@@ -1,0 +1,29 @@
+---
+- name: Test Node.js Role
+  hosts: node1
+  become: true
+  
+  tasks:
+    - name: Apply Node.js Role
+      ansible.builtin.include_role:
+        name: nodejs
+  
+  post_tasks:
+    - name: "Test > Verify Node.js command is available"
+      ansible.builtin.command: node --version
+      register: test_node_version
+      changed_when: false
+
+    - name: "Test > Verify npm command is available"
+      ansible.builtin.command: npm --version
+      register: test_npm_version
+      changed_when: false
+
+    - name: "Test > Display Node.js version"
+      ansible.builtin.debug:
+        msg: "Node.js version: {{ test_node_version.stdout }}"
+
+    - name: "Test > Display npm version"
+      ansible.builtin.debug:
+        msg: "npm version: {{ test_npm_version.stdout }}"
+
