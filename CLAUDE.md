@@ -300,3 +300,20 @@ make release                   # Publish (requires GALAXY_API_KEY)
 - **Shell command safety**: Always use `set -o pipefail` in shell commands with pipes to meet lint requirements
 - **Error handling**: Use `failed_when: false` for commands that may legitimately fail
 - **Idempotency**: Ensure all tasks can be run multiple times safely with `changed_when` directives
+
+### Role Design Principles
+- **Trust your tools**: Don't add redundant verification steps if the underlying module (like `apt`) already provides error handling
+- **Simplicity over complexity**: Avoid unnecessary configuration variables and verification steps that don't add real value
+- **Focus on core purpose**: Keep roles focused on their primary function rather than adding peripheral features
+- **Test in tests, not roles**: Verification belongs in test playbooks, not in the role implementation itself
+
+### Metadata System Guidelines
+- **Use sparingly**: Only implement metadata for complex inter-role communication (e.g., cluster tokens, shared state)
+- **Avoid for simple installations**: Foundation roles (runtime installations like Node.js, Python) don't need metadata tracking
+- **Direct system checks preferred**: Use `which command` or `command --version` instead of reading potentially stale metadata files
+- **When to skip metadata**: If the role is idempotent through direct system state checking, metadata is unnecessary
+
+### Variable Design Best Practices
+- **Minimize configuration options**: Only expose variables that provide genuine value to users
+- **Remove redundant variables**: If a variable doesn't change behavior meaningfully, eliminate it
+- **Example of good simplification**: Remove `nodejs_verify_installation` - verification should happen in tests, not roles
