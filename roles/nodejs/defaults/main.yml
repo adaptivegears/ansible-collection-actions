@@ -1,4 +1,3 @@
 ---
 nodejs_install: true
-nodejs_verify_installation: true
 nodejs_minimum_version: "18"

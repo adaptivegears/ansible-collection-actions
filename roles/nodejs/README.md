@@ -30,9 +30,6 @@ Both versions meet the minimum Node.js 18+ requirement for modern applications.
 # Enable/disable Node.js installation
 nodejs_install: true
 
-# Enable post-installation verification
-nodejs_verify_installation: true
-
 # Minimum Node.js version required
 nodejs_minimum_version: "18"
 ```
@@ -102,7 +99,6 @@ None.
 
 ### Error Handling
 - Validates system requirements before installation
-- Verifies installation success
 - Provides meaningful error messages
 
 ## Usage with npm Global Packages

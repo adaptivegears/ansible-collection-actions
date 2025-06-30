@@ -2,8 +2,6 @@
 - name: Test Node.js Role
   hosts: node1
   become: true
-  vars:
-    nodejs_verify_installation: true
   
   tasks:
     - name: Apply Node.js Role
