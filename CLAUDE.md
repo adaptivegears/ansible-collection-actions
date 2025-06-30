@@ -308,10 +308,12 @@ make release                   # Publish (requires GALAXY_API_KEY)
 - **Test in tests, not roles**: Verification belongs in test playbooks, not in the role implementation itself
 
 ### Metadata System Guidelines
-- **Use sparingly**: Only implement metadata for complex inter-role communication (e.g., cluster tokens, shared state)
-- **Avoid for simple installations**: Foundation roles (runtime installations like Node.js, Python) don't need metadata tracking
-- **Direct system checks preferred**: Use `which command` or `command --version` instead of reading potentially stale metadata files
-- **When to skip metadata**: If the role is idempotent through direct system state checking, metadata is unnecessary
+- **Primary purpose**: Preserve user decisions and state between playbook runs to avoid overriding explicit non-default values with defaults
+- **State preservation**: Store user-provided configuration choices so subsequent runs don't reset them to defaults
+- **Inter-role communication**: Enable roles to share important state (e.g., cluster tokens, endpoints, custom configurations)
+- **When to use**: For user-configurable settings that should persist across runs, complex multi-role state, or dynamic values generated during deployment
+- **When to skip**: For simple installations where system state checking is sufficient (e.g., package presence via `which command`)
+- **Direct system checks preferred**: Use `command --version` or package queries for basic availability checks rather than metadata
 
 ### Variable Design Best Practices
 - **Minimize configuration options**: Only expose variables that provide genuine value to users
