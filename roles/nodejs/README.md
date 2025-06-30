@@ -4,7 +4,7 @@ Install Node.js and npm from system repositories on Debian-based systems.
 
 ## Description
 
-This role installs Node.js and npm using the system package manager (apt) on Debian 12+ and Ubuntu 24.04+ systems. It provides a clean, system-integrated installation that follows security best practices and integrates with the collection's metadata system.
+This role installs Node.js and npm using the system package manager (apt) on Debian 12+ and Ubuntu 24.04+ systems. It provides a clean, system-integrated installation and integrates with the collection's metadata system.
 
 ## Requirements
 
@@ -35,12 +35,6 @@ nodejs_verify_installation: true
 
 # Minimum Node.js version required
 nodejs_minimum_version: "18"
-
-# Configure npm global path to avoid permission issues
-nodejs_configure_global_path: true
-
-# npm global installation prefix
-nodejs_global_prefix: "/usr/local"
 ```
 
 ### Private Variables (vars/main.yml)
@@ -84,7 +78,6 @@ None.
   become: true
   vars:
     nodejs_minimum_version: "18"
-    nodejs_global_prefix: "/opt/nodejs"
   roles:
     - adaptivegears.actions.nodejs
 ```
@@ -107,15 +100,9 @@ None.
 - Only installs if necessary (version < minimum requirement)
 - Graceful handling of existing installations
 
-### npm Configuration
-- Configures npm global prefix to avoid permission issues
-- Sets up proper directory structure for global packages
-- Verifies npm functionality post-installation
-
 ### Metadata Integration
 - Stores Node.js version in `/var/lib/instance-metadata/nodejs-version`
 - Stores npm version in `/var/lib/instance-metadata/npm-version`
-- Stores npm global prefix in `/var/lib/instance-metadata/npm-global-prefix`
 
 ### Error Handling
 - Validates system requirements before installation
@@ -129,8 +116,7 @@ This role creates the following metadata files:
 ```
 /var/lib/instance-metadata/
 ├── nodejs-version        # Node.js version (e.g., "v18.19.0")
-├── npm-version          # npm version (e.g., "9.2.0")
-└── npm-global-prefix    # Global prefix path (e.g., "/usr/local")
+└── npm-version          # npm version (e.g., "9.2.0")
 ```
 
 ## Usage with npm Global Packages
@@ -138,8 +124,8 @@ This role creates the following metadata files:
 After role execution, you can install global npm packages:
 
 ```bash
-# Install global packages (no sudo required with proper configuration)
-npm install -g @anthropic-ai/claude-code
+# Install global packages (requires sudo for system-wide installation)
+sudo npm install -g @anthropic-ai/claude-code
 
 # Verify global packages
 npm list -g --depth=0
@@ -150,20 +136,12 @@ npm list -g --depth=0
 ### Permission Issues with npm
 If you encounter permission issues with npm global installs:
 
-1. Check npm configuration:
+1. Use sudo for global package installation:
    ```bash
-   npm config get prefix
+   sudo npm install -g package-name
    ```
 
-2. Verify directory permissions:
-   ```bash
-   ls -la /usr/local/bin
-   ```
-
-3. Re-run the role with:
-   ```yaml
-   nodejs_configure_global_path: true
-   ```
+2. For user-specific installations, consider using a Node.js version manager like nvm
 
 ### Node.js Version Issues
 If the installed Node.js version is inadequate:

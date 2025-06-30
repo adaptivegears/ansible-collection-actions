@@ -29,11 +29,3 @@
     dest: /var/lib/instance-metadata/npm-version
     mode: '0644'
   become: true
-
-- name: "Node.js > Metadata > Store npm global prefix"
-  ansible.builtin.copy:
-    content: "{{ nodejs__final_global_prefix.stdout | default(nodejs_global_prefix) | trim }}"
-    dest: /var/lib/instance-metadata/npm-global-prefix
-    mode: '0644'
-  become: true
-  when: nodejs_configure_global_path | bool

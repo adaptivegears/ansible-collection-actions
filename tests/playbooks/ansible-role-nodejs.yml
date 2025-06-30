@@ -36,7 +36,6 @@
       loop:
         - nodejs-version
         - npm-version
-        - npm-global-prefix
 
     - name: "Test > Check metadata file contents"
       ansible.builtin.slurp:
@@ -45,29 +44,8 @@
       loop:
         - nodejs-version
         - npm-version
-        - npm-global-prefix
 
     - name: "Test > Display metadata contents"
       ansible.builtin.debug:
         msg: "{{ item.item }}: {{ item.content | b64decode | trim }}"
       loop: "{{ test_metadata_contents.results }}"
-
-    - name: "Test > Test npm global configuration"
-      ansible.builtin.command: npm config get prefix
-      register: test_npm_prefix
-      changed_when: false
-
-    - name: "Test > Display npm global prefix"
-      ansible.builtin.debug:
-        msg: "npm global prefix: {{ test_npm_prefix.stdout }}"
-
-    - name: "Test > Test npm global package listing"
-      ansible.builtin.shell: npm list -g --depth=0 | head -5
-      args:
-        executable: /bin/bash
-      register: test_npm_global_list
-      changed_when: false
-
-    - name: "Test > Display npm global packages"
-      ansible.builtin.debug:
-        msg: "{{ test_npm_global_list.stdout_lines }}"
