@@ -29,23 +29,3 @@
       ansible.builtin.debug:
         msg: "npm version: {{ test_npm_version.stdout }}"
 
-    - name: "Test > Verify metadata files exist"
-      ansible.builtin.stat:
-        path: "/var/lib/instance-metadata/{{ item }}"
-      register: test_metadata_files
-      loop:
-        - nodejs-version
-        - npm-version
-
-    - name: "Test > Check metadata file contents"
-      ansible.builtin.slurp:
-        src: "/var/lib/instance-metadata/{{ item }}"
-      register: test_metadata_contents
-      loop:
-        - nodejs-version
-        - npm-version
-
-    - name: "Test > Display metadata contents"
-      ansible.builtin.debug:
-        msg: "{{ item.item }}: {{ item.content | b64decode | trim }}"
-      loop: "{{ test_metadata_contents.results }}"

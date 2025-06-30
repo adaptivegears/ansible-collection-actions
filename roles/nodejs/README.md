@@ -100,24 +100,10 @@ None.
 - Only installs if necessary (version < minimum requirement)
 - Graceful handling of existing installations
 
-### Metadata Integration
-- Stores Node.js version in `/var/lib/instance-metadata/nodejs-version`
-- Stores npm version in `/var/lib/instance-metadata/npm-version`
-
 ### Error Handling
 - Validates system requirements before installation
 - Verifies installation success
 - Provides meaningful error messages
-
-## Metadata Files
-
-This role creates the following metadata files:
-
-```
-/var/lib/instance-metadata/
-├── nodejs-version        # Node.js version (e.g., "v18.19.0")
-└── npm-version          # npm version (e.g., "9.2.0")
-```
 
 ## Usage with npm Global Packages
 

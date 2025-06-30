@@ -4,6 +4,3 @@
 
 - name: "Node.js > Installation"
   ansible.builtin.include_tasks: 100-nodejs-install.yml
-
-- name: "Node.js > Metadata"
-  ansible.builtin.include_tasks: 999-metadata.yml
