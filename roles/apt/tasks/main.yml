@@ -20,9 +20,9 @@
 - name: APT > Cache
   block:
     - name: APT > Cache > Use default repositories
-      ansible.builtin.copy:
+      ansible.builtin.template:
+        src: sources.list.j2
         dest: /etc/apt/sources.list
-        content: "{{ lookup('file', 'sources.list') }}"
         mode: "0644"
       register: apt__repos
 

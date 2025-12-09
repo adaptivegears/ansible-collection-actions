@@ -8,9 +8,9 @@
   ansible.builtin.assert:
     that:
       - ansible_distribution == "Debian"
-      - ansible_distribution_major_version == "12"
-    success_msg: "This role is supported on Debian 12"
-    fail_msg: "This role is only supported on Debian 12"
+      - ansible_distribution_major_version in ["12", "13"]
+    success_msg: "This role is supported on Debian {{ ansible_distribution_major_version }}"
+    fail_msg: "This role is only supported on Debian 12 and 13"
 
 - name: Metadata > Prerequisites > Architecture
   ansible.builtin.assert:
