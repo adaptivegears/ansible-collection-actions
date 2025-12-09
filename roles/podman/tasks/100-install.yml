@@ -1,0 +1,13 @@
+---
+- name: "Podman > Install > Install Podman packages"
+  ansible.builtin.apt:
+    name: "{{ podman__packages }}"
+    state: present
+
+- name: "Podman > Install > Deploy registries configuration"
+  ansible.builtin.template:
+    src: registries.conf.j2
+    dest: /etc/containers/registries.conf
+    owner: root
+    group: root
+    mode: "0644"

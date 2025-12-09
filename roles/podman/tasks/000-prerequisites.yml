@@ -1,0 +1,21 @@
+---
+- name: "Podman > Prerequisites > Validate system requirements"
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == "Debian"
+      - (ansible_distribution == "Debian" and ansible_distribution_major_version in ["12", "13"]) or
+        (ansible_distribution == "Ubuntu" and ansible_distribution_version is version("24.04", ">="))
+    fail_msg: "This role requires Debian 12/13 or Ubuntu 24.04+"
+    success_msg: "System requirements validated"
+
+- name: "Podman > Prerequisites > Check architecture support"
+  ansible.builtin.assert:
+    that:
+      - ansible_architecture in podman__supported_architectures
+    fail_msg: "Architecture {{ ansible_architecture }} not supported. Supported: {{ podman__supported_architectures | join(', ') }}"
+    success_msg: "Architecture {{ ansible_architecture }} is supported"
+
+- name: "Podman > Prerequisites > Update package cache"
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600

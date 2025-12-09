@@ -1,0 +1,33 @@
+---
+- name: Podman
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  become: true
+  tasks:
+    - name: Print Usage
+      when: help | default(h) | default(false)
+      failed_when: help | default(h) | default(false)
+      ansible.builtin.debug:
+        msg:
+          - "Usage: @adaptivegears/podman [OPTIONS]"
+          - "Options:"
+          - "  -h, --help                Show this help message"
+          - "  --registries              Container registries (PODMAN_REGISTRIES)"
+          - "  --quadlet-dir             Quadlet systemd directory (PODMAN_QUADLET_DIR)"
+
+    - name: Set Facts
+      ignore_errors: true
+      ansible.builtin.set_fact:
+        podman_registries: >-
+          {{ (lookup('env', 'PODMAN_REGISTRIES') |
+              default(registries, true) |
+              default('docker.io,quay.io,gcr.io,ghcr.io', true)).split(',') }}
+        podman_quadlet_dir: >-
+          {{ lookup('env', 'PODMAN_QUADLET_DIR') |
+             default(quadlet_dir, true) |
+             default('/etc/containers/systemd', true) }}
+
+    - name: Include Role
+      ansible.builtin.include_role:
+        name: podman

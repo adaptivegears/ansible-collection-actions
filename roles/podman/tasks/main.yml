@@ -1,0 +1,9 @@
+---
+- name: "Podman > Prerequisites"
+  ansible.builtin.include_tasks: 000-prerequisites.yml
+
+- name: "Podman > Installation"
+  ansible.builtin.include_tasks: 100-install.yml
+
+- name: "Podman > Quadlet"
+  ansible.builtin.include_tasks: 200-quadlet.yml

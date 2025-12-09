@@ -1,0 +1,58 @@
+---
+- name: Test Podman Role
+  hosts: node1
+  become: true
+
+  tasks:
+    - name: Apply Podman Role
+      ansible.builtin.include_role:
+        name: podman
+
+  post_tasks:
+    - name: "Test > Verify Podman command is available"
+      ansible.builtin.command: podman --version
+      register: test_podman_version
+      changed_when: false
+
+    - name: "Test > Display Podman version"
+      ansible.builtin.debug:
+        msg: "Podman version: {{ test_podman_version.stdout }}"
+
+    - name: "Test > Verify registries configuration exists"
+      ansible.builtin.stat:
+        path: /etc/containers/registries.conf
+      register: test_registries_conf
+
+    - name: "Test > Assert registries configuration exists"
+      ansible.builtin.assert:
+        that:
+          - test_registries_conf.stat.exists
+        fail_msg: "Registries configuration file not found"
+        success_msg: "Registries configuration file exists"
+
+    - name: "Test > Verify Quadlet directory exists"
+      ansible.builtin.stat:
+        path: /etc/containers/systemd
+      register: test_quadlet_dir
+
+    - name: "Test > Assert Quadlet directory exists"
+      ansible.builtin.assert:
+        that:
+          - test_quadlet_dir.stat.exists
+          - test_quadlet_dir.stat.isdir
+        fail_msg: "Quadlet directory not found"
+        success_msg: "Quadlet directory exists"
+
+    - name: "Test > Verify Podman can pull images"
+      ansible.builtin.command: podman pull docker.io/library/alpine:latest
+      register: test_pull_image
+      changed_when: false
+
+    - name: "Test > Verify Podman can run containers"
+      ansible.builtin.command: podman run --rm docker.io/library/alpine:latest echo "Hello from Podman"
+      register: test_run_container
+      changed_when: false
+
+    - name: "Test > Display container run output"
+      ansible.builtin.debug:
+        msg: "Container output: {{ test_run_container.stdout }}"

@@ -1,0 +1,9 @@
+---
+- name: "Podman > Quadlet > Create Quadlet systemd directory"
+  ansible.builtin.file:
+    path: "{{ podman_quadlet_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  notify: Reload systemd

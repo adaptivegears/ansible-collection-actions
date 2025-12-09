@@ -1,0 +1,9 @@
+---
+podman__packages:
+  - podman
+
+podman__supported_architectures:
+  - amd64
+  - arm64
+  - aarch64
+  - x86_64

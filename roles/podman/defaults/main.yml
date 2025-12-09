@@ -1,0 +1,15 @@
+---
+# Podman role default variables
+# Variables prefixed with single underscore are public (can be overridden)
+
+# Registry configuration
+# Unqualified image search order
+podman_registries:
+  - "docker.io"
+  - "quay.io"
+  - "gcr.io"
+  - "ghcr.io"
+
+# Quadlet systemd integration
+# Directory for .container, .volume, .network unit files
+podman_quadlet_dir: "/etc/containers/systemd"
